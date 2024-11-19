@@ -1,6 +1,6 @@
 package models
 
-// LottoData는 로또 데이터 구조를 정의합니다.
+// LottoData는 로또 회차별 데이터의 구조를 정의합니다.
 type LottoData struct {
 	TotSellamnt    int    `json:"totSellamnt"`    // 총 판매 금액
 	FirstWinamnt   int    `json:"firstWinamnt"`   // 1등 당첨금
@@ -16,4 +16,16 @@ type LottoData struct {
 	FirstAccumamnt int    `json:"firstAccumamnt"` // 1등 누적 당첨금
 	ReturnValue    string `json:"returnValue"`    // 응답 상태 (예: success)
 	DrwNoDate      string `json:"drwNoDate"`      // 추첨 날짜
+}
+
+// LottoRequest는 로또 번호 생성 요청의 구조를 정의합니다.
+type LottoRequest struct {
+	Type        string `json:"type"`        // 번호 생성 타입 (default, unique, many, custom)
+	UserNumbers []int  `json:"userNumbers"` // 사용자 선택 번호 (custom 타입일 때 사용)
+}
+
+// LottoResponse는 로또 번호 생성 응답의 구조를 정의합니다.
+type LottoResponse struct {
+	Numbers []int  `json:"numbers"`         // 생성된 로또 번호
+	Error   string `json:"error,omitempty"` // 에러 메시지 (있는 경우)
 }
