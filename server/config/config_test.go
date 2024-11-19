@@ -1,29 +1,40 @@
-package config_test
+package config
 
 import (
 	"os"
-	"server/config"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestLoadConfig(t *testing.T) {
-	// 환경 변수를 설정
+	// 테스트용 환경 변수 설정
 	os.Setenv("S3_BUCKET", "test-bucket")
-	os.Setenv("S3_REGION", "us-west-2")
+	os.Setenv("S3_REGION", "test-region")
 	os.Setenv("S3_PREFIX", "test-prefix")
 	os.Setenv("APP_PORT", "8080")
+	os.Setenv("API_KEY", "test-api-key")
 
-	// Config 로드
-	cfg, err := config.LoadConfig()
+	cfg, err := LoadConfig()
+	if err != nil {
+		t.Errorf("LoadConfig() 에러 발생: %v", err)
+	}
 
-	// 에러가 없는지 확인
-	assert.NoError(t, err, "환경 변수 로드 중 에러 발생")
+	tests := []struct {
+		name     string
+		got      string
+		expected string
+	}{
+		{"S3_BUCKET", cfg.S3Bucket, "test-bucket"},
+		{"S3_REGION", cfg.S3Region, "test-region"},
+		{"S3_PREFIX", cfg.S3Prefix, "test-prefix"},
+		{"APP_PORT", cfg.AppPort, "8080"},
+		{"API_KEY", cfg.APIKey, "test-api-key"},
+	}
 
-	// 환경 변수 값 확인
-	assert.Equal(t, "test-bucket", cfg.S3Bucket, "S3_BUCKET 값이 다릅니다")
-	assert.Equal(t, "us-west-2", cfg.S3Region, "S3_REGION 값이 다릅니다")
-	assert.Equal(t, "test-prefix", cfg.S3Prefix, "S3_PREFIX 값이 다릅니다")
-	assert.Equal(t, "8080", cfg.AppPort, "APP_PORT 값이 다릅니다")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.got != tt.expected {
+				t.Errorf("%s = %v, want %v", tt.name, tt.got, tt.expected)
+			}
+		})
+	}
 }
