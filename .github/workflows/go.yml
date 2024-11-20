@@ -1,13 +1,13 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
-
 name: Go Server Workflow
 
 on:
   push:
-    branches: [ "develop" ] # develop 브랜치로 push될 때 실행
+    branches:
+      - "develop" # develop 브랜치로 push될 때 실행
   pull_request:
-    branches: [ "develop" ] # develop 브랜치로 PR이 생성될 때 실행
+    branches:
+      - "develop" # develop 브랜치로 PR이 생성될 때 실행
+      - "main"    # main 브랜치로 PR이 생성될 때 실행
 
 jobs:
   build:
@@ -31,3 +31,45 @@ jobs:
       run: |
         cd server # server 폴더로 이동
         go test -v ./... # 테스트 실행
+
+  auto-merge:
+    needs: build # build 작업이 성공해야 실행
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request' && success()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 # 코드베이스를 체크아웃
+
+    - name: Auto-merge PR into main or develop
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const { data: pullRequest } = await github.pulls.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: context.payload.pull_request.number
+          });
+
+          // 조건: PR 대상이 main 또는 develop이고, source 브랜치가 develop 또는 release
+          const validBases = ['main', 'develop'];
+          const validHeads = ['develop', 'release'];
+
+          if (
+            validBases.includes(pullRequest.base.ref) &&
+            validHeads.includes(pullRequest.head.ref) &&
+            pullRequest.mergeable &&
+            pullRequest.mergeable_state === 'clean'
+          ) {
+            await github.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              merge_method: "squash" # "merge", "squash", or "rebase" 선택 가능
+            });
+            console.log(`PR #${pullRequest.number} merged into ${pullRequest.base.ref}`);
+          } else {
+            console.log(`PR #${pullRequest.number} does not meet merge criteria.`);
+            core.setFailed("Merge criteria not met.");
+          }
