@@ -1,0 +1,33 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go Server Workflow
+
+on:
+  push:
+    branches: [ "develop" ] # develop 브랜치로 push될 때 실행
+  pull_request:
+    branches: [ "develop" ] # develop 브랜치로 PR이 생성될 때 실행
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 워크플로가 실행될 환경 설정 (Ubuntu 최신 버전)
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4 # 코드베이스를 체크아웃
+
+    - name: Set up Go
+      uses: actions/setup-go@v4 # Go 환경 설정
+      with:
+        go-version: '1.23' # 사용할 Go 버전
+
+    - name: Build Go application
+      run: |
+        cd server # server 폴더로 이동
+        go build -v ./... # 빌드 명령어 실행
+
+    - name: Run tests
+      run: |
+        cd server # server 폴더로 이동
+        go test -v ./... # 테스트 실행
