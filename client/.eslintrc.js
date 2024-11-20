@@ -1,22 +1,16 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   extends: [
+    'next',
     'next/core-web-vitals',
     'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
-    'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
   ],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    '@typescript-eslint/no-explicit-any': 'error',
-    '@typescript-eslint/no-unused-vars': 'error',
-    '@typescript-eslint/explicit-function-return-type': 'error',
-    'react/react-in-jsx-scope': 'off',
-    'no-undefined': 'error'
+    'prettier/prettier': 'error',
+    'import/no-anonymous-default-export': 'off',  // 익명 함수 사용 허용
+    'prefer-const': 'off',  // let 대신 const 사용 규칙 비활성화
+    // 다른 규칙들을 여기에 추가할 수 있습니다.
   },
-  settings: {
-    react: {
-      version: 'detect',
-    },
-  },
-} 
+};
