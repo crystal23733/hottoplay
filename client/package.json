@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"src/**/*.{ts,tsx,html,css,scss}\" --watch"
+    "format": "prettier --write \"src/**/*.{ts,tsx,html,css,scss}\""
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
