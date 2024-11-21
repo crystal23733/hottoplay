@@ -80,7 +80,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              merge_method: "squash" # "merge", "squash", 또는 "rebase" 선택 가능
+              merge_method: "squash" // "merge", "squash", 또는 "rebase" 선택 가능
             });
             console.log(`PR #${pullRequest.number} merged into ${pullRequest.base.ref}`);
           } else {
