@@ -1,3 +1,7 @@
+/**
+ * 로또 회차별 데이터 인터페이스
+ * @interface ILottoData
+ */
 export default interface ILottoRoundData {
   totSellamnt: number; // 총 판매 금액
   returnValue: string; // API 응답 상태 (예: 'success')
