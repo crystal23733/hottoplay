@@ -1,4 +1,5 @@
-import { LOTTO_NUMBER_SIZES, LottoNumberProps } from './LottoNumber.types';
+import LottoNumberStyle from './LottoNumber.style';
+import LottoNumberProps from './LottoNumber.types';
 
 /**
  * 단일 로또 번호를 원형으로 표시하는 컴포넌트
@@ -39,11 +40,20 @@ const LottoNumber: React.FC<LottoNumberProps> = ({
   onClick,
   className = '',
 }) => {
+  const getStyles = () =>
+    [
+      LottoNumberStyle.base,
+      LottoNumberStyle.sizes[size],
+      isSelected ? LottoNumberStyle.states.selected : LottoNumberStyle.states.default,
+      onClick && !disabled && !isSelected ? LottoNumberStyle.interaction.clickable : '',
+      disabled ? LottoNumberStyle.interaction.disabled : '',
+      className,
+    ]
+      .filter(Boolean)
+      .join(' ');
+
   return (
-    <div
-      className={`flex items-center justify-center rounded-full ${LOTTO_NUMBER_SIZES[size]} ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted'} ${onClick && !disabled ? 'cursor-pointer hover:bg-muted/80' : ''} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-      onClick={!disabled ? onClick : undefined}
-    >
+    <div className={getStyles()} onClick={!disabled ? onClick : undefined}>
       {number}
     </div>
   );
