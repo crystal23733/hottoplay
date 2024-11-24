@@ -6,7 +6,12 @@ import AdSidebarProps from './AdSidebar.types';
  */
 export const AdSidebar = ({ position, startAdNumber }: AdSidebarProps) => {
   return (
-    <aside className="hidden md:block md:col-span-3">
+    <aside
+      className={`
+      hidden md:block md:col-span-3
+      ${position === 'left' ? 'order-first' : 'order-last'}
+    `}
+    >
       <div className="space-y-6">
         <AdSpace label={`광고 영역 ${startAdNumber}`} height="lg" />
         <AdSpace label={`광고 영역 ${startAdNumber + 1}`} height="lg" />
