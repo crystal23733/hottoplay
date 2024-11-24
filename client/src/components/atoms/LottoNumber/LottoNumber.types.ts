@@ -9,23 +9,11 @@
  * @property {() => void} [onClick] - 번호 클릭 시 실행될 콜백 함수
  * @property {string} [className] - 추가 스타일링을 위한 클래스명
  */
-export interface LottoNumberProps {
+export default interface LottoNumberProps {
   number: number | string;
   size?: 'sm' | 'md' | 'lg';
   isSelected?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   onClick?: () => void;
   className?: string;
 }
-
-/**
- * 로또 번호 크기별 스타일 매핑 객체
- *
- * @constant
- * @type {Record<'sm' | 'md' | 'lg', string>}
- */
-export const LOTTO_NUMBER_SIZES = {
-  sm: 'h-8 w-8 text-sm',
-  md: 'h-10 w-10',
-  lg: 'h-12 w-12',
-} as const;
