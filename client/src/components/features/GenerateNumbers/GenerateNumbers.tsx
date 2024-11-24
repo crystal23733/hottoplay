@@ -5,9 +5,9 @@ import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import { Button } from '@/ui/Button';
 import NumberGrid from '@/components/organisms/NumberGrid/NumberGrid';
-import LottoResult from '@/components/organisms/LottoResult';
-
-type GenerateType = 'default' | 'unique' | 'many' | 'custom';
+import LottoResult from '@/components/organisms/LottoResult/LottoResult';
+import generateLottoNumbers from './utils/generateLottoNumbers';
+import { GeneratedNumberSet, GenerateType } from './GenerateNumbers.types';
 
 /**
  * 로또 번호 생성 기능을 제공하는 템플릿 컴포넌트
@@ -22,6 +22,17 @@ type GenerateType = 'default' | 'unique' | 'many' | 'custom';
 export default function GenerateNumbers() {
   const [generateType, setGenerateType] = useState<GenerateType>('default');
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
+  const [generatedNumbers, setGeneratedNumbers] = useState<GeneratedNumberSet | null>(null);
+
+  const handleGenerate = () => {
+    const numbers = generateLottoNumbers(generateType, selectedNumbers);
+    if (numbers.length === 6) {
+      setGeneratedNumbers({
+        numbers,
+        type: generateType,
+      });
+    }
+  };
 
   return (
     <Card className="p-6">
@@ -45,16 +56,28 @@ export default function GenerateNumbers() {
               selectedNumbers={selectedNumbers}
               onNumberToggle={number => {
                 setSelectedNumbers(prev =>
-                  prev.includes(number) ? prev.filter(n => n !== number) : [...prev, number]
+                  prev.includes(number)
+                    ? prev.filter(n => n !== number)
+                    : prev.length < 6
+                      ? [...prev, number]
+                      : prev
                 );
               }}
               maxSelection={6}
             />
           )}
 
-          <Button className="w-full">번호 생성하기</Button>
+          <Button
+            className="w-full"
+            onClick={handleGenerate}
+            disabled={generateType === 'custom' && selectedNumbers.length === 0}
+          >
+            번호 생성하기
+          </Button>
         </div>
-        <LottoResult />
+        {generatedNumbers && (
+          <LottoResult numbers={generatedNumbers.numbers} title="생성된 번호" size="lg" />
+        )}
       </div>
     </Card>
   );
