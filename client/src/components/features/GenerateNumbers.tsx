@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import { Button } from '@/ui/Button';
-import NumberGrid from '@/components/organisms/NumberGrid';
+import NumberGrid from '@/components/organisms/NumberGrid/NumberGrid';
 import LottoResult from '@/components/organisms/LottoResult';
 
 type GenerateType = 'default' | 'unique' | 'many' | 'custom';
@@ -48,6 +48,7 @@ export default function GenerateNumbers() {
                   prev.includes(number) ? prev.filter(n => n !== number) : [...prev, number]
                 );
               }}
+              maxSelection={6}
             />
           )}
 
