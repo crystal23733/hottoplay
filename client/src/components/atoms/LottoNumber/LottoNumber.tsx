@@ -1,4 +1,4 @@
-import LottoNumberStyle from './LottoNumber.style';
+import { getNumberColor, LottoNumberStyle } from './LottoNumber.style';
 import LottoNumberProps from './LottoNumber.types';
 
 /**
@@ -44,6 +44,7 @@ const LottoNumber: React.FC<LottoNumberProps> = ({
     [
       LottoNumberStyle.base,
       LottoNumberStyle.sizes[size],
+      getNumberColor(Number(number)),
       isSelected ? LottoNumberStyle.states.selected : LottoNumberStyle.states.default,
       onClick && !disabled && !isSelected ? LottoNumberStyle.interaction.clickable : '',
       disabled ? LottoNumberStyle.interaction.disabled : '',
