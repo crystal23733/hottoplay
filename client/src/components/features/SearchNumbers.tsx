@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import SearchResult from '@/components/organisms/SearchResult';
-import PopularNumbersResult from '@/components/organisms/PopularNumbersResult';
+import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
 
 type SearchType = 'round' | 'popular';
 
@@ -64,6 +64,7 @@ export default function SearchNumbers() {
               { number: 3, frequency: 8 },
               // ...
             ]}
+            title="가장 많이 나온 번호"
           />
         )}
       </div>
