@@ -91,8 +91,7 @@ func TestLottoHandler_GenerateNumbers(t *testing.T) {
 		{
 			name: "User based generation",
 			requestBody: models.LottoRequest{
-				Type:        "custom",
-				UserNumbers: []int{1, 2, 3},
+				Type: "custom",
 			},
 			mockService: &mockLottoService{
 				userBasedNumbers: []int{1, 2, 3, 19, 20, 21},

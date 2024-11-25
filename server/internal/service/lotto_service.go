@@ -22,10 +22,8 @@ type LottoService struct {
 
 // LottoServiceInterface는 로또 서비스의 인터페이스를 정의합니다.
 type LottoServiceInterface interface {
-	GenerateRandomNumbers() []int
 	GenerateUniqueNumbers() ([]int, error)
 	GeneratePopularBasedNumbers() []int
-	GenerateUserBasedNumbers(numbers []int) ([]int, error)
 }
 
 // NewLottoService는 새로운 LottoService 인스턴스를 생성합니다.
@@ -121,64 +119,6 @@ func (s *LottoService) GeneratePopularBasedNumbers() []int {
 
 	sort.Ints(popularNumbers)
 	return popularNumbers
-}
-
-// GenerateUserBasedNumbers는 사용자가 선택한 번호를 포함한 조합을 생성합니다.
-func (s *LottoService) GenerateUserBasedNumbers(userNumbers []int) ([]int, error) {
-	// 사용자 입력 번호 검증
-	if len(userNumbers) == 0 {
-		return nil, fmt.Errorf("최소 1개 이상의 번호를 선택해야 합니다")
-	}
-	if len(userNumbers) > 5 {
-		return nil, fmt.Errorf("최대 5개까지 번호를 선택할 수 있습니다")
-	}
-
-	// 번호 범위 검증
-	for _, num := range userNumbers {
-		if num < 1 || num > 45 {
-			return nil, fmt.Errorf("선택한 번호는 1부터 45 사이여야 합니다: %d", num)
-		}
-	}
-
-	// 중복 번호 검증
-	numMap := make(map[int]bool)
-	for _, num := range userNumbers {
-		if numMap[num] {
-			return nil, fmt.Errorf("중복된 번호가 있습니다: %d", num)
-		}
-		numMap[num] = true
-	}
-
-	// 남은 번호 풀 생성
-	availableNumbers := make([]int, 0)
-	for i := 1; i <= 45; i++ {
-		if !numMap[i] {
-			availableNumbers = append(availableNumbers, i)
-		}
-	}
-
-	// 필요한 만큼의 추가 번호 생성
-	result := make([]int, len(userNumbers))
-	copy(result, userNumbers)
-
-	// Fisher-Yates 셔플 알고리즘으로 남은 번호들을 섞음
-	for i := len(availableNumbers) - 1; i > 0; i-- {
-		j := s.rng.Intn(i + 1)
-		availableNumbers[i], availableNumbers[j] = availableNumbers[j], availableNumbers[i]
-	}
-
-	// 필요한 만큼만 추가
-	remainingCount := 6 - len(userNumbers)
-	result = append(result, availableNumbers[:remainingCount]...)
-
-	// 최종 번호 정렬
-	sort.Ints(result)
-	return result, nil
-}
-
-// GenerateRandomNumbers는 완전히 무작위로 번호를 생성합니다.
-func (s *LottoService) GenerateRandomNumbers() []int {
-	return s.generateRandomNumbersWithRng(s.rng)
 }
 
 // generateRandomNumbersWithRng는 주어진 난수 생성기로 번호를 생성합니다.
