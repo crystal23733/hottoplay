@@ -24,8 +24,8 @@ export default function GenerateNumbers() {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [generatedNumbers, setGeneratedNumbers] = useState<GeneratedNumberSet | null>(null);
 
-  const handleGenerate = () => {
-    const numbers = generateLottoNumbers(generateType, selectedNumbers);
+  const handleGenerate = async () => {
+    const numbers = await generateLottoNumbers(generateType, selectedNumbers);
     if (numbers.length === 6) {
       setGeneratedNumbers({
         numbers,
