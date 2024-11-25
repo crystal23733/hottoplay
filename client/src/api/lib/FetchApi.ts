@@ -45,7 +45,7 @@ export default class<T> extends BaseFetchApi<T> {
 
     try {
       const response = await fetch(url, options);
-      const contentType = response.headers.get('content-type');
+      const contentType = response.headers.get('Content-Type');
       const isJson = contentType?.includes('application/json');
 
       const data = isJson ? await response.json() : null;
