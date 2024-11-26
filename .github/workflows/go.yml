@@ -52,7 +52,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Detailed Merge Check
+    - name: Check PR Conflicts
+      id: check-conflicts
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -61,53 +62,64 @@ jobs:
           const pullRequestNumber = context.payload.pull_request.number;
 
           try {
-            // PR 정보 가져오기
             const { data: pullRequest } = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: pullRequestNumber
             });
 
-            // 조건: PR 대상이 develop이고, source 브랜치가 feature/로 시작
+            // 기본 브랜치 확인
             const validBases = ['develop'];
             const validHeads = ['feature/'];
 
-            console.log('Base Branch:', pullRequest.base.ref);
-            console.log('Head Branch:', pullRequest.head.ref);
-            console.log('Mergeable:', pullRequest.mergeable);
-            console.log('Mergeable State:', pullRequest.mergeable_state);
+            // PR 병합 가능성 확인
+            const isConflicting = await github.rest.pulls.checkMergeability({
+              owner,
+              repo,
+              pull_number: pullRequestNumber
+            });
 
+            console.log('Merge Possible:', isConflicting.data.mergeable);
+            console.log('Merge State:', isConflicting.data.mergeable_state);
+
+            // 조건 체크
             const baseCheck = validBases.includes(pullRequest.base.ref);
             const headCheck = validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix));
+            const mergeCheck = isConflicting.data.mergeable && isConflicting.data.mergeable_state === 'clean';
 
-            console.log('Base Branch Check:', baseCheck);
-            console.log('Head Branch Check:', headCheck);
-
-            if (
-              baseCheck &&
-              headCheck &&
-              pullRequest.mergeable &&
-              pullRequest.mergeable_state === 'clean'
-            ) {
-              // PR 병합
-              await github.rest.pulls.merge({
-                owner,
-                repo,
-                pull_number: pullRequestNumber,
-                merge_method: "squash"
-              });
-              console.log(`PR #${pullRequestNumber} merged into ${pullRequest.base.ref}`);
+            if (baseCheck && headCheck && mergeCheck) {
+              console.log('PR is ready to merge');
+              return true;
             } else {
-              console.log(`PR #${pullRequestNumber} does not meet merge criteria.`);
-              console.log('Detailed Failure Reasons:');
-              if (!baseCheck) console.log('- Base branch is not "develop"');
-              if (!headCheck) console.log('- Head branch does not start with "feature/"');
-              if (!pullRequest.mergeable) console.log('- PR is not mergeable');
-              if (pullRequest.mergeable_state !== 'clean') console.log('- Mergeable state is not "clean"');
-              
-              core.setFailed("Merge criteria not met.");
+              console.log('PR merge conditions not met:');
+              if (!baseCheck) console.log('- Invalid base branch');
+              if (!headCheck) console.log('- Invalid head branch');
+              if (!mergeCheck) console.log('- Not mergeable or unstable state');
+              return false;
             }
           } catch (error) {
-            console.error('Merge check failed:', error);
-            core.setFailed(error.message);
+            console.error('Merge check error:', error);
+            return false;
+          }
+
+    - name: Merge Pull Request
+      if: steps.check-conflicts.outputs.result == 'true'
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { owner, repo } = context.repo;
+          const pullRequestNumber = context.payload.pull_request.number;
+
+          try {
+            await github.rest.pulls.merge({
+              owner,
+              repo,
+              pull_number: pullRequestNumber,
+              merge_method: "squash"
+            });
+            console.log(`PR #${pullRequestNumber} merged successfully`);
+          } catch (error) {
+            console.error('Merge failed:', error);
+            core.setFailed('Merge operation failed');
           }
