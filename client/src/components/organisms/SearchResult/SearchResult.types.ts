@@ -31,6 +31,6 @@ export interface LottoRoundDetail {
  * @property {string} [title='회차별 당첨 번호'] - 결과 섹션의 제목
  */
 export interface SearchResultProps {
-  results: LottoRoundDetail[];
+  results: LottoRoundDetail;
   title?: string;
 }
