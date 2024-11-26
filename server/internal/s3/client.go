@@ -42,68 +42,79 @@ func NewS3Client(bucket, region, prefix string) (*S3Client, error) {
 
 // LoadLottoData는 S3에서 로또 데이터를 병렬로 로드합니다.
 func (s *S3Client) LoadLottoData(ctx context.Context) ([]models.LottoData, error) {
+	var allData []models.LottoData
 	input := &s3.ListObjectsV2Input{
 		Bucket: &s.bucket,
 		Prefix: &s.prefix,
 	}
 
-	result, err := s.client.ListObjectsV2(ctx, input)
-	if err != nil {
-		return nil, fmt.Errorf("S3 객체 리스트 조회 실패: %v", err)
-	}
-
-	var wg sync.WaitGroup
-	dataChan := make(chan models.LottoData, len(result.Contents))
-	errorChan := make(chan error, len(result.Contents))
-
-	for _, obj := range result.Contents {
-		wg.Add(1)
-		go func(key string) {
-			defer wg.Done()
-
-			input := &s3.GetObjectInput{
-				Bucket: &s.bucket,
-				Key:    &key,
-			}
-
-			output, err := s.client.GetObject(ctx, input)
-			if err != nil {
-				errorChan <- fmt.Errorf("S3 객체 조회 실패: %v", err)
-				return
-			}
-			defer output.Body.Close()
-
-			data, err := io.ReadAll(output.Body)
-			if err != nil {
-				errorChan <- fmt.Errorf("데이터 읽기 실패: %v", err)
-				return
-			}
-
-			var lottoData models.LottoData
-			if err := json.Unmarshal(data, &lottoData); err != nil {
-				errorChan <- fmt.Errorf("JSON 파싱 실패: %v", err)
-				return
-			}
-
-			dataChan <- lottoData
-		}(*obj.Key)
-	}
-
-	go func() {
-		wg.Wait()
-		close(dataChan)
-		close(errorChan)
-	}()
-
-	var allData []models.LottoData
-	for data := range dataChan {
-		allData = append(allData, data)
-	}
-
-	for err := range errorChan {
+	for {
+		result, err := s.client.ListObjectsV2(ctx, input)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("S3 객체 리스트 조회 실패: %v", err)
 		}
+
+		var wg sync.WaitGroup
+		dataChan := make(chan models.LottoData, len(result.Contents))
+		errorChan := make(chan error, len(result.Contents))
+
+		for _, obj := range result.Contents {
+			wg.Add(1)
+			objKey := *obj.Key // 클로저 문제 해결을 위해 변수 복사
+			go func() {
+				defer wg.Done()
+
+				input := &s3.GetObjectInput{
+					Bucket: &s.bucket,
+					Key:    &objKey,
+				}
+
+				output, err := s.client.GetObject(ctx, input)
+				if err != nil {
+					errorChan <- fmt.Errorf("S3 객체 조회 실패 (키: %s): %v", objKey, err)
+					return
+				}
+				defer output.Body.Close()
+
+				data, err := io.ReadAll(output.Body)
+				if err != nil {
+					errorChan <- fmt.Errorf("데이터 읽기 실패 (키: %s): %v", objKey, err)
+					return
+				}
+
+				var lottoData models.LottoData
+				if err := json.Unmarshal(data, &lottoData); err != nil {
+					errorChan <- fmt.Errorf("JSON 파싱 실패 (키: %s): %v", objKey, err)
+					return
+				}
+
+				dataChan <- lottoData
+			}()
+		}
+
+		go func() {
+			wg.Wait()
+			close(dataChan)
+			close(errorChan)
+		}()
+
+		// 에러 체크를 먼저 수행
+		for err := range errorChan {
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// 에러가 없는 경우에만 데이터 수집
+		for data := range dataChan {
+			allData = append(allData, data)
+		}
+
+		if result.IsTruncated == nil || !*result.IsTruncated {
+			break
+		}
+
+		input.ContinuationToken = result.NextContinuationToken
 	}
 
 	return allData, nil
