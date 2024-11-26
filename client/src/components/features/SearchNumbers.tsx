@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import SearchResult from '@/components/organisms/SearchResult/SearchResult';
 import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
 import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
+import Loading from '../atoms/Loading/Loading';
 
 type SearchType = 'round' | 'popular';
 
@@ -22,7 +23,7 @@ type SearchType = 'round' | 'popular';
 export default function SearchNumbers() {
   const [searchType, setSearchType] = useState<SearchType>('round');
   const [round, setRound] = useState<string>('');
-  const { data } = useSearchNumber(round);
+  const { data, loading, error } = useSearchNumber(round);
 
   return (
     <Card className="p-6">
@@ -55,7 +56,17 @@ export default function SearchNumbers() {
           )}
         </div>
         {searchType === 'round' ? (
-          data && <SearchResult title="회차별 당첨 번호" results={data} />
+          <div>
+            {loading && (
+              <div className="flex justify-center py-8">
+                <Loading size="lg" />
+              </div>
+            )}
+            {error && (
+              <div className="text-center py-4 text-red-500 bg-red-50 rounded-md">{error}</div>
+            )}
+            {data && <SearchResult title="회차별 당첨 번호" results={data} />}
+          </div>
         ) : (
           <PopularNumbersResult
             numbers={[

@@ -1,4 +1,4 @@
-import FetchApi from '../lib/FetchApi';
+import FetchApi from '../lib/fetch/FetchApi';
 import apiKey from '../url/constants/apiKey';
 import baseUrl from '../url/constants/baseUrl';
 import createUrl from '../url/createUrl';
