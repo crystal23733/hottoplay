@@ -5,7 +5,6 @@ import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import SearchResult from '@/components/organisms/SearchResult/SearchResult';
 import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
-import { LottoRoundDetail } from '../organisms/SearchResult/SearchResult.types';
 import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
 
 type SearchType = 'round' | 'popular';
