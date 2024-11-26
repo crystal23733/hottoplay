@@ -28,3 +28,15 @@ type LottoResponse struct {
 	Numbers []int  `json:"numbers"`         // 생성된 로또 번호
 	Error   string `json:"error,omitempty"` // 에러 메시지 (있는 경우)
 }
+
+type LottoRoundData struct {
+	DrwNo          int    `json:"drwNo"`          // 회차 번호
+	TotSellamnt    int    `json:"totSellamnt"`    // 총 판매 금액
+	FirstWinamnt   int    `json:"firstWinamnt"`   // 1등 당첨금
+	Numbers        []int  `json:"numbers"`        // 1~6번 번호
+	BnusNo         int    `json:"bnusNo"`         // 보너스 번호
+	FirstPrzwnerCo int    `json:"firstPrzwnerCo"` // 1등 당첨자 수
+	FirstAccumamnt int    `json:"firstAccumamnt"` // 1등 누적 당첨금
+	ReturnValue    string `json:"returnValue"`    // 응답 상태 (예: success)
+	DrwNoDate      string `json:"drwNoDate"`      // 추첨 날짜
+}

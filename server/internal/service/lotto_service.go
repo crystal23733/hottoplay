@@ -25,7 +25,7 @@ type LottoService struct {
 type LottoServiceInterface interface {
 	GenerateUniqueNumbers() ([]int, error)
 	GeneratePopularBasedNumbers() []int
-	GetRoundNumbers(round int) (*models.LottoData, error)
+	GetRoundNumbers(round int) (*models.LottoRoundData, error)
 }
 
 // NewLottoService는 새로운 LottoService 인스턴스를 생성합니다.
@@ -144,7 +144,7 @@ func contains(arr []int, num int) bool {
 }
 
 // GetRoundNumbers는 특정 회차의 로또 데이터를 반환합니다.
-func (s *LottoService) GetRoundNumbers(round int) (*models.LottoData, error) {
+func (s *LottoService) GetRoundNumbers(round int) (*models.LottoRoundData, error) {
 	if round <= 0 {
 		return nil, fmt.Errorf("유효하지 않은 회차 번호입니다: %d", round)
 	}
@@ -154,20 +154,15 @@ func (s *LottoService) GetRoundNumbers(round int) (*models.LottoData, error) {
 		return nil, fmt.Errorf("%d회차 데이터를 찾을 수 없습니다", round)
 	}
 
-	return &models.LottoData{
+	return &models.LottoRoundData{
 		TotSellamnt:    data.TotSellamnt,
 		FirstWinamnt:   data.FirstWinamnt,
 		DrwNo:          data.DrwNo,
-		DrwtNo1:        data.DrwtNo1,
-		DrwtNo2:        data.DrwtNo2,
-		DrwtNo3:        data.DrwtNo3,
-		DrwtNo4:        data.DrwtNo4,
-		DrwtNo5:        data.DrwtNo5,
-		DrwtNo6:        data.DrwtNo6,
+		Numbers:        []int{data.DrwtNo1, data.DrwtNo2, data.DrwtNo3, data.DrwtNo4, data.DrwtNo5, data.DrwtNo6},
 		BnusNo:         data.BnusNo,
 		FirstPrzwnerCo: data.FirstPrzwnerCo,
 		FirstAccumamnt: data.FirstAccumamnt,
-		ReturnValue:    data.ReturnValue,
 		DrwNoDate:      data.DrwNoDate,
+		ReturnValue:    data.ReturnValue,
 	}, nil
 }

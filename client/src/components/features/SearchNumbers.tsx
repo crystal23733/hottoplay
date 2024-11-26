@@ -5,7 +5,7 @@ import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import SearchResult from '@/components/organisms/SearchResult/SearchResult';
 import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
-import { LottoRoundDetail } from '../organisms/SearchResult/SearchResult.types';
+import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
 
 type SearchType = 'round' | 'popular';
 
@@ -22,39 +22,7 @@ type SearchType = 'round' | 'popular';
 export default function SearchNumbers() {
   const [searchType, setSearchType] = useState<SearchType>('round');
   const [round, setRound] = useState<string>('');
-  // 더미 데이터
-  const sampleResults: LottoRoundDetail[] = [
-    {
-      round: 861,
-      date: '2019-06-01',
-      numbers: [11, 17, 19, 21, 22, 25],
-      bonus: 24,
-      totalSales: 81032551000,
-      firstPrize: 4872108844,
-      firstWinnerCount: 4,
-      firstAccumulated: 19488435376,
-    },
-    {
-      round: 860,
-      date: '2019-05-25',
-      numbers: [1, 4, 10, 12, 28, 45],
-      bonus: 15,
-      totalSales: 78025470000,
-      firstPrize: 2578650615,
-      firstWinnerCount: 7,
-      firstAccumulated: 18050554305,
-    },
-    {
-      round: 859,
-      date: '2019-05-18',
-      numbers: [5, 7, 13, 20, 21, 44],
-      bonus: 33,
-      totalSales: 82145600000,
-      firstPrize: 3752486585,
-      firstWinnerCount: 5,
-      firstAccumulated: 18762432925,
-    },
-  ];
+  const { data } = useSearchNumber(round);
 
   return (
     <Card className="p-6">
@@ -77,7 +45,7 @@ export default function SearchNumbers() {
                 <SelectValue placeholder="회차를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 1000 }, (_, i) => (
+                {Array.from({ length: 1147 }, (_, i) => (
                   <SelectItem key={i + 1} value={String(i + 1)}>
                     {i + 1}회차
                   </SelectItem>
@@ -87,7 +55,7 @@ export default function SearchNumbers() {
           )}
         </div>
         {searchType === 'round' ? (
-          <SearchResult title="회차별 당첨 번호" results={sampleResults} />
+          data && <SearchResult title="회차별 당첨 번호" results={data} />
         ) : (
           <PopularNumbersResult
             numbers={[
