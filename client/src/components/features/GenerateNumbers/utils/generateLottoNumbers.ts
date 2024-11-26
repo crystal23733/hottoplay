@@ -39,7 +39,6 @@ export default async (type: GenerateType, selectedNumbers: number[] = []): Promi
         type: 'unique',
       };
       const uniqueNumber = await fetchUniqueNumber(endpoint, body);
-      console.log(uniqueNumber);
       return uniqueNumber.numbers;
 
     default:

@@ -15,6 +15,7 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
+    "sourceMap": true,
     "plugins": [
       {
         "name": "next"

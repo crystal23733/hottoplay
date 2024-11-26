@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"server/internal/models"
 	"server/internal/service"
@@ -26,23 +27,16 @@ func (h *LottoHandler) GenerateNumbers(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "잘못된 요청 형식입니다", http.StatusBadRequest)
 		return
 	}
+	log.Printf("req: %+v", req)
 
 	var numbers []int
 	var err error
 
 	switch req.Type {
-	case "default":
-		numbers = h.service.GenerateRandomNumbers()
 	case "unique":
 		numbers, err = h.service.GenerateUniqueNumbers()
 	case "many":
 		numbers = h.service.GeneratePopularBasedNumbers()
-	case "custom":
-		if len(req.UserNumbers) == 0 {
-			http.Error(w, "사용자 선택 번호가 필요합니다", http.StatusBadRequest)
-			return
-		}
-		numbers, err = h.service.GenerateUserBasedNumbers(req.UserNumbers)
 	default:
 		http.Error(w, "지원하지 않는 생성 타입입니다", http.StatusBadRequest)
 		return
