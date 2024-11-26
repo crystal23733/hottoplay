@@ -95,15 +95,14 @@ jobs:
             if (
               baseCheck &&
               headCheck &&
-              statusCheck.mergeable &&
-              // statusCheck.mergeable_state === 'clean'
+              statusCheck.mergeable
             ) {
               // PR 병합 시도
               await github.rest.pulls.merge({
                 owner,
                 repo,
                 pull_number: pullRequestNumber,
-                merge_method: "squash"
+                merge_method: "merge"
               });
               
               console.log(`PR #${pullRequestNumber} merged successfully`);
