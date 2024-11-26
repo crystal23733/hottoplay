@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import SearchResult from '@/components/organisms/SearchResult/SearchResult';
 import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
 import { LottoRoundDetail } from '../organisms/SearchResult/SearchResult.types';
+import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
 
 type SearchType = 'round' | 'popular';
 
@@ -22,6 +23,7 @@ type SearchType = 'round' | 'popular';
 export default function SearchNumbers() {
   const [searchType, setSearchType] = useState<SearchType>('round');
   const [round, setRound] = useState<string>('');
+  const { data } = useSearchNumber(round);
 
   return (
     <Card className="p-6">
@@ -44,7 +46,7 @@ export default function SearchNumbers() {
                 <SelectValue placeholder="회차를 선택하세요" />
               </SelectTrigger>
               <SelectContent>
-                {Array.from({ length: 1000 }, (_, i) => (
+                {Array.from({ length: 1147 }, (_, i) => (
                   <SelectItem key={i + 1} value={String(i + 1)}>
                     {i + 1}회차
                   </SelectItem>
@@ -54,7 +56,7 @@ export default function SearchNumbers() {
           )}
         </div>
         {searchType === 'round' ? (
-          <SearchResult title="회차별 당첨 번호" results={sampleResults} />
+          data && <SearchResult title="회차별 당첨 번호" results={data} />
         ) : (
           <PopularNumbersResult
             numbers={[
