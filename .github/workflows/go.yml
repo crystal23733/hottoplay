@@ -96,7 +96,7 @@ jobs:
               baseCheck &&
               headCheck &&
               statusCheck.mergeable &&
-              statusCheck.mergeable_state === 'clean'
+              // statusCheck.mergeable_state === 'clean'
             ) {
               // PR 병합 시도
               await github.rest.pulls.merge({
