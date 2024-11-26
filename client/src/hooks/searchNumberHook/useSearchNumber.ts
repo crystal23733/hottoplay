@@ -1,7 +1,7 @@
 import customHook from '@/api/lib/customHook/customHook';
 import fetchRoundNumber from '@/api/searchRound/fetchRoundNumber';
 import { LottoRoundDetail } from '@/components/organisms/SearchResult/SearchResult.types';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 /**
  * @function useSearchNumber - 회차별 당첨번호 조회 훅
