@@ -52,8 +52,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Check PR Conflicts
-      id: check-conflicts
+    - name: Auto Merge PR
       uses: actions/github-script@v7
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -62,64 +61,66 @@ jobs:
           const pullRequestNumber = context.payload.pull_request.number;
 
           try {
+            // PR 정보 가져오기
             const { data: pullRequest } = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: pullRequestNumber
             });
 
-            // 기본 브랜치 확인
+            console.log('Base Branch:', pullRequest.base.ref);
+            console.log('Head Branch:', pullRequest.head.ref);
+
+            // 조건: PR 대상이 develop이고, source 브랜치가 feature/로 시작
             const validBases = ['develop'];
             const validHeads = ['feature/'];
 
-            // PR 병합 가능성 확인
-            const isConflicting = await github.rest.pulls.checkMergeability({
+            const baseCheck = validBases.includes(pullRequest.base.ref);
+            const headCheck = validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix));
+
+            console.log('Base Branch Check:', baseCheck);
+            console.log('Head Branch Check:', headCheck);
+
+            // 상태 체크 (실제 머지 가능성 확인)
+            const { data: statusCheck } = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: pullRequestNumber
             });
 
-            console.log('Merge Possible:', isConflicting.data.mergeable);
-            console.log('Merge State:', isConflicting.data.mergeable_state);
+            console.log('Mergeable:', statusCheck.mergeable);
+            console.log('Mergeable State:', statusCheck.mergeable_state);
 
-            // 조건 체크
-            const baseCheck = validBases.includes(pullRequest.base.ref);
-            const headCheck = validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix));
-            const mergeCheck = isConflicting.data.mergeable && isConflicting.data.mergeable_state === 'clean';
-
-            if (baseCheck && headCheck && mergeCheck) {
-              console.log('PR is ready to merge');
-              return true;
+            // 모든 조건 확인
+            if (
+              baseCheck &&
+              headCheck &&
+              statusCheck.mergeable &&
+              statusCheck.mergeable_state === 'clean'
+            ) {
+              // PR 병합 시도
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: pullRequestNumber,
+                merge_method: "squash"
+              });
+              
+              console.log(`PR #${pullRequestNumber} merged successfully`);
             } else {
-              console.log('PR merge conditions not met:');
-              if (!baseCheck) console.log('- Invalid base branch');
-              if (!headCheck) console.log('- Invalid head branch');
-              if (!mergeCheck) console.log('- Not mergeable or unstable state');
-              return false;
+              console.log(`PR #${pullRequestNumber} does not meet merge criteria.`);
+              
+              // 조건 실패 이유 상세 로깅
+              console.log('Detailed Failure Reasons:');
+              if (!baseCheck) console.log('- Base branch is not "develop"');
+              if (!headCheck) console.log('- Head branch does not start with "feature/"');
+              if (!statusCheck.mergeable) console.log('- PR is not mergeable');
+              if (statusCheck.mergeable_state !== 'clean') console.log('- Mergeable state is not "clean"');
+              
+              // 오류 표시
+              core.setFailed("Merge criteria not met.");
             }
           } catch (error) {
-            console.error('Merge check error:', error);
-            return false;
-          }
-
-    - name: Merge Pull Request
-      if: steps.check-conflicts.outputs.result == 'true'
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const { owner, repo } = context.repo;
-          const pullRequestNumber = context.payload.pull_request.number;
-
-          try {
-            await github.rest.pulls.merge({
-              owner,
-              repo,
-              pull_number: pullRequestNumber,
-              merge_method: "squash"
-            });
-            console.log(`PR #${pullRequestNumber} merged successfully`);
-          } catch (error) {
-            console.error('Merge failed:', error);
-            core.setFailed('Merge operation failed');
+            console.error('Merge process error:', error);
+            core.setFailed(error.message);
           }
