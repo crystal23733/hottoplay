@@ -23,21 +23,21 @@ const SearchResult: React.FC<SearchResultProps> = ({ results, title }) => {
       <div className="space-y-6">
         {results.map(
           ({
-            round,
-            date,
+            drwNo,
+            drwNoDate,
             numbers,
-            bonus,
-            totalSales,
-            firstPrize,
-            firstWinnerCount,
-            firstAccumulated,
+            bnusNo,
+            totSellamnt,
+            firstAccumamnt,
+            firstPrzwnerCo,
+            firstWinamnt,
           }) => (
-            <div key={round} className="border rounded-lg overflow-hidden">
+            <div key={drwNo} className="border rounded-lg overflow-hidden">
               {/* 회차 정보 */}
               <div className="bg-muted p-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-lg">{round}회</span>
-                  <span className="text-muted-foreground">{date}</span>
+                  <span className="font-medium text-lg">{drwNo}회</span>
+                  <span className="text-muted-foreground">{drwNoDate}</span>
                 </div>
               </div>
 
@@ -50,7 +50,7 @@ const SearchResult: React.FC<SearchResultProps> = ({ results, title }) => {
                     ))}
                   </div>
                   <span className="text-muted-foreground">+</span>
-                  <LottoNumber number={bonus} size="md" />
+                  <LottoNumber number={bnusNo} size="md" />
                 </div>
               </div>
 
@@ -59,11 +59,11 @@ const SearchResult: React.FC<SearchResultProps> = ({ results, title }) => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <div className="text-sm text-muted-foreground">총 판매금액</div>
-                    <div className="font-medium">{formatters(totalSales)}</div>
+                    <div className="font-medium">{formatters(totSellamnt)}</div>
                   </div>
                   <div>
                     <div className="text-sm text-muted-foreground">1등 총 당첨금액</div>
-                    <div className="font-medium">{formatters(firstAccumulated)}</div>
+                    <div className="font-medium">{formatters(firstAccumamnt)}</div>
                   </div>
                 </div>
 
@@ -73,11 +73,11 @@ const SearchResult: React.FC<SearchResultProps> = ({ results, title }) => {
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-muted-foreground">당첨금: </span>
-                      <span className="font-medium">{formatters(firstPrize)}</span>
+                      <span className="font-medium">{formatters(firstPrzwnerCo)}</span>
                     </div>
                     <div>
                       <span className="text-muted-foreground">당첨자: </span>
-                      <span className="font-medium">{firstWinnerCount.toLocaleString()}명</span>
+                      <span className="font-medium">{firstWinamnt.toLocaleString()}명</span>
                     </div>
                   </div>
                 </div>
