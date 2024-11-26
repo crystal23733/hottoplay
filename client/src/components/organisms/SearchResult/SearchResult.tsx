@@ -14,77 +14,61 @@ import formatters from './utils/formatters';
  *
  */
 const SearchResult: React.FC<SearchResultProps> = ({ results, title }) => {
-  if (results.length === 0) {
-    return <div className="text-center py-8 text-muted-foreground">검색 결과가 없습니다.</div>;
-  }
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold">{title}</h3>
       <div className="space-y-6">
-        {results.map(
-          ({
-            drwNo,
-            drwNoDate,
-            numbers,
-            bnusNo,
-            totSellamnt,
-            firstAccumamnt,
-            firstPrzwnerCo,
-            firstWinamnt,
-          }) => (
-            <div key={drwNo} className="border rounded-lg overflow-hidden">
-              {/* 회차 정보 */}
-              <div className="bg-muted p-4">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium text-lg">{drwNo}회</span>
-                  <span className="text-muted-foreground">{drwNoDate}</span>
-                </div>
+        <div key={results.drwNo} className="border rounded-lg overflow-hidden">
+          {/* 회차 정보 */}
+          <div className="bg-muted p-4">
+            <div className="flex justify-between items-center">
+              <span className="font-medium text-lg">{results.drwNo}회</span>
+              <span className="text-muted-foreground">{results.drwNoDate}</span>
+            </div>
+          </div>
+
+          {/* 당첨 번호 */}
+          <div className="p-4 border-b">
+            <div className="flex items-center gap-4">
+              <div className="flex gap-2">
+                {results.numbers.map(num => (
+                  <LottoNumber key={num} number={num} size="md" />
+                ))}
               </div>
+              <span className="text-muted-foreground">+</span>
+              <LottoNumber number={results.bnusNo} size="md" />
+            </div>
+          </div>
 
-              {/* 당첨 번호 */}
-              <div className="p-4 border-b">
-                <div className="flex items-center gap-4">
-                  <div className="flex gap-2">
-                    {numbers.map(num => (
-                      <LottoNumber key={num} number={num} size="md" />
-                    ))}
-                  </div>
-                  <span className="text-muted-foreground">+</span>
-                  <LottoNumber number={bnusNo} size="md" />
-                </div>
+          {/* 당첨금 정보 */}
+          <div className="p-4 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm text-muted-foreground">총 판매금액</div>
+                <div className="font-medium">{formatters(results.totSellamnt)}</div>
               </div>
+              <div>
+                <div className="text-sm text-muted-foreground">1등 총 당첨금액</div>
+                <div className="font-medium">{formatters(results.firstAccumamnt)}</div>
+              </div>
+            </div>
 
-              {/* 당첨금 정보 */}
-              <div className="p-4 space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-muted-foreground">총 판매금액</div>
-                    <div className="font-medium">{formatters(totSellamnt)}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">1등 총 당첨금액</div>
-                    <div className="font-medium">{formatters(firstAccumamnt)}</div>
-                  </div>
+            {/* 1등 당첨 정보 */}
+            <div className="p-3 bg-muted/50 rounded">
+              <div className="text-sm font-medium mb-1">1등 당첨 현황</div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                <div>
+                  <span className="text-muted-foreground">당첨금: </span>
+                  <span className="font-medium">{formatters(results.firstWinamnt)}</span>
                 </div>
-
-                {/* 1등 당첨 정보 */}
-                <div className="p-3 bg-muted/50 rounded">
-                  <div className="text-sm font-medium mb-1">1등 당첨 현황</div>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">당첨금: </span>
-                      <span className="font-medium">{formatters(firstPrzwnerCo)}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">당첨자: </span>
-                      <span className="font-medium">{firstWinamnt.toLocaleString()}명</span>
-                    </div>
-                  </div>
+                <div>
+                  <span className="text-muted-foreground">당첨자: </span>
+                  <span className="font-medium">{results.firstPrzwnerCo.toLocaleString()}명</span>
                 </div>
               </div>
             </div>
-          )
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );
