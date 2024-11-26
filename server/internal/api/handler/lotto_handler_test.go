@@ -23,15 +23,10 @@ func (m *MockLottoService) GeneratePopularBasedNumbers() []int {
 	return []int{7, 8, 9, 10, 11, 12}
 }
 
-func (m *MockLottoService) GetRoundNumbers(round int) (*models.LottoData, error) {
-	return &models.LottoData{
+func (m *MockLottoService) GetRoundNumbers(round int) (*models.LottoRoundData, error) {
+	return &models.LottoRoundData{
 		DrwNo:        round,
-		DrwtNo1:      1,
-		DrwtNo2:      2,
-		DrwtNo3:      3,
-		DrwtNo4:      4,
-		DrwtNo5:      5,
-		DrwtNo6:      6,
+		Numbers:      []int{1, 2, 3, 4, 5, 6},
 		BnusNo:       7,
 		ReturnValue:  "success",
 		DrwNoDate:    "2024-01-01",
@@ -82,7 +77,7 @@ func TestGetRoundNumbers(t *testing.T) {
 		handler.GetRoundNumbers(rec, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
-		var resp models.LottoData
+		var resp models.LottoRoundData
 		err := json.NewDecoder(rec.Body).Decode(&resp)
 		assert.NoError(t, err)
 		assert.Equal(t, 10, resp.DrwNo)
