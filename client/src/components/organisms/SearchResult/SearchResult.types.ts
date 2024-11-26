@@ -2,24 +2,25 @@
  * 로또 회차별 상세 정보
  *
  * @interface LottoRoundDetail
- * @property {number} round - 회차 번호 (drwNo)
- * @property {string} date - 추첨일 (drwNoDate)
+ * @property {number} drwNo - 회차 번호
+ * @property {string} drwNoDate - 추첨 날짜
  * @property {number[]} numbers - 당첨 번호 배열 (drwtNo1~6)
- * @property {number} bonus - 보너스 번호 (bnusNo)
- * @property {number} totalSales - 총 판매금액 (totSellamnt)
- * @property {number} firstPrize - 1등 당첨금액 (firstWinamnt)
- * @property {number} firstWinnerCount - 1등 당첨자 수 (firstPrzwnerCo)
- * @property {number} firstAccumulated - 1등 당첨금 총액 (firstAccumamnt)
+ * @property {number} bnusNo - 보너스 번호
+ * @property {number} totSellamnt - 총 판매 금액
+ * @property {number} firstWinamnt - 1등 당첨금
+ * @property {number} firstPrzwnerCo - 1등 당첨자 수
+ * @property {number} firstAccumamnt - 1등 누적 당첨금
  */
 export interface LottoRoundDetail {
-  round: number;
-  date: string;
-  numbers: number[];
-  bonus: number;
-  totalSales: number;
-  firstPrize: number;
-  firstWinnerCount: number;
-  firstAccumulated: number;
+  totSellamnt: number; // 총 판매 금액
+  returnValue: string; // API 응답 상태 (예: 'success')
+  drwNoDate: string; // 추첨 날짜
+  firstWinamnt: number; // 1등 당첨금
+  firstPrzwnerCo: number; // 1등 당첨자 수
+  bnusNo: number; // 보너스 번호
+  firstAccumamnt: number; // 1등 누적 당첨금
+  drwNo: number; // 회차 번호
+  numbers: number[]; // 당첨 번호 배열 (drwtNo1~6)
 }
 
 /**
