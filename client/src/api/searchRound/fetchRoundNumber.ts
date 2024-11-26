@@ -1,5 +1,5 @@
 import { LottoRoundDetail } from '@/components/organisms/SearchResult/SearchResult.types';
-import FetchApi from '../lib/FetchApi';
+import FetchApi from '../lib/fetch/FetchApi';
 import baseUrl from '../url/constants/baseUrl';
 import createUrl from '../url/createUrl';
 import apiKey from '../url/constants/apiKey';
