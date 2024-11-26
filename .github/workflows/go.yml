@@ -63,9 +63,12 @@ jobs:
           });
 
           // 조건: PR 대상이 develop이고, source 브랜치가 feature/로 시작
+          const validBases = ['develop'];
+          const validHeads = ['feature/'];
+
           if (
-            pullRequest.base.ref === 'develop' &&
-            pullRequest.head.ref.startsWith('feature/') &&
+            validBases.includes(pullRequest.base.ref) &&
+            validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix)) &&
             pullRequest.mergeable &&
             pullRequest.mergeable_state === 'clean'
           ) {
@@ -73,7 +76,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.payload.pull_request.number,
-              merge_method: "squash" # "merge", "squash", 또는 "rebase" 중 선택
+              merge_method: "squash" // "merge", "squash", 또는 "rebase" 중 선택 가능
             });
             console.log(`PR #${pullRequest.number} merged into ${pullRequest.base.ref}`);
           } else {
