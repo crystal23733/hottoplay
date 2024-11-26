@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"server/internal/models"
 	"server/internal/service"
+	"strconv"
 )
 
 // LottoHandler는 로또 관련 HTTP 요청을 처리하는 핸들러입니다.
@@ -53,4 +54,24 @@ func (h *LottoHandler) GenerateNumbers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(models.LottoResponse{
 		Numbers: numbers,
 	})
+}
+
+// GetRoundNumbers는 특정 회차의 로또 데이터를 반환합니다.
+func (h *LottoHandler) GetRoundNumbers(w http.ResponseWriter, r *http.Request) {
+	round := r.URL.Query().Get("round")
+
+	roundNumber, err := strconv.Atoi(round)
+	if err != nil {
+		http.Error(w, "유효하지 않은 회차 번호입니다", http.StatusBadRequest)
+		return
+	}
+
+	result, err := h.service.GetRoundNumbers(roundNumber)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
 }
