@@ -157,10 +157,12 @@ func (s *LottoService) GetRoundNumbers(round int) (*models.LottoRoundData, error
 	return &models.LottoRoundData{
 		TotSellamnt:    data.TotSellamnt,
 		FirstWinamnt:   data.FirstWinamnt,
+		DrwNo:          data.DrwNo,
 		Numbers:        []int{data.DrwtNo1, data.DrwtNo2, data.DrwtNo3, data.DrwtNo4, data.DrwtNo5, data.DrwtNo6},
 		BnusNo:         data.BnusNo,
 		FirstPrzwnerCo: data.FirstPrzwnerCo,
 		FirstAccumamnt: data.FirstAccumamnt,
 		DrwNoDate:      data.DrwNoDate,
+		ReturnValue:    data.ReturnValue,
 	}, nil
 }
