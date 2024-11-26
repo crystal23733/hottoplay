@@ -1,140 +1,100 @@
-package handler
+package handler_test
 
 import (
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"server/internal/api/handler"
 	"server/internal/models"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// mockLottoService는 테스트를 위한 LottoService 모의 구현체입니다.
-type mockLottoService struct {
-	randomNumbers       []int
-	uniqueNumbers       []int
-	popularBasedNumbers []int
-	userBasedNumbers    []int
-	err                 error
+// Mock LottoServiceInterface for testing
+type MockLottoService struct{}
+
+func (m *MockLottoService) GenerateUniqueNumbers() ([]int, error) {
+	return []int{1, 2, 3, 4, 5, 6}, nil
 }
 
-func (m *mockLottoService) GenerateRandomNumbers() []int {
-	return m.randomNumbers
+func (m *MockLottoService) GeneratePopularBasedNumbers() []int {
+	return []int{7, 8, 9, 10, 11, 12}
 }
 
-func (m *mockLottoService) GenerateUniqueNumbers() ([]int, error) {
-	return m.uniqueNumbers, m.err
+func (m *MockLottoService) GetRoundNumbers(round int) (*models.LottoData, error) {
+	return &models.LottoData{
+		DrwNo:        round,
+		DrwtNo1:      1,
+		DrwtNo2:      2,
+		DrwtNo3:      3,
+		DrwtNo4:      4,
+		DrwtNo5:      5,
+		DrwtNo6:      6,
+		BnusNo:       7,
+		ReturnValue:  "success",
+		DrwNoDate:    "2024-01-01",
+		TotSellamnt:  1000000,
+		FirstWinamnt: 500000,
+	}, nil
 }
 
-func (m *mockLottoService) GeneratePopularBasedNumbers() []int {
-	return m.popularBasedNumbers
+func TestGenerateNumbers(t *testing.T) {
+	mockService := &MockLottoService{}
+	handler := handler.NewLottoHandler(mockService)
+
+	t.Run("Unique Numbers", func(t *testing.T) {
+		reqBody := `{"type": "unique"}`
+		req := httptest.NewRequest(http.MethodPost, "/lotto/numbers", bytes.NewBufferString(reqBody))
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+
+		handler.GenerateNumbers(rec, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		var resp models.LottoResponse
+		err := json.NewDecoder(rec.Body).Decode(&resp)
+		assert.NoError(t, err)
+		assert.Equal(t, []int{1, 2, 3, 4, 5, 6}, resp.Numbers)
+	})
+
+	t.Run("Unsupported Type", func(t *testing.T) {
+		reqBody := `{"type": "unsupported"}`
+		req := httptest.NewRequest(http.MethodPost, "/lotto/numbers", bytes.NewBufferString(reqBody))
+		rec := httptest.NewRecorder()
+
+		handler.GenerateNumbers(rec, req)
+
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "지원하지 않는 생성 타입입니다")
+	})
 }
 
-func (m *mockLottoService) GenerateUserBasedNumbers(numbers []int) ([]int, error) {
-	return m.userBasedNumbers, m.err
-}
+func TestGetRoundNumbers(t *testing.T) {
+	mockService := &MockLottoService{}
+	handler := handler.NewLottoHandler(mockService)
 
-// compareSlices는 두 정수 슬라이스가 동일한지 비교합니다.
-func compareSlices(a, b []int) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i] != b[i] {
-			return false
-		}
-	}
-	return true
-}
+	t.Run("Valid Round", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/lotto/rounds?round=10", nil)
+		rec := httptest.NewRecorder()
 
-func TestLottoHandler_GenerateNumbers(t *testing.T) {
-	tests := []struct {
-		name            string
-		requestBody     models.LottoRequest
-		mockService     *mockLottoService
-		expectedStatus  int
-		expectedNumbers []int
-	}{
-		{
-			name: "Default generation",
-			requestBody: models.LottoRequest{
-				Type: "default",
-			},
-			mockService: &mockLottoService{
-				randomNumbers: []int{1, 2, 3, 4, 5, 6},
-			},
-			expectedStatus:  http.StatusOK,
-			expectedNumbers: []int{1, 2, 3, 4, 5, 6},
-		},
-		{
-			name: "Unique generation",
-			requestBody: models.LottoRequest{
-				Type: "unique",
-			},
-			mockService: &mockLottoService{
-				uniqueNumbers: []int{7, 8, 9, 10, 11, 12},
-			},
-			expectedStatus:  http.StatusOK,
-			expectedNumbers: []int{7, 8, 9, 10, 11, 12},
-		},
-		{
-			name: "Popular based generation",
-			requestBody: models.LottoRequest{
-				Type: "many",
-			},
-			mockService: &mockLottoService{
-				popularBasedNumbers: []int{13, 14, 15, 16, 17, 18},
-			},
-			expectedStatus:  http.StatusOK,
-			expectedNumbers: []int{13, 14, 15, 16, 17, 18},
-		},
-		{
-			name: "User based generation",
-			requestBody: models.LottoRequest{
-				Type: "custom",
-			},
-			mockService: &mockLottoService{
-				userBasedNumbers: []int{1, 2, 3, 19, 20, 21},
-			},
-			expectedStatus:  http.StatusOK,
-			expectedNumbers: []int{1, 2, 3, 19, 20, 21},
-		},
-		{
-			name: "Invalid type",
-			requestBody: models.LottoRequest{
-				Type: "invalid",
-			},
-			mockService:    &mockLottoService{},
-			expectedStatus: http.StatusBadRequest,
-		},
-	}
+		handler.GetRoundNumbers(rec, req)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			handler := NewLottoHandler(tt.mockService)
+		assert.Equal(t, http.StatusOK, rec.Code)
+		var resp models.LottoData
+		err := json.NewDecoder(rec.Body).Decode(&resp)
+		assert.NoError(t, err)
+		assert.Equal(t, 10, resp.DrwNo)
+	})
 
-			body, _ := json.Marshal(tt.requestBody)
-			req := httptest.NewRequest(http.MethodPost, "/api/v1/lotto/numbers", bytes.NewBuffer(body))
-			req.Header.Set("Content-Type", "application/json")
+	t.Run("Invalid Round", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/lotto/rounds?round=invalid", nil)
+		rec := httptest.NewRecorder()
 
-			rr := httptest.NewRecorder()
-			handler.GenerateNumbers(rr, req)
+		handler.GetRoundNumbers(rec, req)
 
-			if rr.Code != tt.expectedStatus {
-				t.Errorf("handler returned wrong status code: got %v want %v", rr.Code, tt.expectedStatus)
-			}
-
-			if tt.expectedStatus == http.StatusOK {
-				var response models.LottoResponse
-				err := json.NewDecoder(rr.Body).Decode(&response)
-				if err != nil {
-					t.Fatalf("Failed to decode response: %v", err)
-				}
-
-				if !compareSlices(response.Numbers, tt.expectedNumbers) {
-					t.Errorf("handler returned unexpected numbers: got %v want %v", response.Numbers, tt.expectedNumbers)
-				}
-			}
-		})
-	}
+		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		assert.Contains(t, rec.Body.String(), "유효하지 않은 회차 번호입니다")
+	})
 }
