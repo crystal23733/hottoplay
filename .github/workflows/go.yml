@@ -3,45 +3,45 @@ name: Feature to Develop Automation Workflow
 on:
   pull_request:
     branches:
-      - "develop" # develop 브랜치로 PR 생성 시 실행
+      - "develop"
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest # 워크플로 실행 환경
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # 코드 체크아웃
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3 # Node.js 환경 설정
+      uses: actions/setup-node@v3
       with:
         node-version: '22'
 
     - name: Install dependencies (Next.js)
       run: |
         cd client
-        npm ci # 의존성 설치
+        npm ci
 
     - name: Build Next.js application
       run: |
         cd client
-        npm run build # Next.js 빌드
+        npm run build
 
     - name: Set up Go
-      uses: actions/setup-go@v4 # Go 환경 설정
+      uses: actions/setup-go@v4
       with:
-        go-version: '1.23' # 사용할 Go 버전
+        go-version: '1.23'
 
     - name: Build Go application
       run: |
         cd server
-        go build -v ./... # Go 서버 빌드
+        go build -v ./...
 
     - name: Run Go tests
       run: |
         cd server
-        go test -v ./... # Go 테스트 실행
+        go test -v ./...
 
   auto-merge:
     needs: build-and-test
@@ -50,12 +50,12 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # 코드 체크아웃
+      uses: actions/checkout@v4
 
-    - name: Auto-merge PR into develop
-      uses: actions/github-script@v7  # 최신 버전으로 업데이트
+    - name: Detailed Merge Check
+      uses: actions/github-script@v7
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}  # GitHub에서 자동으로 제공되는 토큰 사용
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const { owner, repo } = context.repo;
           const pullRequestNumber = context.payload.pull_request.number;
@@ -72,9 +72,20 @@ jobs:
             const validBases = ['develop'];
             const validHeads = ['feature/'];
 
+            console.log('Base Branch:', pullRequest.base.ref);
+            console.log('Head Branch:', pullRequest.head.ref);
+            console.log('Mergeable:', pullRequest.mergeable);
+            console.log('Mergeable State:', pullRequest.mergeable_state);
+
+            const baseCheck = validBases.includes(pullRequest.base.ref);
+            const headCheck = validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix));
+
+            console.log('Base Branch Check:', baseCheck);
+            console.log('Head Branch Check:', headCheck);
+
             if (
-              validBases.includes(pullRequest.base.ref) &&
-              validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix)) &&
+              baseCheck &&
+              headCheck &&
               pullRequest.mergeable &&
               pullRequest.mergeable_state === 'clean'
             ) {
@@ -88,9 +99,15 @@ jobs:
               console.log(`PR #${pullRequestNumber} merged into ${pullRequest.base.ref}`);
             } else {
               console.log(`PR #${pullRequestNumber} does not meet merge criteria.`);
+              console.log('Detailed Failure Reasons:');
+              if (!baseCheck) console.log('- Base branch is not "develop"');
+              if (!headCheck) console.log('- Head branch does not start with "feature/"');
+              if (!pullRequest.mergeable) console.log('- PR is not mergeable');
+              if (pullRequest.mergeable_state !== 'clean') console.log('- Mergeable state is not "clean"');
+              
               core.setFailed("Merge criteria not met.");
             }
           } catch (error) {
-            console.error('Merge failed:', error);
+            console.error('Merge check failed:', error);
             core.setFailed(error.message);
           }
