@@ -21,7 +21,7 @@ func NewRouter(lottoHandler *handler.LottoHandler, apiKey string) *mux.Router {
 	// 엔드포인트 설정
 	api.HandleFunc("/lotto/numbers", lottoHandler.GenerateNumbers).Methods(http.MethodPost)
 	api.HandleFunc("/lotto/rounds", lottoHandler.GetRoundNumbers).Methods(http.MethodGet)
-	api.HandleFunc("/lotto/popular", lottoHandler.GetPopularWatch).Methods(http.MethodGet)
+	api.HandleFunc("/lotto/populars", lottoHandler.GetPopularWatch).Methods(http.MethodGet)
 
 	return r
 }

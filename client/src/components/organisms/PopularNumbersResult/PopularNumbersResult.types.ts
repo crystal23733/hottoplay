@@ -6,8 +6,8 @@
  * @property {number} frequency - 해당 번호가 나온 횟수
  */
 export interface PopularNumber {
-  number: number;
-  frequency: number;
+  numbers: number;
+  freq: number;
 }
 
 /**

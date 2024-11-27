@@ -8,6 +8,7 @@ import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/Po
 import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
 import Loading from '../atoms/Loading/Loading';
 import VirtualizedSelect from '../molecules/VirtualizedSelect/VirtualizedSelect';
+import popularNumberHook from '@/hooks/PopularNumberHook/usePopularNumberHook';
 
 type SearchType = 'round' | 'popular';
 
@@ -24,7 +25,23 @@ type SearchType = 'round' | 'popular';
 export default function SearchNumbers() {
   const [searchType, setSearchType] = useState<SearchType>('round');
   const [round, setRound] = useState<string>('');
+  const [popular, setPopular] = useState<string>('');
   const { data, loading, error } = useSearchNumber(round);
+  const {
+    data: popularData,
+    loading: popularLoading,
+    error: popularError,
+  } = popularNumberHook(popular);
+
+  // searchType이 변경될 때 popular 값을 설정
+  const handleSearchTypeChange = (value: string) => {
+    setSearchType(value as SearchType);
+    if (value === 'popular') {
+      setPopular('popular'); // popular 타입이 선택되면 'watch' 값으로 설정
+    } else {
+      setPopular(''); // round 타입이 선택되면 초기화
+    }
+  };
 
   const roundOptions = useMemo(
     () =>
@@ -40,7 +57,7 @@ export default function SearchNumbers() {
       <div className="space-y-6">
         <div className="space-y-4">
           <h2 className="text-lg font-semibold">번호 조회</h2>
-          <Select onValueChange={value => setSearchType(value as SearchType)}>
+          <Select onValueChange={handleSearchTypeChange}>
             <SelectTrigger>
               <SelectValue placeholder="조회 방식을 선택하세요" />
             </SelectTrigger>
@@ -72,17 +89,21 @@ export default function SearchNumbers() {
             {data && <SearchResult title="회차별 당첨 번호" results={data} />}
           </div>
         ) : (
-          <PopularNumbersResult
-            numbers={[
-              // 여기에 API에서 받아온 데이터를 넣습니다
-              // 예시 데이터
-              { number: 1, frequency: 10 },
-              { number: 2, frequency: 10 },
-              { number: 3, frequency: 8 },
-              // ...
-            ]}
-            title="가장 많이 나온 번호"
-          />
+          <>
+            {popularData && (
+              <PopularNumbersResult numbers={popularData} title="가장 많이 나온 번호" />
+            )}
+            {popularLoading && (
+              <div className="flex justify-center py-8">
+                <Loading size="lg" />
+              </div>
+            )}
+            {popularError && (
+              <div className="text-center py-4 text-red-500 bg-red-50 rounded-md">
+                {popularError}
+              </div>
+            )}
+          </>
         )}
       </div>
     </Card>

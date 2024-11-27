@@ -12,34 +12,18 @@ import { PopularNumbersResultProps } from './PopularNumbersResult.types';
  * @param {string} [props.title='가장 많이 나온 번호'] - 결과 섹션의 제목
  */
 const PopularNumbersResult: React.FC<PopularNumbersResultProps> = ({ numbers, title }) => {
-  // 같은 빈도수를 가진 번호들을 그룹화
-  const groupedNumbers = numbers.reduce<Record<number, number[]>>((acc, curr) => {
-    const key = curr.frequency;
-    if (!acc[key]) {
-      acc[key] = [];
-    }
-    acc[key].push(curr.number);
-    return acc;
-  }, {});
-
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{title}</h3>
       <div className="space-y-2">
-        {Object.entries(groupedNumbers)
-          .sort(([freqA], [freqB]) => Number(freqB) - Number(freqA))
-          .map(([frequency, nums]) => (
-            <div key={frequency} className="p-4 border rounded-lg">
-              <div className="text-sm text-muted-foreground mb-2">{frequency}회 출현</div>
-              <div className="flex flex-wrap gap-2">
-                {nums
-                  .sort((a, b) => a - b)
-                  .map(num => (
-                    <LottoNumber key={num} number={num} size="sm" />
-                  ))}
-              </div>
+        {numbers.map(({ numbers: number, freq }) => (
+          <div key={number} className="p-4 border rounded-lg">
+            <div className="text-sm text-muted-foreground mb-2">{freq}회 출현</div>
+            <div className="flex flex-wrap gap-2">
+              <LottoNumber key={number} number={number} size="sm" />
             </div>
-          ))}
+          </div>
+        ))}
       </div>
     </div>
   );
