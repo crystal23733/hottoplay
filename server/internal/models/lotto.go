@@ -40,3 +40,9 @@ type LottoRoundData struct {
 	ReturnValue    string `json:"returnValue"`    // 응답 상태 (예: success)
 	DrwNoDate      string `json:"drwNoDate"`      // 추첨 날짜
 }
+
+// PupolarResponse는 가장 많이나온 번호들을 응답하는 구조체입니다.
+type PopularResponse struct {
+	Numbers int `json:"numbers"`
+	Freq    int `json:"freq"`
+}

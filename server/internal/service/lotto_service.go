@@ -21,11 +21,17 @@ type LottoService struct {
 	rng      *rand.Rand
 }
 
+type numberFrequency struct {
+	Number int
+	Freq   int
+}
+
 // LottoServiceInterface는 로또 서비스의 인터페이스를 정의합니다.
 type LottoServiceInterface interface {
 	GenerateUniqueNumbers() ([]int, error)
 	GeneratePopularBasedNumbers() []int
 	GetRoundNumbers(round int) (*models.LottoRoundData, error)
+	GetPopularWatch(popular string) ([]*models.PopularResponse, error)
 }
 
 // NewLottoService는 새로운 LottoService 인스턴스를 생성합니다.
@@ -46,6 +52,49 @@ func (s *LottoService) InitializeData(ctx context.Context) error {
 	}
 	s.cache.LoadData(data)
 	return nil
+}
+
+// GetSortedFrequencies는 번호 빈도수 맵을 받아서 정렬된 NumberFrequency 슬라이스를 반환합니다.
+func (s *LottoService) GetSortedFrequencies(frequencies map[int]int) []numberFrequency {
+	// 빈도수 맵을 슬라이스로 변환
+	freqList := make([]numberFrequency, 0, len(frequencies))
+
+	for num, count := range frequencies {
+		freqList = append(freqList, numberFrequency{
+			Number: num,
+			Freq:   count,
+		})
+	}
+
+	// 빈도수 내림차순, 같은 빈도수는 번호 오름차순 정렬
+	sort.Slice(freqList, func(i, j int) bool {
+		if freqList[i].Freq == freqList[j].Freq {
+			return freqList[i].Freq < freqList[j].Freq
+		}
+		return freqList[i].Freq > freqList[j].Freq
+	})
+
+	return freqList
+}
+
+// GetPopularWatch는 번호를 빈도수별로 내림차순 합니다.
+func (s *LottoService) GetPopularWatch(popular string) ([]*models.PopularResponse, error) {
+	freq := s.cache.GetNumberFrequency()
+
+	// 정렬된 빈도수 얻기
+	sortedFreq := s.GetSortedFrequencies(freq)
+
+	// 결과 배열 생성
+	result := make([]*models.PopularResponse, len(sortedFreq))
+
+	// 정렬된 데이터를 PopularResponse 타입으로 변환
+	for i, sf := range sortedFreq {
+		result[i] = &models.PopularResponse{
+			Numbers: sf.Number,
+			Freq:    sf.Freq,
+		}
+	}
+	return result, nil
 }
 
 // GenerateUniqueNumbers는 지금까지 나오지 않은 새로운 번호 조합을 생성합니다.
@@ -100,23 +149,12 @@ func (s *LottoService) GenerateUniqueNumbers() ([]int, error) {
 func (s *LottoService) GeneratePopularBasedNumbers() []int {
 	freq := s.cache.GetNumberFrequency()
 
-	type numberFreq struct {
-		Number int
-		Freq   int
-	}
-
-	var freqList []numberFreq
-	for number, freq := range freq {
-		freqList = append(freqList, numberFreq{Number: number, Freq: freq})
-	}
-
-	sort.Slice(freqList, func(i, j int) bool {
-		return freqList[i].Freq > freqList[j].Freq
-	})
+	// 정렬된 빈도수 얻기
+	sortedFreq := s.GetSortedFrequencies(freq)
 
 	popularNumbers := make([]int, 0, 6)
-	for i := 0; i < 6 && i < len(freqList); i++ {
-		popularNumbers = append(popularNumbers, freqList[i].Number)
+	for i := 0; i < 6 && i < len(sortedFreq); i++ {
+		popularNumbers = append(popularNumbers, sortedFreq[i].Number)
 	}
 
 	sort.Ints(popularNumbers)

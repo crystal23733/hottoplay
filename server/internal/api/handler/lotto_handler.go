@@ -75,3 +75,17 @@ func (h *LottoHandler) GetRoundNumbers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }
+
+// GetPopularWatch는 가장 많이 나온 번호들을 반환합니다.
+func (h *LottoHandler) GetPopularWatch(w http.ResponseWriter, r *http.Request) {
+	popular := r.URL.Query().Get("popular")
+
+	result, err := h.service.GetPopularWatch(popular)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
