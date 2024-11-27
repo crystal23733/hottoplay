@@ -2,6 +2,7 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from '@/ui/Select';
 import VirtualizedSelectProps from './VirtualizedSelect.types';
 import { FixedSizeList } from 'react-window';
 import VirtualizedSelectItem from '../VirtualizedSelectItem/VirtualizedSelectItem';
+import { ITEM_HEIGHT, ITEM_TO_SHOW } from './constants/item';
 
 /**
  * 가상화 셀렉트 컴포넌트
