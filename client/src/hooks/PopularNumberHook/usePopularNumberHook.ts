@@ -4,7 +4,7 @@ import IPopular from '@/api/popularWatch/IPopular.types';
 import { useEffect } from 'react';
 
 /**
- * 가장 많이 나온 번호를 조회하는 훅  
+ * 가장 많이 나온 번호를 조회하는 훅
  * @param {string} popular - 조회할 타입
  * @returns {Object} - 데이터, 로딩 상태, 에러 상태
  */
