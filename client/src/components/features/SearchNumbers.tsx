@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/ui/Card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/Select';
 import SearchResult from '@/components/organisms/SearchResult/SearchResult';
 import PopularNumbersResult from '@/components/organisms/PopularNumbersResult/PopularNumbersResult';
 import useSearchNumber from '@/hooks/searchNumberHook/useSearchNumber';
 import Loading from '../atoms/Loading/Loading';
+import VirtualizedSelect from '../molecules/VirtualizedSelect/VirtualizedSelect';
 
 type SearchType = 'round' | 'popular';
 
@@ -25,6 +26,15 @@ export default function SearchNumbers() {
   const [round, setRound] = useState<string>('');
   const { data, loading, error } = useSearchNumber(round);
 
+  const roundOptions = useMemo(
+    () =>
+      Array.from({ length: 1147 }, (_, i) => ({
+        value: String(1147 - i),
+        label: `${1147 - i}회차`,
+      })),
+    []
+  );
+
   return (
     <Card className="p-6">
       <div className="space-y-6">
@@ -41,18 +51,12 @@ export default function SearchNumbers() {
           </Select>
 
           {searchType === 'round' && (
-            <Select onValueChange={setRound}>
-              <SelectTrigger>
-                <SelectValue placeholder="회차를 선택하세요" />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 1147 }, (_, i) => (
-                  <SelectItem key={i + 1} value={String(i + 1)}>
-                    {i + 1}회차
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <VirtualizedSelect
+              options={roundOptions}
+              value={round}
+              onValueChange={setRound}
+              placeholder="회차를 선택하세요"
+            />
           )}
         </div>
         {searchType === 'round' ? (
