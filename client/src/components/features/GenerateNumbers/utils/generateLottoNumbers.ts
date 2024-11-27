@@ -35,11 +35,18 @@ export default async (type: GenerateType, selectedNumbers: number[] = []): Promi
       return [...selectedNumbers, ...randomNumbers].sort((a, b) => a - b);
 
     case 'unique':
-      const body = {
+      const unique = {
         type: 'unique',
       };
-      const uniqueNumber = await fetchUniqueNumber(endpoint, body);
+      const uniqueNumber = await fetchUniqueNumber(endpoint, unique);
       return uniqueNumber.numbers;
+
+    case 'many':
+      const many = {
+        type: 'many',
+      };
+      const manyNumber = await fetchUniqueNumber(endpoint, many);
+      return manyNumber.numbers;
 
     default:
       return [];
