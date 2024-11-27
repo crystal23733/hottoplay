@@ -21,6 +21,11 @@ type LottoService struct {
 	rng      *rand.Rand
 }
 
+type numberFrequency struct {
+	Number int
+	Freq   int
+}
+
 // LottoServiceInterface는 로또 서비스의 인터페이스를 정의합니다.
 type LottoServiceInterface interface {
 	GenerateUniqueNumbers() ([]int, error)
@@ -46,6 +51,29 @@ func (s *LottoService) InitializeData(ctx context.Context) error {
 	}
 	s.cache.LoadData(data)
 	return nil
+}
+
+// GetSortedFrequencies는 번호 빈도수 맵을 받아서 정렬된 NumberFrequency 슬라이스를 반환합니다.
+func (s *LottoService) GetSortedFrequencies(frequencies map[int]int) []numberFrequency {
+	// 빈도수 맵을 슬라이스로 변환
+	freqList := make([]numberFrequency, 0, len(frequencies))
+
+	for num, count := range frequencies {
+		freqList = append(freqList, numberFrequency{
+			Number: num,
+			Freq:   count,
+		})
+	}
+
+	// 빈도수 내림차순, 같은 빈도수는 번호 오름차순 정렬
+	sort.Slice(freqList, func(i, j int) bool {
+		if freqList[i].Freq == freqList[j].Freq {
+			return freqList[i].Freq < freqList[j].Freq
+		}
+		return freqList[i].Freq > freqList[j].Freq
+	})
+
+	return freqList
 }
 
 // GenerateUniqueNumbers는 지금까지 나오지 않은 새로운 번호 조합을 생성합니다.
