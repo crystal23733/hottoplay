@@ -25,27 +25,35 @@ func (m *MockLottoService) GeneratePopularBasedNumbers() []int {
 
 func (m *MockLottoService) GetRoundNumbers(round int) (*models.LottoRoundData, error) {
 	return &models.LottoRoundData{
-		DrwNo:        round,
-		Numbers:      []int{1, 2, 3, 4, 5, 6},
-		BnusNo:       7,
-		ReturnValue:  "success",
-		DrwNoDate:    "2024-01-01",
-		TotSellamnt:  1000000,
-		FirstWinamnt: 500000,
+		DrwNo:          round,
+		Numbers:        []int{1, 2, 3, 4, 5, 6},
+		ReturnValue:    "success",
+		DrwNoDate:      "2024-01-01",
+		TotSellamnt:    1000000,
+		FirstWinamnt:   500000,
+		FirstPrzwnerCo: 1,
+		FirstAccumamnt: 500000,
 	}, nil
 }
 
-func TestGenerateNumbers(t *testing.T) {
-	mockService := &MockLottoService{}
-	handler := handler.NewLottoHandler(mockService)
+func (m *MockLottoService) GetPopularWatch(popular string) ([]*models.PopularResponse, error) {
+	return []*models.PopularResponse{
+		{Numbers: 1, Freq: 50},
+		{Numbers: 2, Freq: 40},
+	}, nil
+}
 
-	t.Run("Unique Numbers", func(t *testing.T) {
+func TestLottoHandler(t *testing.T) {
+	mockService := &MockLottoService{}
+	lottoHandler := handler.NewLottoHandler(mockService)
+
+	t.Run("GenerateNumbers - Unique Numbers", func(t *testing.T) {
 		reqBody := `{"type": "unique"}`
 		req := httptest.NewRequest(http.MethodPost, "/lotto/numbers", bytes.NewBufferString(reqBody))
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 
-		handler.GenerateNumbers(rec, req)
+		lottoHandler.GenerateNumbers(rec, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
 		var resp models.LottoResponse
@@ -54,42 +62,54 @@ func TestGenerateNumbers(t *testing.T) {
 		assert.Equal(t, []int{1, 2, 3, 4, 5, 6}, resp.Numbers)
 	})
 
-	t.Run("Unsupported Type", func(t *testing.T) {
+	t.Run("GenerateNumbers - Unsupported Type", func(t *testing.T) {
 		reqBody := `{"type": "unsupported"}`
 		req := httptest.NewRequest(http.MethodPost, "/lotto/numbers", bytes.NewBufferString(reqBody))
+		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 
-		handler.GenerateNumbers(rec, req)
+		lottoHandler.GenerateNumbers(rec, req)
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Contains(t, rec.Body.String(), "지원하지 않는 생성 타입입니다")
 	})
-}
 
-func TestGetRoundNumbers(t *testing.T) {
-	mockService := &MockLottoService{}
-	handler := handler.NewLottoHandler(mockService)
-
-	t.Run("Valid Round", func(t *testing.T) {
+	t.Run("GetRoundNumbers - Valid Round", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/lotto/rounds?round=10", nil)
 		rec := httptest.NewRecorder()
 
-		handler.GetRoundNumbers(rec, req)
+		lottoHandler.GetRoundNumbers(rec, req)
 
 		assert.Equal(t, http.StatusOK, rec.Code)
-		var resp models.LottoRoundData
+		var resp models.LottoData
 		err := json.NewDecoder(rec.Body).Decode(&resp)
 		assert.NoError(t, err)
 		assert.Equal(t, 10, resp.DrwNo)
+		assert.Equal(t, "success", resp.ReturnValue)
 	})
 
-	t.Run("Invalid Round", func(t *testing.T) {
+	t.Run("GetRoundNumbers - Invalid Round", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/lotto/rounds?round=invalid", nil)
 		rec := httptest.NewRecorder()
 
-		handler.GetRoundNumbers(rec, req)
+		lottoHandler.GetRoundNumbers(rec, req)
 
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 		assert.Contains(t, rec.Body.String(), "유효하지 않은 회차 번호입니다")
+	})
+
+	t.Run("GetPopularWatch - Valid Request", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/lotto/popular?popular=watch", nil)
+		rec := httptest.NewRecorder()
+
+		lottoHandler.GetPopularWatch(rec, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
+		var resp []*models.PopularResponse
+		err := json.NewDecoder(rec.Body).Decode(&resp)
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(resp))
+		assert.Equal(t, 1, resp[0].Numbers)
+		assert.Equal(t, 50, resp[0].Freq)
 	})
 }

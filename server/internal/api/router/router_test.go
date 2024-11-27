@@ -35,6 +35,13 @@ func (m *MockLottoService) GetRoundNumbers(round int) (*models.LottoRoundData, e
 	}, nil
 }
 
+func (m *MockLottoService) GetPopularWatch(popular string) ([]*models.PopularResponse, error) {
+	return []*models.PopularResponse{
+		{Numbers: 1, Freq: 50},
+		{Numbers: 2, Freq: 40},
+	}, nil
+}
+
 func TestRouter(t *testing.T) {
 	mockService := &MockLottoService{}
 	lottoHandler := handler.NewLottoHandler(mockService)
