@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -18,9 +19,23 @@ type Config struct {
 
 // LoadConfig는 환경 변수에서 설정을 로드합니다.
 func LoadConfig() (*Config, error) {
-	viper.SetConfigFile(".env")
+	env := os.Getenv("GO_ENV")
+	if env == "" {
+		env = "development"
+	}
+
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
+	viper.AddConfigPath("../")
+	viper.AddConfigPath(".")
 	if err := viper.ReadInConfig(); err != nil {
 		log.Printf(".env 파일을 읽을 수 없습니다: %v\n", err)
+	}
+
+	// 환경 별 추가파일
+	viper.SetConfigName(".env." + env)
+	if err := viper.MergeInConfig(); err != nil {
+		log.Printf("%s 환경별 .env 파일을 읽을 수 없습니다: %v\n", env, err)
 	}
 
 	viper.AutomaticEnv()
