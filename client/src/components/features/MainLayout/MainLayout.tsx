@@ -12,9 +12,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     <div className="flex flex-col">
       <Header />
       <main className="container mx-auto px-4 py-6">
-        <div className="mb-6">
-          <AdSpace label="광고 영역 1" height="md" className="h-[100px] md:h-[120px]" />
-        </div>
+        <div className="mb-6"></div>
         {children}
       </main>
       <Footer />
