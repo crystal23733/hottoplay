@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"server/internal/models"
 
@@ -48,6 +49,9 @@ func (s *S3Client) LoadLottoData(ctx context.Context) ([]models.LottoData, error
 		Prefix: &s.prefix,
 	}
 
+	// 동시 요청 수를 제한하는 세마포어 (최대 5개)
+	sem := make(chan struct{}, 5)
+
 	for {
 		result, err := s.client.ListObjectsV2(ctx, input)
 		if err != nil {
@@ -60,8 +64,11 @@ func (s *S3Client) LoadLottoData(ctx context.Context) ([]models.LottoData, error
 
 		for _, obj := range result.Contents {
 			wg.Add(1)
-			objKey := *obj.Key // 클로저 문제 해결을 위해 변수 복사
+			objKey := *obj.Key
 			go func() {
+				// 세마포어로 동시 요청 제한
+				sem <- struct{}{}
+				defer func() { <-sem }()
 				defer wg.Done()
 
 				input := &s3.GetObjectInput{
@@ -69,7 +76,16 @@ func (s *S3Client) LoadLottoData(ctx context.Context) ([]models.LottoData, error
 					Key:    &objKey,
 				}
 
-				output, err := s.client.GetObject(ctx, input)
+				// 재시도 로직 추가
+				var output *s3.GetObjectOutput
+				for retries := 0; retries < 3; retries++ {
+					output, err = s.client.GetObject(ctx, input)
+					if err == nil {
+						break
+					}
+					// 실패 시 잠시 대기 후 재시도
+					time.Sleep(time.Duration(retries+1) * 500 * time.Millisecond)
+				}
 				if err != nil {
 					errorChan <- fmt.Errorf("S3 객체 조회 실패 (키: %s): %v", objKey, err)
 					return
