@@ -4,7 +4,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/Tabs';
 import GenerateNumbers from '@/components/features/GenerateNumbers/GenerateNumbers';
 import SearchNumbers from '@/components/features/SearchNumbers';
 import { MainLayout } from '@/components/features/MainLayout/MainLayout';
-import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 /**
  * hottoplay 웹 애플리케이션의 메인 페이지
@@ -44,15 +43,12 @@ export default function Home() {
                 번호 조회
               </TabsTrigger>
             </TabsList>
-
-            <AdLayout>
-              <TabsContent value="generate" className="mt-2">
-                <GenerateNumbers />
-              </TabsContent>
-              <TabsContent value="search" className="mt-2">
-                <SearchNumbers />
-              </TabsContent>
-            </AdLayout>
+            <TabsContent value="generate" className="mt-2">
+              <GenerateNumbers />
+            </TabsContent>
+            <TabsContent value="search" className="mt-2">
+              <SearchNumbers />
+            </TabsContent>
           </Tabs>
         </div>
       </div>

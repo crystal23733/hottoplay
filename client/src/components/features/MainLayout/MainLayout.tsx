@@ -1,5 +1,4 @@
 import MainLayoutProps from './MainLayout.types';
-import { AdSpace } from '@/components/atoms/AdSpace/AdSpace';
 
 /**
  * 전체 페이지 레이아웃을 구성하는 컴포넌트
@@ -17,9 +16,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {/* 메인 컨텐츠 */}
       <main className="container mx-auto px-4 py-6">
         {/* 상단 광고 */}
-        <div className="mb-6">
-          <AdSpace label="광고 영역 1" height="md" className="h-[100px] md:h-[120px]" />
-        </div>
+        <div className="mb-6"></div>
 
         {children}
       </main>
