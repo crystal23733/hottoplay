@@ -163,22 +163,18 @@ func (s *LottoService) GeneratePopularBasedNumbers() []int {
 
 // generateRandomNumbersWithRng는 주어진 난수 생성기로 번호를 생성합니다.
 func (s *LottoService) generateRandomNumbersWithRng(rng *rand.Rand) []int {
-	numbers := make([]int, 6)
-	for i := range numbers {
-		numbers[i] = rng.Intn(45) + 1
+	numbers := make([]int, 0, 6)
+	used := make(map[int]bool)
+	for len(numbers) < 6 {
+		num := rng.Intn(45) + 1
+		// 아직 사용되지 않은 번호만 추가
+		if !used[num] {
+			numbers = append(numbers, num)
+			used[num] = true
+		}
 	}
 	sort.Ints(numbers)
 	return numbers
-}
-
-// contains는 배열에 특정 숫자가 포함되어 있는지 확인합니다.
-func contains(arr []int, num int) bool {
-	for _, n := range arr {
-		if n == num {
-			return true
-		}
-	}
-	return false
 }
 
 // GetRoundNumbers는 특정 회차의 로또 데이터를 반환합니다.
