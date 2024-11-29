@@ -47,79 +47,33 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && success()
-
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Auto Merge PR
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const { owner, repo } = context.repo;
-          const pullRequestNumber = context.payload.pull_request.number;
-
-          try {
-            // PR 정보 가져오기
-            const { data: pullRequest } = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number: pullRequestNumber
-            });
-
-            console.log('Base Branch:', pullRequest.base.ref);
-            console.log('Head Branch:', pullRequest.head.ref);
-
-            // 조건: PR 대상이 develop이고, source 브랜치가 feature/로 시작
-            const validBases = ['develop'];
-            const validHeads = ['feature/'];
-
-            const baseCheck = validBases.includes(pullRequest.base.ref);
-            const headCheck = validHeads.some(prefix => pullRequest.head.ref.startsWith(prefix));
-
-            console.log('Base Branch Check:', baseCheck);
-            console.log('Head Branch Check:', headCheck);
-
-            // 상태 체크 (실제 머지 가능성 확인)
-            const { data: statusCheck } = await github.rest.pulls.get({
-              owner,
-              repo,
-              pull_number: pullRequestNumber
-            });
-
-            console.log('Mergeable:', statusCheck.mergeable);
-            console.log('Mergeable State:', statusCheck.mergeable_state);
-
-            // 모든 조건 확인
-            if (
-              baseCheck &&
-              headCheck &&
-              statusCheck.mergeable
-            ) {
-              // PR 병합 시도
-              await github.rest.pulls.merge({
-                owner,
-                repo,
-                pull_number: pullRequestNumber,
-                merge_method: "merge"
-              });
-              
-              console.log(`PR #${pullRequestNumber} merged successfully`);
-            } else {
-              console.log(`PR #${pullRequestNumber} does not meet merge criteria.`);
-              
-              // 조건 실패 이유 상세 로깅
-              console.log('Detailed Failure Reasons:');
-              if (!baseCheck) console.log('- Base branch is not "develop"');
-              if (!headCheck) console.log('- Head branch does not start with "feature/"');
-              if (!statusCheck.mergeable) console.log('- PR is not mergeable');
-              if (statusCheck.mergeable_state !== 'clean') console.log('- Mergeable state is not "clean"');
-              
-              // 오류 표시
-              core.setFailed("Merge criteria not met.");
-            }
-          } catch (error) {
-            console.error('Merge process error:', error);
-            core.setFailed(error.message);
-          }
+        - name: Checkout code
+          uses: actions/checkout@v4
+    
+        - name: Auto Merge PR
+          uses: actions/github-script@v7
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const PullRequestService = require('./.github/actions/services/PullRequestService');
+              const MergeService = require('./.github/actions/services/MergeService');
+    
+              async function run() {
+                const prService = new PullRequestService(github, context);
+                const mergeService = new MergeService(github, context);
+    
+                try {
+                  const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+                  const validation = prService.validatePullRequest(pullRequest);
+                  await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+                  
+                  console.log(`PR #${context.payload.pull_request.number} merged successfully`);
+                } catch (error) {
+                  console.error('Merge process error:', error);
+                  core.setFailed(error.message);
+                }
+              }
+    
+              run();
