@@ -1,4 +1,4 @@
-const { VALID_BASE_BRANCHES, VALID_HEAD_PREFIXES } = require('../common/constants');
+const { VALID_BASE_BRANCHES, VALID_HEAD_PREFIXES, BRANCH_RULES } = require('../common/constants');
 const ActionUtils = require('../common/utils');
 
 /**
@@ -30,16 +30,48 @@ class PullRequestService {
   }
 
   /**
+   * PR 유형을 판단
+   * @param {Object} pullRequest - PR 정보
+   * @returns {string|null} - PR 유형 또는 null
+   */
+  determinePRType(pullRequest) {
+    const { base, head } = pullRequest
+
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.base) && ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.head)) {
+      return 'FEATURE_TO_DEVELOP';
+    }
+
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.DEVELOP_TO_RELEASE.base) &&
+        ActionUtils.isValidBranch(head.ref, BRANCH_RULES.DEVELOP_TO_RELEASE.head)) {
+      return 'DEVELOP_TO_RELEASE';
+    }
+
+    return null;
+  }
+
+  /**
    * PR이 머지 가능한 상태인지 검사
    * @param {Object} pullRequest - PR 정보
    * @returns {boolean}
    */
   validatePullRequest(pullRequest) {
-    const baseCheck = ActionUtils.isValidBranch(pullRequest.base.ref, VALID_BASE_BRANCHES);
-    const headCheck = ActionUtils.hasValidPrefix(pullRequest.head.ref, VALID_HEAD_PREFIXES);
+    const prType = this.determinePRType(pullRequest);
+    if (!prType) {
+      return {
+        isValid: false,
+        type: null,
+        baseCheck: false,
+        headCheck: false
+      };
+    }
+
+    const rules = BRANCH_RULES[prType];
+    const baseCheck = ActionUtils.isValidBranch(pullRequest.base.ref, rules.base);
+    const headCheck = prType === 'FEATURE_TO_DEVELOP' ? ActionUtils.hasValidPrefix(pullRequest.head.ref, rules.head) : ActionUtils.isValidBranch(pullRequest.head.ref, rules.head);
     
     return {
       isValid: baseCheck && headCheck,
+      type: prType,
       baseCheck,
       headCheck
     };
