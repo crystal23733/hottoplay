@@ -1,0 +1,84 @@
+name: Develop to Release Workflow
+
+on:
+  pull_request:
+    branches:
+      - "release"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+
+    - name: Install dependencies (Next.js)
+      run: |
+        cd client
+        npm ci --legacy-peer-deps
+
+    - name: Build Next.js application
+      run: |
+        cd client
+        npm run build
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+
+    - name: Build Go application
+      run: |
+        cd server
+        go build -v ./...
+
+    - name: Run Go tests
+      run: |
+        cd server
+        go test -v ./...
+
+  auto-merge:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Auto Merge PR
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const PullRequestService = require('./.github/actions/services/PullRequestService');
+          const MergeService = require('./.github/actions/services/MergeService');
+
+          async function run() {
+            const prService = new PullRequestService(github, context);
+            const mergeService = new MergeService(github, context);
+
+            try {
+              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+              const validation = prService.validatePullRequest(pullRequest);
+              
+              if (validation.type !== 'DEVELOP_TO_RELEASE') {
+                core.setFailed('This workflow is only for develop to release PRs');
+                return;
+              }
+              
+              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+              console.log(`PR #${context.payload.pull_request.number} merged successfully`);
+            } catch (error) {
+              console.error('Merge process error:', error);
+              core.setFailed(error.message);
+            }
+          }
+
+          run();
