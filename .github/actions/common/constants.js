@@ -3,12 +3,21 @@
  * @module Constants
  */
 module.exports = {
-  VALID_BASE_BRANCHES: ['develop'],
-  VALID_HEAD_PREFIXES: ['feature/'],
-  MERGE_METHOD: 'merge',
+  BRANCH_RULES: {
+    FEATURE_TO_DEVELOP: {
+      base: ['develop'],
+      head: ['feature/'],
+      method: 'merge'
+    },
+    DEVELOP_TO_RELEASE: {
+      base: ['release'],
+      head: ['develop'],
+      method: 'merge'
+    }
+  },
   ERROR_MESSAGES: {
-    INVALID_BASE: '- Base branch is not "develop"',
-    INVALID_HEAD: '- Head branch does not start with "feature/"',
+    INVALID_BASE: (expected) => `- Base branch is not "${expected}"`,
+    INVALID_HEAD: (prefix) => `- Head branch does not start with ${prefix}`,
     NOT_MERGEABLE: '- PR is not mergeable',
     UNCLEAN_STATE: '- Mergeable state is not "clean"'
   }
