@@ -1,6 +1,4 @@
-import { AdSpace } from '@/components/atoms/AdSpace/AdSpace';
 import MainLayoutProps from './MainLayout.types';
-import { Coins, History, Settings, TrendingUp } from 'lucide-react';
 import Header from '@/components/molecules/Header/Header';
 import Footer from '@/components/molecules/Footer/Footer';
 

@@ -4,7 +4,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/Tabs';
 import GenerateNumbers from '@/components/features/GenerateNumbers/GenerateNumbers';
 import SearchNumbers from '@/components/features/SearchNumbers';
 import { MainLayout } from '@/components/features/MainLayout/MainLayout';
-import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 import HeroSection from '@/components/organisms/HeroSection/HeroSection';
 import Description from '@/components/organisms/Description/Description';
 
