@@ -26,14 +26,14 @@ class MergeService {
 
     if (!validation.isValid) {
       this.logFailureReasons(validation);
-      throw new Error('Merge criteria not met');
+      throw new Error(ERROR_MESSAGES.MERGE_FAILED);
     }
 
     await this.github.rest.pulls.merge({
       owner,
       repo,
       pull_number: pullNumber,
-      merge_method: MERGE_METHOD
+      merge_method: BRANCH_RULES.FEATURE_TO_DEVELOP.method
     });
   }
 
@@ -44,7 +44,7 @@ class MergeService {
    */
   logFailureReasons(validation) {
     const rules = BRANCH_RULES[validation.type || 'FEATURE_TO_DEVELOP'];
-    console.log('Detailed Failure Reasons:');
+    console.log(ERROR_MESSAGES.DETAILED_REASONS);
     if (!validation.baseCheck) console.log(ERROR_MESSAGES.INVALID_BASE(rules.base[0]));
     if (!validation.headCheck) console.log(ERROR_MESSAGES.INVALID_HEAD);
   }

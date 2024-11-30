@@ -11,9 +11,11 @@ module.exports = {
     },
   },
   ERROR_MESSAGES: {
-    INVALID_BASE: (expected) => `- Base branch is not "${expected}"`,
-    INVALID_HEAD: (prefix) => `- Head branch does not start with ${prefix}`,
-    NOT_MERGEABLE: '- PR is not mergeable',
-    UNCLEAN_STATE: '- Mergeable state is not "clean"'
+    INVALID_BASE: (expected) => `- 대상 브랜치가 "${expected}"가 아닙니다.`,
+    INVALID_HEAD: (prefix) => `- 대상 브랜치가 ${prefix}로 시작하지 않습니다.`,
+    NOT_MERGEABLE: '- 현재 PR을 병합할 수 없는 상태입니다',
+    UNCLEAN_STATE: '- PR 상태가 깨끗하지 않습니다 (충돌이나 리뷰 필요)',
+    MERGE_FAILED: '병합 조건이 충족되지 않았습니다',
+    DETAILED_REASONS: '상세 실패 사유:'
   }
 };
