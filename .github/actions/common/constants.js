@@ -9,11 +9,6 @@ module.exports = {
       head: ['feature/'],
       method: 'merge'
     },
-    DEVELOP_TO_RELEASE: {
-      base: ['release'],
-      head: ['develop'],
-      method: 'merge'
-    }
   },
   ERROR_MESSAGES: {
     INVALID_BASE: (expected) => `- Base branch is not "${expected}"`,
