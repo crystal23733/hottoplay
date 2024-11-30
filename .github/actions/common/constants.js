@@ -6,7 +6,7 @@ module.exports = {
   BRANCH_RULES: {
     FEATURE_TO_DEVELOP: {
       base: ['develop'],
-      head: ['feature/'],
+      head: ['feature/', 'bugfix/', 'bug-fix/'],
       method: 'merge'
     },
   },

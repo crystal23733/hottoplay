@@ -1,4 +1,5 @@
-const { MERGE_METHOD, ERROR_MESSAGES } = require('../common/constants');
+const { rules } = require('eslint-config-prettier');
+const { MERGE_METHOD, ERROR_MESSAGES, BRANCH_RULES } = require('../common/constants');
 
 /**
  * PR 머지 관련 작업을 처리하는 서비스
@@ -42,8 +43,9 @@ class MergeService {
    * @private
    */
   logFailureReasons(validation) {
+    const rules = BRANCH_RULES[validation.type || 'FEATURE_TO_DEVELOP'];
     console.log('Detailed Failure Reasons:');
-    if (!validation.baseCheck) console.log(ERROR_MESSAGES.INVALID_BASE);
+    if (!validation.baseCheck) console.log(ERROR_MESSAGES.INVALID_BASE(rules.base[0]));
     if (!validation.headCheck) console.log(ERROR_MESSAGES.INVALID_HEAD);
   }
 }
