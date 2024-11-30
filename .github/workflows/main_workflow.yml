@@ -1,0 +1,131 @@
+name: Release to Test-Main Workflow
+
+on:
+  pull_request:
+    branches:
+      - "test-main"
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '22'
+
+    - name: Install dependencies (Next.js)
+      run: |
+        cd client
+        npm ci --legacy-peer-deps
+
+    - name: Build Next.js application
+      run: |
+        cd client
+        npm run build
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+
+    - name: Build Go application
+      run: |
+        cd server
+        go build -v ./...
+
+    - name: Run Go tests
+      run: |
+        cd server
+        go test -v ./...
+
+  auto-merge:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Auto Merge PR
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const PullRequestService = require('./.github/actions/services/PullRequestService');
+          const MergeService = require('./.github/actions/services/MergeService');
+
+          async function run() {
+            const prService = new PullRequestService(github, context);
+            const mergeService = new MergeService(github, context);
+
+            try {
+              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+              const validation = prService.validatePullRequest(pullRequest);
+              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+              
+              console.log(`PR #${context.payload.pull_request.number} merged successfully`);
+            } catch (error) {
+              console.error('Merge process error:', error);
+              core.setFailed(error.message);
+            }
+          }
+
+          run();
+
+  deploy:
+    needs: auto-merge
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: test-main
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker Image
+      run: |
+        cd server
+        if ! docker-compose build; then
+          echo "Docker build failed"
+          exit 1
+        fi
+        echo "Docker build successful"
+
+    - name: Push Docker Image
+      if: success()
+      run: |
+        cd server
+        if ! docker-compose push; then
+          echo "Docker push failed"
+          exit 1
+        fi
+        echo "Docker push successful"
+
+    - name: Notify Build Status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "Docker build and push completed successfully"
+        else
+          echo "Docker build or push failed"
+          exit 1
+        fi
