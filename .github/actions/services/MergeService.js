@@ -1,5 +1,4 @@
-const { rules } = require('eslint-config-prettier');
-const { MERGE_METHOD, ERROR_MESSAGES, BRANCH_RULES } = require('../common/constants');
+const { ERROR_MESSAGES, BRANCH_RULES } = require('../common/constants');
 
 /**
  * PR 머지 관련 작업을 처리하는 서비스
