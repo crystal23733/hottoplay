@@ -2,16 +2,16 @@ name: Release to Test-Main Workflow
 
 on:
   pull_request:
-    types: [opened, synchronize, closed]
     branches:
       - "test-main"
-  pull_request_review:
-    types: [submitted]
+  push:
+    branches:
+      - "test-main"
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event_name == 'pull_request'
     
     steps:
     - name: Checkout code
@@ -50,7 +50,7 @@ jobs:
   auto-merge:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action != 'closed' && success()
+    if: github.event_name == 'pull_request' && success()
     
     steps:
     - name: Checkout code
@@ -84,7 +84,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: github.event_name == 'push'
     
     steps:
     - name: Checkout code
