@@ -9,6 +9,16 @@ module.exports = {
       head: ['feature/', 'bugfix/', 'bug-fix/'],
       method: 'merge'
     },
+    RELEASE_TO_DEVELOP: {
+      base: ['develop'],
+      head: ['release/'],
+      method: 'merge'
+    },
+    RELEASE_TO_MAIN: {
+      base: ['test-main'],
+      head: ['release/'],
+      method: 'squash'
+    }
   },
   ERROR_MESSAGES: {
     INVALID_BASE: (expected) => `- 대상 브랜치가 "${expected}"가 아닙니다.`,
