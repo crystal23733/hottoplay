@@ -28,11 +28,12 @@ class MergeService {
       throw new Error(ERROR_MESSAGES.MERGE_FAILED);
     }
 
+    const rules = BRANCH_RULES[validation.type];
     await this.github.rest.pulls.merge({
       owner,
       repo,
       pull_number: pullNumber,
-      merge_method: BRANCH_RULES.FEATURE_TO_DEVELOP.method
+      merge_method: rules.method
     });
   }
 
