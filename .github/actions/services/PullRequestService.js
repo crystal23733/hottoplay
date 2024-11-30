@@ -1,4 +1,4 @@
-const { VALID_BASE_BRANCHES, VALID_HEAD_PREFIXES, BRANCH_RULES } = require('../common/constants');
+const { BRANCH_RULES } = require('../common/constants');
 const ActionUtils = require('../common/utils');
 
 /**
@@ -41,11 +41,6 @@ class PullRequestService {
       return 'FEATURE_TO_DEVELOP';
     }
 
-    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.DEVELOP_TO_RELEASE.base) &&
-        ActionUtils.isValidBranch(head.ref, BRANCH_RULES.DEVELOP_TO_RELEASE.head)) {
-      return 'DEVELOP_TO_RELEASE';
-    }
-
     return null;
   }
 
@@ -67,7 +62,7 @@ class PullRequestService {
 
     const rules = BRANCH_RULES[prType];
     const baseCheck = ActionUtils.isValidBranch(pullRequest.base.ref, rules.base);
-    const headCheck = prType === 'FEATURE_TO_DEVELOP' ? ActionUtils.hasValidPrefix(pullRequest.head.ref, rules.head) : ActionUtils.isValidBranch(pullRequest.head.ref, rules.head);
+    const headCheck = ActionUtils.hasValidPrefix(pullRequest.head.ref, rules.head);
     
     return {
       isValid: baseCheck && headCheck,
