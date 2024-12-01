@@ -5,13 +5,6 @@ on:
     types: [opened, synchronize, reopened]
     branches:
       - "test-main"
-  pull_request_target:
-    types: [opened, synchronize, reopened]
-    branches:
-      - "test-main"
-  push:
-    branches:
-      - "test-main"
 
 permissions:
   contents: write
@@ -19,114 +12,15 @@ permissions:
   issues: write
 
 jobs:
-  build-and-test:
+  docker-build-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    if: startsWith(github.head_ref, 'release/')
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.ref }}
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '22'
-
-    - name: Install dependencies (Next.js)
-      run: |
-        cd client
-        npm ci --legacy-peer-deps
-
-    - name: Build Next.js application
-      run: |
-        cd client
-        npm run build
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.23'
-
-    - name: Build Go application
-      run: |
-        cd server
-        go build -v ./...
-
-    - name: Run Go tests
-      run: |
-        cd server
-        go test -v ./...
-
-  auto-merge:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: (github.event_name == 'pull_request' || github.event_name == 'pull_request_target') && success()
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-        fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Configure Git
-      run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-    
-    - name: Auto-resolve conflicts
-      run: |
-        # test-main 브랜치 최신 상태 가져오기
-        git fetch origin test-main:test-main
-        
-        # 현재 브랜치를 test-main에 rebase 시도
-        if ! git rebase test-main; then
-          # 충돌 발생 시 release/ 브랜치 변경사항 우선 적용
-          git rebase --abort
-          git merge test-main -X ours
-          git push -f origin HEAD
-        fi
-    
-    - name: Auto Merge PR
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const PullRequestService = require('./.github/actions/services/PullRequestService');
-          const MergeService = require('./.github/actions/services/MergeService');
-
-          async function run() {
-            const prService = new PullRequestService(github, context);
-            const mergeService = new MergeService(github, context);
-
-            try {
-              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
-              const validation = prService.validatePullRequest(pullRequest);
-              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
-              
-              console.log(`PR #${context.payload.pull_request.number} merged successfully`);
-            } catch (error) {
-              console.error('Merge process error:', error);
-              core.setFailed(error.message);
-            }
-          }
-
-          run();
-
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: test-main
         fetch-depth: 0
 
     - name: Set up Docker
@@ -160,12 +54,12 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const errorMessage = process.env.error_message || 'Unknown error';
+          const errorMessage = steps.docker_build.outputs.error_message || 'Unknown error';
           await github.rest.issues.create({
             owner: context.repo.owner,
             repo: context.repo.repo,
             title: 'Docker Build/Push Failed',
-            body: `Docker build or push failed in test-main branch.
+            body: `Docker build or push failed for PR #${context.payload.pull_request.number}
             
             Error details:
             \`\`\`
@@ -175,3 +69,41 @@ jobs:
             Please check the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for more details.`,
             labels: ['docker-build-failed', 'bug']
           });
+
+  auto-merge:
+    needs: docker-build-test
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
+    
+    - name: Auto Merge PR
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const PullRequestService = require('./.github/actions/services/PullRequestService');
+          const MergeService = require('./.github/actions/services/MergeService');
+
+          async function run() {
+            const prService = new PullRequestService(github, context);
+            const mergeService = new MergeService(github, context);
+
+            try {
+              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+              const validation = prService.validatePullRequest(pullRequest);
+              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+              
+              console.log(`PR #${context.payload.pull_request.number} merged successfully`);
+            } catch (error) {
+              console.error('Merge process error:', error);
+              core.setFailed(error.message);
+            }
+          }
+
+          run();
