@@ -40,10 +40,20 @@ jobs:
     - name: Create env files
       run: |
         # 루트 디렉토리의 .env 파일 생성 (SERVER_PORT만 포함)
-        echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" > ./.env
+        echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" > .env
         
         # server/.env.production 파일에 PRODUCTION_ENV의 모든 내용 복사
         echo "${{ secrets.PRODUCTION_ENV }}" > server/.env.production
+        
+        # 디버깅: 환경변수와 파일 확인
+        echo "=== .env 파일 내용 ==="
+        cat .env
+        echo "=== 환경변수 SERVER_PORT 값 ==="
+        echo $SERVER_PORT
+        echo "=== 현재 디렉토리 구조 ==="
+        ls -la
+        echo "=== docker-compose.yml 위치 ==="
+        pwd
 
     - name: Build and Push Docker Image
       id: docker_build
