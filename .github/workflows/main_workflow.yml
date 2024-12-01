@@ -1,0 +1,137 @@
+name: Release to Main Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  docker-build-test:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'release/')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
+
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y docker-compose
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Create env files
+      run: |
+        # 루트 디렉토리의 .env 파일 생성 (SERVER_PORT만 포함)
+        echo "${{ secrets.SERVER_PORT }}" > .env
+        
+        # server/.env.production 파일에 PRODUCTION_ENV의 모든 내용 복사
+        echo "${{ secrets.PRODUCTION_ENV }}" > server/.env.production
+        
+        # 디버깅: 환경변수와 파일 확인
+        echo "=== .env 파일 내용 ==="
+        cat .env
+        echo "=== 환경변수 SERVER_PORT 값 ==="
+        echo $SERVER_PORT
+        echo "=== 현재 디렉토리 구조 ==="
+        ls -la
+        echo "=== docker-compose.yml 위치 ==="
+        pwd
+  
+    - name: Build and Push Docker Image
+      id: docker_build
+      run: |
+        if ! docker-compose build; then
+          echo "build_status=failed" >> $GITHUB_OUTPUT
+          echo "error_message=$(docker-compose build 2>&1)" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        if ! docker-compose push; then
+          echo "push_status=failed" >> $GITHUB_OUTPUT
+          echo "error_message=$(docker-compose push 2>&1)" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: Create Issue on Failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const error_message = process.env.error_message || 'Unknown error';
+          const pr_number = context.payload.pull_request.number;
+          const pr_title = context.payload.pull_request.title;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `[Build Failed] ${pr_title}`,
+            body: `Docker build or push failed for PR #${pr_number}
+            
+            Branch: ${context.payload.pull_request.head.ref}
+            Commit: ${context.payload.pull_request.head.sha}
+            
+            Error details:
+            \`\`\`
+            ${error_message}
+            \`\`\`
+            
+            Please check the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for more details.`,
+            labels: ['docker-build-failed', 'bug', 'release']
+          });
+
+  auto-merge:
+    needs: docker-build-test
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
+    
+    - name: Auto Merge PR
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const PullRequestService = require('./.github/actions/services/PullRequestService');
+          const MergeService = require('./.github/actions/services/MergeService');
+
+          async function run() {
+            const prService = new PullRequestService(github, context);
+            const mergeService = new MergeService(github, context);
+
+            try {
+              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+              const validation = prService.validatePullRequest(pullRequest);
+              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+              
+              console.log(`PR #${context.payload.pull_request.number} merged successfully`);
+            } catch (error) {
+              console.error('Merge process error:', error);
+              core.setFailed(error.message);
+            }
+          }
+
+          run();
