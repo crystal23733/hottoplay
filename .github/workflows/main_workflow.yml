@@ -54,16 +54,10 @@ jobs:
         ls -la
         echo "=== docker-compose.yml 위치 ==="
         pwd
-
+  
     - name: Build and Push Docker Image
       id: docker_build
       run: |
-        # 환경변수 명시적 설정
-        export SERVER_PORT=${{ secrets.SERVER_PORT }}
-        
-        # docker-compose 설정 확인
-        docker-compose config
-        
         if ! docker-compose build; then
           echo "build_status=failed" >> $GITHUB_OUTPUT
           echo "error_message=$(docker-compose build 2>&1)" >> $GITHUB_OUTPUT
