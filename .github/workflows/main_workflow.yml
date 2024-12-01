@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - "test-main"
+  pull_request_target:
+    branches:
+      - "test-main"
   push:
     branches:
       - "test-main"
