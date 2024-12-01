@@ -46,9 +46,9 @@ class PullRequestService {
       return 'RELEASE_TO_DEVELOP';
     }
 
-    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_MAIN.base) && 
-        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_MAIN.head)) {
-      return 'RELEASE_TO_MAIN';
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.base) && 
+        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.head)) {
+      return 'RELEASE_TO_TEST_MAIN';
     }
 
     return null;
