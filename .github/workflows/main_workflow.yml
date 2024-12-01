@@ -29,6 +29,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -71,6 +72,25 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
         fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Configure Git
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+    
+    - name: Auto-resolve conflicts
+      run: |
+        # test-main 브랜치 최신 상태 가져오기
+        git fetch origin test-main:test-main
+        
+        # 현재 브랜치를 test-main에 rebase 시도
+        if ! git rebase test-main; then
+          # 충돌 발생 시 release/ 브랜치 변경사항 우선 적용
+          git rebase --abort
+          git merge test-main -X ours
+          git push -f origin HEAD
+        fi
     
     - name: Auto Merge PR
       uses: actions/github-script@v7
