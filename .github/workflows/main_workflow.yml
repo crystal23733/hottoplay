@@ -91,6 +91,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         ref: test-main
+        fetch-depth: 0
+
+    - name: Fetch latest changes
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+        git pull origin test-main
+        echo "Current commit: $(git rev-parse HEAD)"
+        echo "Latest commit message: $(git log -1 --pretty=%B)"
 
     - name: Set up Docker
       uses: docker/setup-buildx-action@v3
@@ -108,7 +117,8 @@ jobs:
           echo "Docker build failed"
           exit 1
         fi
-        echo "Docker build successful"
+        echo "Docker build successful at $(date '+%Y-%m-%d %H:%M:%S')"
+        docker images --format "{{.Repository}}:{{.Tag}} - Created: {{.CreatedAt}}"
 
     - name: Push Docker Image
       if: success()
@@ -118,7 +128,13 @@ jobs:
           echo "Docker push failed"
           exit 1
         fi
-        echo "Docker push successful"
+        echo "Docker push successful at $(date '+%Y-%m-%d %H:%M:%S')"
+
+    - name: Image Build Info
+      if: success()
+      run: |
+        echo "=== Docker Image Build Information ==="
+        docker images --format "{{.Repository}}:{{.Tag}} - Size: {{.Size}} - Created: {{.CreatedAt}}"
 
     - name: Notify Build Status
       if: always()
