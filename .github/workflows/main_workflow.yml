@@ -1,59 +1,92 @@
-name: Release to Test-Main Workflow
+name: Release to Main Workflow
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     branches:
-      - "test-main"
-  pull_request_review:
-    types: [submitted]
+      - "main"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
 
 jobs:
-  build-and-test:
+  docker-build-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: startsWith(github.head_ref, 'release/')
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
       with:
-        node-version: '22'
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
 
-    - name: Install dependencies (Next.js)
-      run: |
-        cd client
-        npm ci --legacy-peer-deps
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v3
 
-    - name: Build Next.js application
-      run: |
-        cd client
-        npm run build
-
-    - name: Set up Go
-      uses: actions/setup-go@v4
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        go-version: '1.23'
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build Go application
+    - name: Build and Push Docker Image
+      id: docker_build
       run: |
         cd server
-        go build -v ./...
+        if ! docker-compose build; then
+          echo "::set-output name=build_status::failed"
+          echo "::set-output name=error_message::$(docker-compose build 2>&1)"
+          exit 1
+        fi
+        if ! docker-compose push; then
+          echo "::set-output name=push_status::failed"
+          echo "::set-output name=error_message::$(docker-compose push 2>&1)"
+          exit 1
+        fi
+        echo "::set-output name=status::success"
 
-    - name: Run Go tests
-      run: |
-        cd server
-        go test -v ./...
+    - name: Create Issue on Failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const error_message = process.env.error_message || 'Unknown error';
+          const pr_number = context.payload.pull_request.number;
+          const pr_title = context.payload.pull_request.title;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `[Build Failed] ${pr_title}`,
+            body: `Docker build or push failed for PR #${pr_number}
+            
+            Branch: ${context.payload.pull_request.head.ref}
+            Commit: ${context.payload.pull_request.head.sha}
+            
+            Error details:
+            \`\`\`
+            ${error_message}
+            \`\`\`
+            
+            Please check the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for more details.`,
+            labels: ['docker-build-failed', 'bug', 'release']
+          });
 
   auto-merge:
-    needs: build-and-test
+    needs: docker-build-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && success()
+    if: success()
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+        fetch-depth: 0
     
     - name: Auto Merge PR
       uses: actions/github-script@v7
@@ -80,52 +113,3 @@ jobs:
           }
 
           run();
-
-  deploy:
-    needs: auto-merge
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        ref: test-main
-
-    - name: Set up Docker
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    - name: Build Docker Image
-      run: |
-        cd server
-        if ! docker-compose build; then
-          echo "Docker build failed"
-          exit 1
-        fi
-        echo "Docker build successful"
-
-    - name: Push Docker Image
-      if: success()
-      run: |
-        cd server
-        if ! docker-compose push; then
-          echo "Docker push failed"
-          exit 1
-        fi
-        echo "Docker push successful"
-
-    - name: Notify Build Status
-      if: always()
-      run: |
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "Docker build and push completed successfully"
-        else
-          echo "Docker build or push failed"
-          exit 1
-        fi
