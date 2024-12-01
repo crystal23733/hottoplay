@@ -1,5 +1,5 @@
-const { BRANCH_RULES } = require('../common/constants');
 const ActionUtils = require('../common/utils');
+const { BRANCH_RULES } = require('../common/constants');
 
 /**
  * Pull Request 관련 작업을 처리하는 서비스
@@ -30,34 +30,9 @@ class PullRequestService {
   }
 
   /**
-   * PR 유형을 판단
-   * @param {Object} pullRequest - PR 정보
-   * @returns {string|null} - PR 유형 또는 null
-   */
-  determinePRType(pullRequest) {
-    const { base, head } = pullRequest
-
-    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.base) && ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.head)) {
-      return 'FEATURE_TO_DEVELOP';
-    }
-
-    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_DEVELOP.base) && 
-        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_DEVELOP.head)) {
-      return 'RELEASE_TO_DEVELOP';
-    }
-
-    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.base) && 
-        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.head)) {
-      return 'RELEASE_TO_TEST_MAIN';
-    }
-
-    return null;
-  }
-
-  /**
    * PR이 머지 가능한 상태인지 검사
    * @param {Object} pullRequest - PR 정보
-   * @returns {boolean}
+   * @returns {Object} validation - 유효성 검사 결과
    */
   validatePullRequest(pullRequest) {
     const prType = this.determinePRType(pullRequest);
@@ -80,6 +55,32 @@ class PullRequestService {
       baseCheck,
       headCheck
     };
+  }
+
+  /**
+   * PR 유형을 판단
+   * @param {Object} pullRequest - PR 정보
+   * @returns {string|null} - PR 유형 또는 null
+   */
+  determinePRType(pullRequest) {
+    const { base, head } = pullRequest;
+
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.base) && 
+        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.FEATURE_TO_DEVELOP.head)) {
+      return 'FEATURE_TO_DEVELOP';
+    }
+
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_DEVELOP.base) && 
+        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_DEVELOP.head)) {
+      return 'RELEASE_TO_DEVELOP';
+    }
+
+    if (ActionUtils.isValidBranch(base.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.base) && 
+        ActionUtils.hasValidPrefix(head.ref, BRANCH_RULES.RELEASE_TO_TEST_MAIN.head)) {
+      return 'RELEASE_TO_TEST_MAIN';
+    }
+
+    return null;
   }
 }
 
