@@ -2,16 +2,16 @@ name: Release to Test-Main Workflow
 
 on:
   pull_request:
-    types: [opened, synchronize, closed]
     branches:
       - "test-main"
-  pull_request_review:
-    types: [submitted]
+  push:
+    branches:
+      - "test-main"
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    if: github.event_name == 'pull_request'
     
     steps:
     - name: Checkout code
@@ -50,7 +50,7 @@ jobs:
   auto-merge:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action != 'closed' && success()
+    if: github.event_name == 'pull_request' && success()
     
     steps:
     - name: Checkout code
@@ -84,13 +84,11 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: github.event_name == 'push'
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        ref: test-main
 
     - name: Set up Docker
       uses: docker/setup-buildx-action@v3
@@ -101,31 +99,40 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build Docker Image
+    - name: Build and Push Docker Image
+      id: docker_build
       run: |
         cd server
         if ! docker-compose build; then
-          echo "Docker build failed"
+          echo "::set-output name=build_status::failed"
+          echo "::set-output name=error_message::$(docker-compose build 2>&1)"
           exit 1
         fi
-        echo "Docker build successful"
-
-    - name: Push Docker Image
-      if: success()
-      run: |
-        cd server
         if ! docker-compose push; then
-          echo "Docker push failed"
+          echo "::set-output name=push_status::failed"
+          echo "::set-output name=error_message::$(docker-compose push 2>&1)"
           exit 1
         fi
-        echo "Docker push successful"
+        echo "::set-output name=status::success"
 
-    - name: Notify Build Status
-      if: always()
-      run: |
-        if [ "${{ job.status }}" == "success" ]; then
-          echo "Docker build and push completed successfully"
-        else
-          echo "Docker build or push failed"
-          exit 1
-        fi
+    - name: Create Issue on Failure
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const errorMessage = process.env.error_message || 'Unknown error';
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: 'Docker Build/Push Failed',
+            body: `Docker build or push failed in test-main branch.
+            
+            Error details:
+            \`\`\`
+            ${errorMessage}
+            \`\`\`
+            
+            Please check the [workflow run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) for more details.`,
+            labels: ['docker-build-failed', 'bug']
+          });

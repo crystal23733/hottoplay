@@ -14,8 +14,8 @@ module.exports = {
       head: ['release/'],
       method: 'merge'
     },
-    RELEASE_TO_MAIN: {
-      base: ['test-main'],
+    RELEASE_TO_TEST_MAIN: {  // 변경
+      base: ['test-main'],   // 변경
       head: ['release/'],
       method: 'squash'
     }
@@ -26,6 +26,7 @@ module.exports = {
     NOT_MERGEABLE: '- 현재 PR을 병합할 수 없는 상태입니다',
     UNCLEAN_STATE: '- PR 상태가 깨끗하지 않습니다 (충돌이나 리뷰 필요)',
     MERGE_FAILED: '병합 조건이 충족되지 않았습니다',
-    DETAILED_REASONS: '상세 실패 사유:'
+    DETAILED_REASONS: '상세 실패 사유:',
+    BUILD_FAILED: 'Docker 빌드 실패'
   }
 };
