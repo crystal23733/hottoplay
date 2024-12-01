@@ -39,8 +39,17 @@ jobs:
 
     - name: Build and Push Docker Image
       id: docker_build
+      env:
+        SERVER_PORT: ${{ secrets.SERVER_PORT }}
+        S3_BUCKET: ${{ secrets.S3_BUCKET }}
+        S3_REGION: ${{ secrets.S3_REGION }}
+        S3_PREFIX: ${{ secrets.S3_PREFIX }}
+        APP_PORT: ${{ secrets.APP_PORT }}
+        API_KEY: ${{ secrets.API_KEY }}
+        CLIENT_URL: ${{ secrets.CLIENT_URL }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
-        cd server
         if ! docker-compose build; then
           echo "build_status=failed" >> $GITHUB_OUTPUT
           echo "error_message=$(docker-compose build 2>&1)" >> $GITHUB_OUTPUT
