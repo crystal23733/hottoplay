@@ -6,7 +6,6 @@ services:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     env_file:
-      - ./server/.env
       - ./server/.env.production
     environment:
       - GO_ENV=production
