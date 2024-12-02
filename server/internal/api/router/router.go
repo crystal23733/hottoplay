@@ -12,6 +12,12 @@ import (
 func NewRouter(lottoHandler *handler.LottoHandler, apiKey string) *mux.Router {
 	r := mux.NewRouter()
 
+	// 기본 라우트 추가 (헬스 체크용)
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`{"message": "Hello, World!"}`))
+	}).Methods(http.MethodGet)
+
 	// API 서브라우터 설정
 	api := r.PathPrefix("/api/v1").Subrouter()
 
