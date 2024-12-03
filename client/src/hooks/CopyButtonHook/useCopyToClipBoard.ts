@@ -1,4 +1,5 @@
 import { useToast } from '../use-toast';
+import { TOAST_MESSAGES, TOAST_VARIANTS } from './constants/toast';
 import UseCopyToClipBoardReturn from './useCopyToClipBoard.types';
 
 /**
@@ -20,14 +21,17 @@ export default (): UseCopyToClipBoardReturn => {
     try {
       await navigator.clipboard.writeText(text);
       toast({
-        title: '복사 완료',
-        description: '번호가 클립보드에 복사되었습니다.',
+        variant: TOAST_VARIANTS.SUCCESS,
+        title: TOAST_MESSAGES.COPY.SUCCESS.TITLE,
+        description: TOAST_MESSAGES.COPY.SUCCESS.DESCRIPTION(text),
+        duration: TOAST_MESSAGES.DURATION,
       });
-    } catch (err) {
+    } catch {
       toast({
-        title: '복사 실패',
-        description: '번호를 복사하는데 실패했습니다.',
-        variant: 'destructive',
+        variant: TOAST_VARIANTS.ERROR,
+        title: TOAST_MESSAGES.COPY.ERROR.TITLE,
+        description: TOAST_MESSAGES.COPY.ERROR.DESCRIPTION,
+        duration: TOAST_MESSAGES.DURATION,
       });
     }
   };
