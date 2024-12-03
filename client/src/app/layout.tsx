@@ -77,6 +77,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID as string;
+  const GA_ID = process.env.NEXT_PUBLIC_GA_ID as string;
   return (
     <html lang="en">
       <head>
