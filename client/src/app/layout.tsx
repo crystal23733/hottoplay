@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '../../style/globals.css';
-import Script from 'next/script';
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import env from '@/config/meta/env';
+import hottoplay from '@/constants/hottoplay';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -15,13 +17,59 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  other: {
-    'google-site-verification': '',
+  metadataBase: new URL(env.url.base),
+  title: {
+    default: `${hottoplay} - 로또 예상번호 조합기`,
+    template: `%s | ${hottoplay}`,
   },
-  title: 'hottoplay',
   description:
-    '역대 로또 당첨 번호를 분석하여 새로운 번호 조합을 생성합니다. 유니크한 번호 조합, 가장 많이 당첨된 번호 기반 조합, 사용자가 제시하는 번호 조합 등 다양한 방식으로 제작자와 함께 번호를 생성해보세요.',
-  keywords: '로또, 로또번호생성, 로또분석, 당첨번호, 번호조합, 로또예측, 무료',
+    '새로운 로또번호 조합을 생성합니다. 유니크한 번호 조합, 가장 많이 당첨된 번호 기반 조합, 사용자가 제시하는 번호 조합 등 다양한 방식으로 제작자와 함께 무료로 번호를 생성해보세요.',
+  keywords: [
+    '로또',
+    '로또번호생성',
+    '로또분석',
+    '당첨번호',
+    '번호조합',
+    '로또예측',
+    '무료',
+    '모바일',
+  ],
+  authors: [{ name: `${hottoplay}` }],
+  creator: hottoplay,
+  publisher: hottoplay,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: `${hottoplay} - 로또 예상번호 조합기`,
+    description:
+      '새로운 로또번호 조합을 생성합니다. 유니크한 번호 조합, 가장 많이 당첨된 번호 기반 조합, 사용자가 제시하는 번호 조합 등 다양한 방식으로 제작자와 함께 무료로 번호를 생성해보세요.',
+    url: env.url.base,
+    siteName: hottoplay,
+    locale: 'ko_KR',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  verification: {
+    google: env.siteVerification.google,
+  },
+  category: '로또',
+  other: {
+    'google-site-verification': env.siteVerification.google,
+    'naver-site-verification': env.siteVerification.naver,
+  },
 };
 
 export default function RootLayout({
@@ -34,43 +82,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Tag Manager */}
-        <Script id="google-tag-manager" strategy="afterInteractive">
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${GTM_ID}');`}
-        </Script>
-        {/* Google Analytics */}
-        <Script
-          strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        />
-        <Script
-          id="google-analytics"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${GA_ID}');
-            `,
-          }}
-        />
+        <GoogleTagManager gtmId={env.analytics.gtmId} />
+        <GoogleAnalytics gaId={env.analytics.gaId} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
-            height="0"
-            width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
-          />
-        </noscript>
-        {children}
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
     </html>
   );
 }

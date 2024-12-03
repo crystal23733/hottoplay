@@ -18,6 +18,11 @@ jobs:
       with:
         node-version: '22'
 
+    - name: Create .env file
+      run: |
+        cd client
+        echo "${{ vars.ENV }}" > .env
+
     - name: Install dependencies (Next.js)
       run: |
         cd client
