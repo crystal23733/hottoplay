@@ -1,5 +1,7 @@
 import LottoNumber from '@/components/atoms/LottoNumber/LottoNumber';
 import LottoResultProps from './LottoResult.types';
+import CopyButton from '@/components/molecules/CopyButton/CopyButton';
+import useCopyToClipBoard from '@/hooks/CopyButtonHook/useCopyToClipBoard';
 
 /**
  * 로또 번호 6개를 표시하는 결과 컴포넌트
@@ -12,9 +14,20 @@ import LottoResultProps from './LottoResult.types';
  * @param {'sm' | 'md' | 'lg'} [props.size='lg'] - 번호 원의 크기
  */
 const LottoResult: React.FC<LottoResultProps> = ({ numbers, title, size }) => {
+  const { copyToClipBoard } = useCopyToClipBoard();
+
+  if (!numbers) return null;
+
+  const handleCopy = () => {
+    copyToClipBoard(numbers.join(', '));
+  };
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">{title}</h3>
+        <CopyButton onClick={handleCopy} />
+      </div>
       <div className="flex justify-center gap-4">
         {/* 번호가 생성되면 여기에 표시됩니다 */}
         {Array.from({ length: 6 }, (_, i) => (
