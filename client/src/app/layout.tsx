@@ -64,6 +64,23 @@ export const metadata: Metadata = {
     siteName: hottoplay,
     locale: 'ko_KR',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: '로또번호 예상 조합기 - 다양한 방식의 랜덤 번호 생성',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${hottoplay} - 로또 번호 생성기`,
+    description:
+      '로또 번호 생성기입니다. 랜덤 번호, 유니크 번호, 많이 나온 번호 기반 생성, 커스텀 번호 생성 등 다양한 방식으로 무료로 번호를 생성해보세요.',
+    images: ['/og-image.png'],
+    creator: '@hottoplay',
+    site: '@hottoplay',
   },
   robots: {
     index: true,
