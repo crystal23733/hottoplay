@@ -30,6 +30,6 @@ export default (popular: string) => {
       }
     };
     fetchData();
-  }, [popular]);
+  }, [popular, setData, setError, setLoading]);
   return { data, loading, error };
 };

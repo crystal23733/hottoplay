@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import '../../style/globals.css';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
 import hottoplay from '@/constants/hottoplay';
 
@@ -83,7 +84,10 @@ export default function RootLayout({
         <GoogleTagManager gtmId={env.analytics.gtmId} />
         <GoogleAnalytics gaId={env.analytics.gaId} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>{children}</body>
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }
