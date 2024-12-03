@@ -8,6 +8,7 @@ import NumberGrid from '@/components/organisms/NumberGrid/NumberGrid';
 import LottoResult from '@/components/organisms/LottoResult/LottoResult';
 import generateLottoNumbers from './utils/generateLottoNumbers';
 import { GeneratedNumberSet, GenerateType } from './GenerateNumbers.types';
+import GenerationMethodInfo from '@/components/molecules/GenerationMethodInfo/GenerationMethodInfo';
 
 /**
  * 로또 번호 생성 기능을 제공하는 템플릿 컴포넌트
@@ -50,6 +51,7 @@ export default function GenerateNumbers() {
               <SelectItem value="custom">커스텀 번호 생성</SelectItem>
             </SelectContent>
           </Select>
+          {generateType && <GenerationMethodInfo type={generateType} />}
 
           {generateType === 'custom' && (
             <NumberGrid
