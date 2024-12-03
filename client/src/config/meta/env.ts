@@ -29,12 +29,12 @@ requiredEnvs.forEach(env => {
 
 const env: EnvConfig = {
   analytics: {
-    gtmId: process.env.NEXT_PUBLIC_GTM_ID!,
-    gaId: process.env.NEXT_PUBLIC_GA_ID!,
+    gtmId: process.env.NEXT_PUBLIC_GTM_ID as string,
+    gaId: process.env.NEXT_PUBLIC_GA_ID as string,
   },
   siteVerification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION!,
-    naver: process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION!,
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION as string,
+    naver: process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION as string,
   },
   url: {
     base: 'https://hottoplay.com',
