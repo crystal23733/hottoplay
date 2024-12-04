@@ -2,6 +2,8 @@
 
 import LottoNumber from '@/components/atoms/LottoNumber/LottoNumber';
 import { GroupedNumbers, PopularNumbersResultProps } from './PopularNumbersResult.types';
+import usePopularNumberScrollHook from '@/hooks/PopularNumberHook/usePopularNumberScrollHook';
+import Loading from '@/components/atoms/Loading/Loading';
 
 /**
  * 가장 많이 나온 로또 번호들을 빈도수별로 그룹화하여 표시하는 컴포넌트
@@ -12,8 +14,10 @@ import { GroupedNumbers, PopularNumbersResultProps } from './PopularNumbersResul
  * @param {string} [props.title='가장 많이 나온 번호'] - 결과 섹션의 제목
  */
 const PopularNumbersResult: React.FC<PopularNumbersResultProps> = ({ numbers, title }) => {
+  const { visibleNumbers, hasMore, setLastElementRef } = usePopularNumberScrollHook(numbers);
+
   // 빈도수별로 번호들을 그룹화
-  const groupedNumbers = numbers.reduce<GroupedNumbers>((acc, curr) => {
+  const groupedNumbers = visibleNumbers.reduce<GroupedNumbers>((acc, curr) => {
     const freq = curr.freq;
     if (!acc[freq]) {
       acc[freq] = [];
@@ -29,19 +33,41 @@ const PopularNumbersResult: React.FC<PopularNumbersResultProps> = ({ numbers, ti
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">{title}</h3>
-      <div className="space-y-2">
-        {sortedFrequencies.map((freq: number) => (
-          <div key={freq} className="p-4 border rounded-lg">
-            <div className="text-sm text-muted-foreground mb-2">{freq}회 출현</div>
-            <div className="flex flex-wrap gap-2">
-              {groupedNumbers[freq]
-                .sort((a, b): number => a - b) // 같은 빈도수 내에서 번호 오름차순 정렬
-                .map((number: number) => (
-                  <LottoNumber key={number} number={number} size="sm" />
-                ))}
+      <div
+        className="h-[500px] md:h-[1000px] 
+        overflow-y-auto 
+        scrollbar-thin 
+        scrollbar-thumb-primary/40 
+        hover:scrollbar-thumb-primary/60 
+        dark:scrollbar-thumb-primary/30 
+        dark:hover:scrollbar-thumb-primary/50
+        scrollbar-track-transparent
+        scrollbar-thumb-rounded-full
+        pr-2"
+      >
+        <div className="space-y-2">
+          {sortedFrequencies.map((freq: number, index: number) => (
+            <div
+              key={freq}
+              ref={index === sortedFrequencies.length - 1 ? setLastElementRef : null}
+              className="p-4 border rounded-lg"
+            >
+              <div className="text-sm text-muted-foreground mb-2">{freq}회 출현</div>
+              <div className="flex flex-wrap gap-2">
+                {groupedNumbers[freq]
+                  .sort((a, b): number => a - b)
+                  .map((number: number) => (
+                    <LottoNumber key={number} number={number} size="sm" />
+                  ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+          {hasMore && (
+            <div className="py-4 flex justify-center">
+              <Loading size="sm" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
