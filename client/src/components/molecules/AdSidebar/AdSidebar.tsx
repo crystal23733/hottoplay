@@ -13,10 +13,12 @@ export const AdSidebar = ({ position, startAdNumber }: AdSidebarProps) => {
       ${position === 'left' ? 'order-first' : 'order-last'}
     `}
     >
-      <div className={`
+      <div
+        className={`
         space-y-6
         ${position === 'right' ? 'flex flex-col items-end' : ''}
-      `}>
+      `}
+      >
         <AdSpace label={`광고 영역 ${startAdNumber}`} size="skyscraper" />
         <AdSpace label={`광고 영역 ${startAdNumber + 1}`} size="skyscraper" />
       </div>

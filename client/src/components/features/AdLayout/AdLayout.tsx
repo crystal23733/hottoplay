@@ -11,14 +11,10 @@ export const AdLayout = ({ children, showMobileAd = true }: AdLayoutProps) => {
       <AdSidebar position="left" startAdNumber={2} />
       <div className="md:col-span-6">{children}</div>
       <AdSidebar position="right" startAdNumber={4} />
-      
+
       {showMobileAd && (
         <div className="md:hidden mt-6">
-          <AdSpace 
-            label="광고 영역 (모바일)" 
-            size="mobile-banner"
-            className="mx-auto"
-          />
+          <AdSpace label="광고 영역 (모바일)" size="mobile-banner" className="mx-auto" />
         </div>
       )}
     </div>
