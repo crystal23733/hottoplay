@@ -12,7 +12,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       <Header />
       <main className="container mx-auto px-4 py-6">
         <div className="mb-6">
-          <AdSpace 
+          {/*<AdSpace 
             label="광고 영역 1" 
             size="leaderboard"
             className="hidden md:block mx-auto" 
@@ -21,7 +21,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             label="광고 영역 (모바일)" 
             size="mobile-banner"
             className="md:hidden mx-auto" 
-          />
+          />*/}
         </div>
         {children}
       </main>
