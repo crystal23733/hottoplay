@@ -6,7 +6,7 @@ import SearchNumbers from '@/components/features/SearchNumbers';
 import { MainLayout } from '@/components/features/MainLayout/MainLayout';
 import HeroSection from '@/components/organisms/HeroSection/HeroSection';
 import Description from '@/components/organisms/Description/Description';
-import { AdLayout } from '@/components/features/AdLayout/AdLayout';
+// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 export default function Home() {
   return (
@@ -40,14 +40,14 @@ export default function Home() {
                 번호 조회
               </TabsTrigger>
             </TabsList>
-            <AdLayout>
-              <TabsContent value="generate" className="mt-2">
-                <GenerateNumbers />
-              </TabsContent>
-              <TabsContent value="search" className="mt-2">
-                <SearchNumbers />
-              </TabsContent>
-            </AdLayout>
+            {/* <AdLayout> */}
+            <TabsContent value="generate" className="mt-2">
+              <GenerateNumbers />
+            </TabsContent>
+            <TabsContent value="search" className="mt-2">
+              <SearchNumbers />
+            </TabsContent>
+            {/* </AdLayout> */}
           </Tabs>
         </div>
       </div>

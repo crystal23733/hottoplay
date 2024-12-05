@@ -1,4 +1,16 @@
 services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
+    env_file:
+      - ./client/.env.production
+    environment:
+      - PORT=${CLIENT_PORT}
+    depends_on:
+      - server
   server:
     build:
       context: ./server
