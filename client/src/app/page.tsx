@@ -6,7 +6,7 @@ import SearchNumbers from '@/components/features/SearchNumbers';
 import { MainLayout } from '@/components/features/MainLayout/MainLayout';
 import HeroSection from '@/components/organisms/HeroSection/HeroSection';
 import Description from '@/components/organisms/Description/Description';
-import { AdLayout } from '@/components/features/AdLayout/AdLayout';
+// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 export default function Home() {
   return (

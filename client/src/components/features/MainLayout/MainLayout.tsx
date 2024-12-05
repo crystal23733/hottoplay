@@ -1,7 +1,7 @@
 import MainLayoutProps from './MainLayout.types';
 import Header from '@/components/molecules/Header/Header';
 import Footer from '@/components/molecules/Footer/Footer';
-import { AdSpace } from '@/components/atoms/AdSpace/AdSpace';
+// import { AdSpace } from '@/components/atoms/AdSpace/AdSpace';
 
 /**
  * 전체 페이지 레이아웃을 구성하는 컴포넌트
