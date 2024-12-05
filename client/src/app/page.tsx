@@ -40,14 +40,14 @@ export default function Home() {
                 번호 조회
               </TabsTrigger>
             </TabsList>
-            <AdLayout>
-              <TabsContent value="generate" className="mt-2">
-                <GenerateNumbers />
-              </TabsContent>
-              <TabsContent value="search" className="mt-2">
-                <SearchNumbers />
-              </TabsContent>
-            </AdLayout>
+            {/* <AdLayout> */}
+            <TabsContent value="generate" className="mt-2">
+              <GenerateNumbers />
+            </TabsContent>
+            <TabsContent value="search" className="mt-2">
+              <SearchNumbers />
+            </TabsContent>
+            {/* </AdLayout> */}
           </Tabs>
         </div>
       </div>
