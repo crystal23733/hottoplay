@@ -11,6 +11,13 @@ export interface PopularNumber {
 }
 
 /**
+ * 빈도수별로 그룹화된 번호들의 타입
+ */
+export interface GroupedNumbers {
+  [frequency: number]: number[];
+}
+
+/**
  * PopularNumbersResult 컴포넌트의 Props 타입 정의
  *
  * @interface PopularNumbersResultProps
