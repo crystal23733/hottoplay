@@ -19,6 +19,9 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
+  alternates: {
+    canonical: env.url.base,
+  },
   title: {
     default: `${hottoplay} - 로또 예상번호 조합기`,
     template: `%s | ${hottoplay}`,
@@ -109,7 +112,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ko">
       <head>
         <GoogleTagManager gtmId={env.analytics.gtmId} />
         <GoogleAnalytics gaId={env.analytics.gaId} />
