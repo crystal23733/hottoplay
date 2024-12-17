@@ -47,7 +47,7 @@ func main() {
 
 	// CORS 설정
 	corsHandler := handlers.CORS(
-		handlers.AllowedOrigins([]string{cfg.ClientURL}),
+		handlers.AllowedOrigins([]string{cfg.ClientURL, cfg.ClientURLWWW}),
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "PATCH"}),
 		handlers.AllowedHeaders([]string{"X-API-KEY", "Content-Type", "Authorization"}),
 		handlers.AllowCredentials(),
