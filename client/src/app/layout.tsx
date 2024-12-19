@@ -85,6 +85,12 @@ export const metadata: Metadata = {
     creator: '@hottoplay',
     site: '@hottoplay',
   },
+  applicationName: hottoplay,
+  appleWebApp: {
+    capable: true,
+    title: hottoplay,
+    statusBarStyle: 'default',
+  },
   robots: {
     index: true,
     follow: true,
