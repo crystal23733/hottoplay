@@ -1,5 +1,5 @@
 import Logo from '@/components/atoms/Logo/Logo';
-import NoticeLink from '../Notice/NoticeLink/NoticeLink';
+import NoticeLink from '@/components/atoms/NoticeButton/NoticeButton';
 
 const Header: React.FC = () => (
   <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
