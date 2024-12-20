@@ -6,11 +6,16 @@ import calculatePagination from '@/utils/calculatePagination';
 import formatDate from '@/utils/formatDate';
 import Pagination from '../../Pagination/Pagination';
 import Loading from '@/components/atoms/Loading/Loading';
+import { useRouter } from 'next/navigation';
 
 const NoticeList = () => {
   const { data, loading, error, currentPage, setCurrentPage } = useNoticeList();
-
+  const router = useRouter();
   const totalPages = data ? calculatePagination(data.total, data.limit) : 0;
+
+  const handleNoticeClick = (noticeId: string) => {
+    router.push(`/notices/${noticeId}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -31,7 +36,11 @@ const NoticeList = () => {
           {/* 공지사항 목록 */}
           <div className="space-y-4">
             {data?.notices.map(notice => (
-              <Card key={notice.id} className="p-6 hover:shadow-md transition-shadow">
+              <Card
+                key={notice.id}
+                className="p-6 hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => handleNoticeClick(notice.id)}
+              >
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-semibold mb-2">{notice.title}</h3>
