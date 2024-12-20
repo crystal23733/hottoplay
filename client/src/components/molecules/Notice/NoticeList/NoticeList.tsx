@@ -39,7 +39,7 @@ const NoticeList = () => {
               <Card
                 key={notice.id}
                 className="p-6 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => handleNoticeClick(notice.id)}
+                onClick={() => handleNoticeClick(notice.timestamp)}
               >
                 <div className="flex justify-between items-start">
                   <div>

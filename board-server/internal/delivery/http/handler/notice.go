@@ -26,6 +26,7 @@ type NoticeResponse struct {
 	CreatedAt time.Time          `json:"created_at"`
 	Title     string             `json:"title"`
 	Author    string             `json:"author"`
+	Timestamp string             `json:"timestamp"`
 }
 
 // NoticeListResponse는 게시글 목록 응답 구조를 정의한다.
@@ -82,6 +83,7 @@ func (h *NoticeHandler) GetNotices(c echo.Context) error {
 			Title:     notice.Title,
 			Author:    author.Name,
 			CreatedAt: notice.CreatedAt,
+			Timestamp: notice.Timestamp,
 		}
 	}
 
@@ -93,4 +95,24 @@ func (h *NoticeHandler) GetNotices(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+// GetNoticeDetail는 공지사항 상세 정보를 조회하는 핸들러이다.
+func (h *NoticeHandler) GetNoticeDetail(c echo.Context) error {
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "잘못된 ID 형식입니다.",
+		})
+	}
+
+	notice, err := h.noticeUsecase.GetNoticeDetail(objectID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "공지사항을 불러오는데 실패했습니다.",
+		})
+	}
+
+	return c.JSON(http.StatusOK, notice)
 }

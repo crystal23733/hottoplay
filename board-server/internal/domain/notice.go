@@ -13,6 +13,7 @@ type Notice struct {
 	Author    primitive.ObjectID `json:"author_id" bson:"author_id"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt time.Time          `json:"updated_at" bson:"updated_at"`
+	Timestamp string             `json:"timestamp" bson:"timestamp"`
 }
 
 // User는 사용자의 도메인 모델을 정의한다.
