@@ -6,5 +6,5 @@ import { NoticeListResponse } from '../notice.types';
  * @property {Function} getList - 공지사항 목록 조회
  */
 export default interface INoticeService {
-  getList: (page?: number, limit?: number) => Promise<NoticeListResponse>;
+  getList: (page: number, limit: number) => Promise<NoticeListResponse>;
 }
