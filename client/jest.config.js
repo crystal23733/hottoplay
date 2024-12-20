@@ -26,8 +26,6 @@ const config = {
   moduleNameMapper: {
     // @ 경로 별칭을 src 폴더로 매핑
     '^@/(.*)$': '<rootDir>/src/$1',
-    // 마크다운 에디터를 목 파일로 대체
-    '@uiw/react-md-editor': '<rootDir>/__mocks__/mockMDEditor.ts',
   },
 };
 
