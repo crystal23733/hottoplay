@@ -23,10 +23,14 @@ export default class NoticeService implements INoticeService {
    * @param {number} limit - 페이지당 데이터 수
    * @returns {Promise<NoticeListResponse>} - 공지사항 목록
    */
-  async getList(page?: number, limit?: number): Promise<NoticeListResponse> {
-    return await this.api.request(`${ENDPOINT.API}${ENDPOINT.NOTICES}`, 'GET', {
-      page,
-      limit,
+  async getList(page: number = 1, limit: number = 10): Promise<NoticeListResponse> {
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
     });
+    return await this.api.request(
+      `${ENDPOINT.API}${ENDPOINT.NOTICES}?${queryParams.toString()}`,
+      'GET'
+    );
   }
 }
