@@ -4,81 +4,179 @@ on:
   pull_request:
     branches:
       - "develop"
+    types: [opened, synchronize, reopened]
 
 jobs:
-  build-and-test:
+  client-validation:
     runs-on: ubuntu-latest
-
+    
     steps:
-    - name: Checkout code
+    - name: 코드 체크아웃
       uses: actions/checkout@v4
 
-    - name: Set up Node.js
+    - name: Node.js 설정
       uses: actions/setup-node@v3
       with:
         node-version: '22'
 
-    - name: Create .env file
+    - name: 환경 변수 파일 생성
       run: |
         cd client
         echo "${{ vars.ENV }}" > .env
 
-    - name: Install dependencies (Next.js)
+    - name: 의존성 설치
       run: |
         cd client
         npm ci --legacy-peer-deps
 
-    - name: Build Next.js application
+    - name: 테스트 실행
+      id: test
+      run: |
+        cd client
+        npm test
+
+    - name: Next.js 애플리케이션 빌드
+      id: build
       run: |
         cd client
         npm run build
 
-    - name: Set up Go
+    - name: 실패 시 이슈 생성
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { repo, owner } = context.repo;
+          const failedStep = steps.test.outcome === 'failure' ? '테스트' : '빌드';
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title: `🚨 클라이언트 ${failedStep} 실패 - PR #${context.payload.pull_request.number}`,
+            body: `클라이언트 ${failedStep} 과정에서 오류가 발생했습니다.
+            \n브랜치: ${context.payload.pull_request.head.ref}
+            \n커밋: ${context.sha}
+            \n워크플로우 실행 링크: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`,
+            labels: ['🐛버그']
+          });
+
+  server-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: Go 설정
       uses: actions/setup-go@v4
       with:
         go-version: '1.23'
 
-    - name: Build Go application
+    - name: Go 애플리케이션 빌드
+      id: build
       run: |
         cd server
         go build -v ./...
 
-    - name: Run Go tests
+    - name: Go 테스트 실행
+      id: test
       run: |
         cd server
         go test -v ./...
 
-  auto-merge:
-    needs: build-and-test
+    - name: 실패 시 이슈 생성
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { repo, owner } = context.repo;
+          const failedStep = steps.test.outcome === 'failure' ? '테스트' : '빌드';
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title: `🚨 서버 ${failedStep} 실패 - PR #${context.payload.pull_request.number}`,
+            body: `서버 ${failedStep} 과정에서 오류가 발생했습니다.
+            \n브랜치: ${context.payload.pull_request.head.ref}
+            \n커밋: ${context.sha}
+            \n워크플로우 실행 링크: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`,
+            labels: ['🐛버그']
+          });
+
+  board-server-validation:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && success()
     
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+    - name: 코드 체크아웃
+      uses: actions/checkout@v4
+
+    - name: Go 설정
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+
+    - name: Go 애플리케이션 빌드
+      id: build
+      run: |
+        cd board-server
+        go build -v ./...
+
+    - name: Go 테스트 실행
+      id: test
+      run: |
+        cd board-server
+        go test -v ./...
+
+    - name: 실패 시 이슈 생성
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { repo, owner } = context.repo;
+          const failedStep = steps.test.outcome === 'failure' ? '테스트' : '빌드';
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title: `🚨 게시판 서버 ${failedStep} 실패 - PR #${context.payload.pull_request.number}`,
+            body: `게시판 서버 ${failedStep} 과정에서 오류가 발생했습니다.
+            \n브랜치: ${context.payload.pull_request.head.ref}
+            \n커밋: ${context.sha}
+            \n워크플로우 실행 링크: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`,
+            labels: ['🐛버그']
+          });
+
+  auto-merge:
+    needs: [client-validation, server-validation, board-server-validation]
+    runs-on: ubuntu-latest
+    if: success()
     
-        - name: Auto Merge PR
-          uses: actions/github-script@v7
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              const PullRequestService = require('./.github/actions/services/PullRequestService');
-              const MergeService = require('./.github/actions/services/MergeService');
+    steps:
+    - name: 코드 체크아웃
+      uses: actions/checkout@v4
     
-              async function run() {
-                const prService = new PullRequestService(github, context);
-                const mergeService = new MergeService(github, context);
-    
-                try {
-                  const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
-                  const validation = prService.validatePullRequest(pullRequest);
-                  await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
-                  
-                  console.log(`PR #${context.payload.pull_request.number} merged successfully`);
-                } catch (error) {
-                  console.error('Merge process error:', error);
-                  core.setFailed(error.message);
-                }
-              }
-    
-              run();
+    - name: PR 자동 병합
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const PullRequestService = require('./.github/actions/services/PullRequestService');
+          const MergeService = require('./.github/actions/services/MergeService');
+
+          async function run() {
+            const prService = new PullRequestService(github, context);
+            const mergeService = new MergeService(github, context);
+
+            try {
+              const { data: pullRequest } = await prService.getPullRequest(context.payload.pull_request.number);
+              const validation = prService.validatePullRequest(pullRequest);
+              await mergeService.mergePullRequest(context.payload.pull_request.number, validation);
+              
+              console.log(`PR #${context.payload.pull_request.number} 병합이 성공적으로 완료되었습니다.`);
+            } catch (error) {
+              console.error('병합 프로세스 오류:', error);
+              core.setFailed(error.message);
+            }
+          }
+
+          run();
