@@ -16,4 +16,5 @@ func InitRoutes(e *echo.Echo, noticeHandler *handler.NoticeHandler) {
 
 	// 공지사항 라우트 설정
 	notices.GET("", noticeHandler.GetNotices)
+	notices.GET("/:timestamp", noticeHandler.GetNoticeDetail)
 }

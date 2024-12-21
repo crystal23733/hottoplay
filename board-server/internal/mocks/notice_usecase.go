@@ -23,3 +23,11 @@ func (m *NoticeUsecase) GetUserByID(id primitive.ObjectID) (*domain.User, error)
 	}
 	return args.Get(0).(*domain.User), args.Error(1)
 }
+
+func (m *NoticeUsecase) GetNoticeDetail(timestamp string) (*domain.Notice, error) {
+	args := m.Called(timestamp)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.Notice), args.Error(1)
+}

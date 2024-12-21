@@ -2,6 +2,7 @@ package handler
 
 import (
 	"board-server/internal/usecase"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,6 +27,7 @@ type NoticeResponse struct {
 	CreatedAt time.Time          `json:"created_at"`
 	Title     string             `json:"title"`
 	Author    string             `json:"author"`
+	Timestamp string             `json:"timestamp"`
 }
 
 // NoticeListResponse는 게시글 목록 응답 구조를 정의한다.
@@ -82,6 +84,7 @@ func (h *NoticeHandler) GetNotices(c echo.Context) error {
 			Title:     notice.Title,
 			Author:    author.Name,
 			CreatedAt: notice.CreatedAt,
+			Timestamp: notice.Timestamp,
 		}
 	}
 
@@ -90,6 +93,53 @@ func (h *NoticeHandler) GetNotices(c echo.Context) error {
 		Total:   total,
 		Page:    page,
 		Limit:   limit,
+	}
+
+	return c.JSON(http.StatusOK, response)
+}
+
+// NoticeDetailResponse는 공지사항 상세 정보를 정의한다.
+type NoticeDetailResponse struct {
+	ID        primitive.ObjectID `json:"id"`
+	CreatedAt time.Time          `json:"created_at"`
+	Title     string             `json:"title"`
+	Author    string             `json:"author"`
+	Content   string             `json:"content"`
+	Timestamp string             `json:"timestamp"`
+}
+
+// GetNoticeDetail는 공지사항 상세 정보를 조회하는 핸들러이다.
+func (h *NoticeHandler) GetNoticeDetail(c echo.Context) error {
+	timestamp := c.Param("timestamp")
+	log.Printf("timestamp: %s", timestamp)
+	if timestamp == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"message": "잘못된 요청입니다.",
+		})
+	}
+
+	notice, err := h.noticeUsecase.GetNoticeDetail(timestamp)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "공지사항을 불러오는데 실패했습니다.",
+		})
+	}
+
+	// 작성자 정보 조회
+	author, err := h.noticeUsecase.GetUserByID(notice.Author)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"message": "작성자 정보를 불러오는데 실패했습니다.",
+		})
+	}
+
+	response := NoticeDetailResponse{
+		ID:        notice.ID,
+		CreatedAt: notice.CreatedAt,
+		Title:     notice.Title,
+		Author:    author.Name,
+		Content:   notice.Content,
+		Timestamp: notice.Timestamp,
 	}
 
 	return c.JSON(http.StatusOK, response)

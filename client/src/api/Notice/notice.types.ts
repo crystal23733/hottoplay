@@ -5,12 +5,14 @@
  * @property {string} title - 공지사항 제목
  * @property {string} author - 공지사항 작성자
  * @property {string} created_at - 공지사항 작성일
+ * @property {string} timestamp - 공지사항 작성일
  */
 export interface NoticeListItem {
   id: string;
   title: string;
   author: string;
   created_at: string;
+  timestamp: string;
 }
 
 /**
