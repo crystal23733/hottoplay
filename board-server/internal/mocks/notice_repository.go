@@ -46,3 +46,12 @@ func (m *NoticeRepository) FindSessionByID(sessionID string) (string, error) {
 	args := m.Called(sessionID)
 	return args.String(0), args.Error(1)
 }
+
+// FindByNoticeID mocks the FindByNoticeID method
+func (m *NoticeRepository) FindByNoticeID(timestamp string) (*domain.Notice, error) {
+	args := m.Called(timestamp)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).(*domain.Notice), args.Error(1)
+}
