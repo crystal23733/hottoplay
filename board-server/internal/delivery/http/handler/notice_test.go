@@ -3,9 +3,11 @@ package handler
 import (
 	"board-server/internal/domain"
 	"board-server/internal/mocks"
+	"board-server/pkg/errors"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
@@ -37,6 +39,7 @@ func TestNoticeHandler_GetNotices(t *testing.T) {
 					Title:     "테스트 공지사항",
 					Author:    primitive.NewObjectID(),
 					CreatedAt: time.Now(),
+					Timestamp: time.Now().Format(time.RFC3339),
 				},
 			},
 			mockTotal:     1,
@@ -84,6 +87,69 @@ func TestNoticeHandler_GetNotices(t *testing.T) {
 				err := json.Unmarshal(rec.Body.Bytes(), &response)
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectedTotal, response.Total)
+			}
+		})
+	}
+}
+
+func TestNoticeHandler_GetNoticeDetail(t *testing.T) {
+	tests := []struct {
+		name         string
+		timestamp    string
+		mockNotice   *domain.Notice
+		mockError    error
+		expectedCode int
+	}{
+		{
+			name:      "정상적인 상세 조회",
+			timestamp: strconv.FormatInt(time.Now().UnixNano(), 10),
+			mockNotice: &domain.Notice{
+				ID:        primitive.NewObjectID(),
+				Title:     "테스트 공지사항",
+				Content:   "테스트 내용",
+				Author:    primitive.NewObjectID(),
+				CreatedAt: time.Now(),
+				Timestamp: strconv.FormatInt(time.Now().UnixNano(), 10),
+			},
+			mockError:    nil,
+			expectedCode: http.StatusOK,
+		},
+		{
+			name:         "존재하지 않는 타임스탬프",
+			timestamp:    "invalid",
+			mockNotice:   nil,
+			mockError:    errors.ErrNotFound,
+			expectedCode: http.StatusInternalServerError,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			mockUseCase := new(mocks.NoticeUsecase)
+			mockUseCase.On("GetNoticeDetail", tt.timestamp).Return(tt.mockNotice, tt.mockError)
+			if tt.mockNotice != nil {
+				mockUseCase.On("GetUserByID", tt.mockNotice.Author).Return(&domain.User{Name: "테스트 유저"}, nil)
+			}
+
+			h := NewNoticeHandler(mockUseCase)
+
+			req := httptest.NewRequest(http.MethodGet, "/notices/"+tt.timestamp, nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			c.SetParamNames("timestamp")
+			c.SetParamValues(tt.timestamp)
+
+			err := h.GetNoticeDetail(c)
+			if tt.expectedCode == http.StatusOK {
+				assert.NoError(t, err)
+				var response NoticeDetailResponse
+				err := json.Unmarshal(rec.Body.Bytes(), &response)
+				assert.NoError(t, err)
+				assert.Equal(t, tt.mockNotice.Title, response.Title)
+				assert.Equal(t, tt.mockNotice.Timestamp, response.Timestamp)
+			} else {
+				assert.Equal(t, tt.expectedCode, rec.Code)
 			}
 		})
 	}

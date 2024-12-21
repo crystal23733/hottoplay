@@ -30,6 +30,7 @@ func TestNoticeRepository_FindAll(t *testing.T) {
 			{Key: "title", Value: "테스트 공지사항"},
 			{Key: "author_id", Value: authorID},
 			{Key: "created_at", Value: now},
+			{Key: "timestamp", Value: now.Format(time.RFC3339)},
 		})
 		killCursors := mtest.CreateCursorResponse(0, "foo.bar", mtest.NextBatch)
 
