@@ -16,6 +16,7 @@ import (
 type NoticeRepository interface {
 	FindUserByID(id primitive.ObjectID) (*domain.User, error)
 	FindAll(page, limit int) ([]*domain.Notice, int64, error)
+	FindByNoticeID(timestamp string) (*domain.Notice, error)
 }
 
 // noticeRepository는 NoticeRepository 인터페이스를 구현한다.
@@ -80,4 +81,21 @@ func (r *noticeRepository) FindAll(page, limit int) ([]*domain.Notice, int64, er
 	}
 
 	return notices, total, nil
+}
+
+// FindByNoticeID는 주어진 ID로 Notice를 조회하고 반환한다.
+func (r *noticeRepository) FindByNoticeID(timestamp string) (*domain.Notice, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var notice domain.Notice
+	err := r.noticeColl.FindOne(ctx, bson.M{"timestamp": timestamp}).Decode(&notice)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.ErrNotFound
+		}
+		return nil, errors.ErrInternalServer
+	}
+
+	return &notice, nil
 }
