@@ -11,6 +11,7 @@ import (
 type NoticeUsecase interface {
 	GetUserByID(userID primitive.ObjectID) (*domain.User, error)
 	GetNotices(page, limit int) ([]*domain.Notice, int64, error)
+	GetNoticeDetail(timestamp string) (*domain.Notice, error)
 }
 
 // noticeUsecase는 NoticeUsecase 인터페이스를 구현한 구체적인 구현체
@@ -49,4 +50,9 @@ func (u *noticeUsecase) GetNotices(page, limit int) ([]*domain.Notice, int64, er
 	}
 
 	return notices, total, nil
+}
+
+// GetNoticeDetail는 공지사항 상세 정보를 조회하는 함수
+func (u *noticeUsecase) GetNoticeDetail(timestamp string) (*domain.Notice, error) {
+	return u.noticeRepo.FindByNoticeID(timestamp)
 }
