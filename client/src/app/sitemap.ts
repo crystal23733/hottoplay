@@ -1,3 +1,4 @@
+import notices from '@/utils/sitemap/notices';
 import { MetadataRoute } from 'next';
 
 /**
@@ -14,7 +15,7 @@ type Route = {
  * 사이트맵 생성
  * @returns {MetadataRoute.Sitemap} - 사이트맵 데이터
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://hottoplay.com';
 
   // 라우트 설정 (새로운 페이지 추가 시 여기에 추가)
@@ -24,29 +25,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
       changeFrequency: 'daily',
     },
-    // 예시: 추후 추가될 수 있는 라우트들
-    // {
-    //   path: '/unique',      // 유니크 번호 생성
-    //   priority: 0.8,
-    //   changeFrequency: 'daily',
-    // },
-    // {
-    //   path: '/custom',      // 커스텀 번호 생성
-    //   priority: 0.8,
-    //   changeFrequency: 'daily',
-    // },
-    // {
-    //   path: '/statistics',  // 통계 페이지
-    //   priority: 0.7,
-    //   changeFrequency: 'weekly',
-    // },
+    {
+      path: '/notices',
+      priority: 0.8,
+      changeFrequency: 'daily',
+    },
   ];
 
-  // 사이트맵 생성
-  return routes.map(route => ({
+  // 기본 사이트맵 생성
+  const staticPaths = routes.map(route => ({
     url: `${baseUrl}${route.path}`,
     lastModified: new Date(),
     changeFrequency: route.changeFrequency,
     priority: route.priority,
   }));
+
+  // 동적 공지사항 경로 추가
+  const noticesPaths = await notices();
+
+  return [...staticPaths, ...noticesPaths];
 }
