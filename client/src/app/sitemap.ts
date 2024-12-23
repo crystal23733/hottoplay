@@ -1,3 +1,4 @@
+import CLIENT_URL from '@/api/url/constants/CLIENT_URL';
 import notices from '@/utils/sitemap/notices';
 import { MetadataRoute } from 'next';
 
@@ -16,7 +17,7 @@ type Route = {
  * @returns {MetadataRoute.Sitemap} - 사이트맵 데이터
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://hottoplay.com';
+  const baseUrl = CLIENT_URL;
 
   // 라우트 설정 (새로운 페이지 추가 시 여기에 추가)
   const routes: Route[] = [
