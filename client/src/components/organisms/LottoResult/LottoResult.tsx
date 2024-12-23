@@ -1,6 +1,6 @@
 import LottoNumber from '@/components/atoms/LottoNumber/LottoNumber';
 import LottoResultProps from './LottoResult.types';
-import CopyButton from '@/components/molecules/CopyButton/CopyButton';
+import CopyButton from '@/components/molecules/Button/CopyButton/CopyButton';
 import useCopyToClipBoard from '@/hooks/CopyButtonHook/useCopyToClipBoard';
 
 /**

@@ -1,0 +1,36 @@
+'use client';
+
+// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
+import { MainLayout } from '@/components/features/MainLayout/MainLayout';
+import NoticeList from '@/components/molecules/Notice/NoticeList/NoticeList';
+import { Button } from '@/ui/Button';
+import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+
+export default function NoticesPage() {
+  const router = useRouter();
+  return (
+    <MainLayout>
+      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 min-h-screen pt-8 pb-12">
+        {/* <AdLayout> */}
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            {/* 뒤로가기 버튼 */}
+            <Button variant="ghost" className="mb-6" onClick={() => router.push('/')}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              돌아가기
+            </Button>
+            {/* 공지사항 제목 */}
+            <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-violet-600 dark:from-blue-400 dark:via-purple-400 dark:to-violet-400">
+              공지사항
+            </h1>
+
+            {/* 공지사항 목록 */}
+            <NoticeList />
+          </div>
+        </div>
+        {/* </AdLayout> */}
+      </div>
+    </MainLayout>
+  );
+}
