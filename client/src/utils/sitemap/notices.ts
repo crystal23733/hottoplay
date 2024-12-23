@@ -4,8 +4,6 @@ import ENDPOINT from '@/api/url/constants/ENDPOINT';
 import { MetadataRoute } from 'next';
 
 export default async (): Promise<MetadataRoute.Sitemap> => {
-  if (process.env.NODE_ENV === 'production') return [];
-
   const noticeService = new NoticeService();
   try {
     const response = await noticeService.getList(1, 100);
