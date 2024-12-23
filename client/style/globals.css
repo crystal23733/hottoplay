@@ -64,3 +64,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r 
+      from-blue-600 via-purple-600 to-violet-600 
+      dark:from-blue-400 dark:via-purple-400 dark:to-violet-400;
+  }
+}
