@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { LodingSpinnerProps } from './LoadingSpinner.types';
 import sizeClasses from './LoadingSpinner.styles';
