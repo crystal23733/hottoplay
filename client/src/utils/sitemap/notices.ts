@@ -1,14 +1,16 @@
 import NoticeService from '@/api/Notice/NoticeService';
+import CLIENT_URL from '@/api/url/constants/CLIENT_URL';
 import ENDPOINT from '@/api/url/constants/ENDPOINT';
-import NOTICE_URL from '@/api/url/constants/noticeUrl';
 import { MetadataRoute } from 'next';
 
 export default async (): Promise<MetadataRoute.Sitemap> => {
+  if (process.env.NODE_ENV === 'production') return [];
+
   const noticeService = new NoticeService();
   try {
     const response = await noticeService.getList(1, 100);
     return response.notices.map(notice => ({
-      url: `${NOTICE_URL + ENDPOINT.API + ENDPOINT.NOTICES}/${notice.timestamp}`,
+      url: `${CLIENT_URL}${ENDPOINT.NOTICES}/${notice.timestamp}`,
       lastModified: new Date(notice.created_at),
       changeFrequency: 'monthly' as const,
       priority: 0.8,
