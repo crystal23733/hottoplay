@@ -1,3 +1,5 @@
+'use client';
+
 import { Card } from '@/ui/Card';
 import ErrorMessageProps from './ErrorMessage.types';
 import { cn } from '@/lib/utils';

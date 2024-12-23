@@ -1,3 +1,5 @@
+'use client';
+
 import Loading from '@/components/atoms/Loading/Loading';
 import NoticeDetail from '@/components/organisms/Notice/NoticeDetail';
 import useNoticeDetail from '@/hooks/Notice/Detail/useNoticeDetail';

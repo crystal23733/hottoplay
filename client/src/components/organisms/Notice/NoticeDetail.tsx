@@ -1,3 +1,5 @@
+'use client';
+
 import BackButton from '@/components/molecules/Button/BackButton/BackButton';
 import NoticeDetailProps from './NoticeDetail.types';
 import { Card } from '@/ui/Card';
