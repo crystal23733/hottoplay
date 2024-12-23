@@ -2,19 +2,21 @@ import FetchApi from '../lib/fetch/FetchApi';
 import ENDPOINT from '../url/constants/ENDPOINT';
 import NOTICE_URL from '../url/constants/noticeUrl';
 import INoticeService from './interface/noticeService';
-import { NoticeListResponse } from './notice.types';
+import { NoticeDetailResponse, NoticeListResponse } from './notice.types';
 
 /**
  * 공지사항 서비스
  */
 export default class NoticeService implements INoticeService {
   private api: FetchApi<NoticeListResponse>;
+  private apiDetail: FetchApi<NoticeDetailResponse>;
 
   /**
    * 생성자
    */
   constructor() {
     this.api = new FetchApi<NoticeListResponse>(NOTICE_URL);
+    this.apiDetail = new FetchApi<NoticeDetailResponse>(NOTICE_URL);
   }
 
   /**
@@ -32,5 +34,9 @@ export default class NoticeService implements INoticeService {
       `${ENDPOINT.API}${ENDPOINT.NOTICES}?${queryParams.toString()}`,
       'GET'
     );
+  }
+
+  async getDetail(timestamp: string): Promise<NoticeDetailResponse> {
+    return await this.apiDetail.request(`${ENDPOINT.API}${ENDPOINT.NOTICES}/${timestamp}`, 'GET');
   }
 }

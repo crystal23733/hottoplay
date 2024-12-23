@@ -29,3 +29,20 @@ export interface NoticeListResponse {
   page: number;
   limit: number;
 }
+
+/**
+ * 공지사항 상세 응답 인터페이스
+ * @interface
+ * @property {string} id - 공지사항 아이디
+ * @property {string} title - 공지사항 제목
+ * @property {string} author - 공지사항 작성자
+ * @property {string} created_at - 공지사항 작성일
+ * @property {string} content - 공지사항 내용
+ */
+export interface NoticeDetailResponse {
+  id: string;
+  title: string;
+  author: string;
+  created_at: string;
+  content: string;
+}
