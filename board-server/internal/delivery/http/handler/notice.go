@@ -58,7 +58,7 @@ func (h *NoticeHandler) GetNotices(c echo.Context) error {
 
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if err != nil {
-		limit = 20
+		limit = 10
 	}
 
 	notices, total, err := h.noticeUsecase.GetNotices(page, limit)

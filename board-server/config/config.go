@@ -9,10 +9,11 @@ import (
 
 // Config은 환경변수 설정을 담은 구조체이다.
 type Config struct {
-	Port       string // 포트 번호
-	DB_URL     string
-	DB_NAME    string
-	Client_URL string
+	Port         string // 포트 번호
+	DB_URL       string
+	DB_NAME      string
+	Client_URL   string
+	ClientURLWWW string
 }
 
 func LoadConfig() (*Config, error) {
@@ -42,9 +43,10 @@ func LoadConfig() (*Config, error) {
 	viper.AutomaticEnv()
 
 	return &Config{
-		Port:       viper.GetString("PORT"),
-		DB_URL:     viper.GetString("DB_URL"),
-		DB_NAME:    viper.GetString("DB_NAME"),
-		Client_URL: viper.GetString("CLIENT_URL"),
+		Port:         viper.GetString("PORT"),
+		DB_URL:       viper.GetString("DB_URL"),
+		DB_NAME:      viper.GetString("DB_NAME"),
+		Client_URL:   viper.GetString("CLIENT_URL"),
+		ClientURLWWW: viper.GetString("CLIENT_URL_WWW"),
 	}, nil
 }
