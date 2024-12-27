@@ -2,6 +2,7 @@ package router
 
 import (
 	"board-server/internal/delivery/http/handler"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
@@ -13,6 +14,11 @@ func InitRoutes(e *echo.Echo, noticeHandler *handler.NoticeHandler) {
 
 	// 공지사항 라우트
 	notices := api.Group("/notices")
+
+	// 헬스체크
+	notices.GET("/health", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
 
 	// 공지사항 라우트 설정
 	notices.GET("", noticeHandler.GetNotices)

@@ -64,9 +64,6 @@ func main() {
 	// 라우터 초기화
 	router.InitRoutes(e, noticeHandler)
 
-	e.GET("/health", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 
 }

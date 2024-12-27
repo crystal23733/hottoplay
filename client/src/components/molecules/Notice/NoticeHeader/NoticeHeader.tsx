@@ -1,3 +1,5 @@
+'use client';
+
 import formatDate from '@/utils/formatDate';
 import NoticeHeaderProps from './NoticeHeader.types';
 
