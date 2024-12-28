@@ -41,7 +41,7 @@ func main() {
 
 	// CORS 설정
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{cfg.Client_URL},
+		AllowOrigins:     []string{cfg.Client_URL, cfg.ClientURLWWW},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Requested-With"},
 		AllowCredentials: true,
@@ -64,9 +64,6 @@ func main() {
 	// 라우터 초기화
 	router.InitRoutes(e, noticeHandler)
 
-	e.GET("/health", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
 
 }

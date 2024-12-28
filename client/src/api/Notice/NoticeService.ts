@@ -31,7 +31,7 @@ export default class NoticeService implements INoticeService {
       limit: limit.toString(),
     });
     return await this.api.request(
-      `${ENDPOINT.API}${ENDPOINT.NOTICES}?${queryParams.toString()}`,
+      `${ENDPOINT.API}${ENDPOINT.NOTICES}${ENDPOINT.LIST}?${queryParams.toString()}`,
       'GET'
     );
   }
