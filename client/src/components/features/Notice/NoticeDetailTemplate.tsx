@@ -31,9 +31,7 @@ const NoticeDetailTemplate = ({ timestamp }: NoticeDetailTemplateProps) => {
     if (!data) {
       return (
         <div className="flex justify-center items-center min-h-[50vh]">
-          <p className="text-muted-foreground">
-            공지사항을 찾을 수 없습니다.
-          </p>
+          <p className="text-muted-foreground">공지사항을 찾을 수 없습니다.</p>
         </div>
       );
     }
