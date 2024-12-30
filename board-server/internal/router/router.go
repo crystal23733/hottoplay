@@ -16,11 +16,11 @@ func InitRoutes(e *echo.Echo, noticeHandler *handler.NoticeHandler) {
 	notices := api.Group("/notices")
 
 	// 헬스체크
-	notices.GET("/health", func(c echo.Context) error {
+	notices.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "OK")
 	})
 
 	// 공지사항 라우트 설정
-	notices.GET("", noticeHandler.GetNotices)
+	notices.GET("/list", noticeHandler.GetNotices)
 	notices.GET("/:timestamp", noticeHandler.GetNoticeDetail)
 }

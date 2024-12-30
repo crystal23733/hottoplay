@@ -41,7 +41,7 @@ func main() {
 
 	// CORS 설정
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{cfg.Client_URL},
+		AllowOrigins:     []string{cfg.Client_URL, cfg.ClientURLWWW},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Requested-With"},
 		AllowCredentials: true,
