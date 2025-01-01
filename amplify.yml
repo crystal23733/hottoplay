@@ -16,3 +16,16 @@ applications:
       cache:
         paths:
           - node_modules/**/*
+      # 리다이렉션 규칙 추가
+      customHeaders:
+        - pattern: '**/*'
+          headers:
+            - key: 'Cache-Control'
+              value: 'public, max-age=0, must-revalidate'
+      customRules:
+        - pattern: '/notices/**/*'
+          target: '/notices/[timestamp]/index.html'
+          status: '200'
+        - pattern: '**/*'
+          target: '/index.html'
+          status: '200'
