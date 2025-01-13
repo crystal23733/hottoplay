@@ -12,7 +12,7 @@ const DreamButton = () => {
       onClick={() => router.push('/content/dream')}
       className="text-sm font-medium text-muted-foreground hover:text-primary"
     >
-      꿈 분석
+      행운의 꿈 해몽
     </Button>
   );
 };
