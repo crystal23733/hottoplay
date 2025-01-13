@@ -6,7 +6,7 @@ import BackButton from '@/components/molecules/Button/BackButton/BackButton';
 import { Card } from '@/ui/Card';
 import { Search } from 'lucide-react';
 import DreamList from '@/components/organisms/Dream/DreamList/DreamList';
-import { dreamData } from './dreamData';
+import { dreamData } from '../../../data/dreams';
 import { Input } from '@/ui/input';
 
 const DreamTemplate = () => {
