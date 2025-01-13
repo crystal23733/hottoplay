@@ -15,7 +15,7 @@ const DreamTemplate = () => {
             <BackButton>홈으로</BackButton>
 
             <h1 className="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-violet-600">
-              꿈 해몽
+              행운의 꿈 해몽
             </h1>
 
             <DreamContent />

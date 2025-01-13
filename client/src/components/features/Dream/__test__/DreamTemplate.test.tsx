@@ -22,7 +22,7 @@ jest.mock('@/components/molecules/Button/BackButton/BackButton', () => {
 describe('DreamTemplate', () => {
   it('제목이 올바르게 렌더링되어야 합니다', () => {
     render(<DreamTemplate />);
-    expect(screen.getByText('꿈 해몽')).toBeInTheDocument();
+    expect(screen.getByText('행운의 꿈 해몽')).toBeInTheDocument();
   });
 
   it('뒤로가기 버튼이 표시되어야 합니다', () => {
