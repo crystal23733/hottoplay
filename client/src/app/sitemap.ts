@@ -31,6 +31,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       changeFrequency: 'daily',
     },
+    {
+      path: '/content/dream',
+      priority: 0.8,
+      changeFrequency: 'daily',
+    },
   ];
 
   // 기본 사이트맵 생성

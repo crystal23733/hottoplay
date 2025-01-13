@@ -8,7 +8,7 @@ export default async (): Promise<MetadataRoute.Sitemap> => {
   try {
     const response = await noticeService.getList(1, 100);
     return response.notices.map(notice => ({
-      url: `${CLIENT_URL}${ENDPOINT.NOTICES}/${notice.timestamp}`,
+      url: `${CLIENT_URL}${ENDPOINT.NOTICES}?nid=${notice.timestamp}`,
       lastModified: new Date(notice.created_at),
       changeFrequency: 'monthly' as const,
       priority: 0.8,

@@ -10,7 +10,7 @@ const NoticeDetail = ({ notice }: NoticeDetailProps) => {
   return (
     <div className="container mx-auto px-4 relative">
       <div className="max-w-4xl mx-auto">
-        <BackButton />
+        <BackButton>목록으로</BackButton>
         <Card className="p-4 md:p-8 shadow-lg hover:shadow-xl transition-shadow duration-200">
           <NoticeHeader title={notice.title} author={notice.author} createdAt={notice.created_at} />
           <div className="relative">
