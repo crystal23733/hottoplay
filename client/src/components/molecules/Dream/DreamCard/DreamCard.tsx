@@ -15,6 +15,7 @@ const DreamCard: React.FC<DreamCardProps> = ({ keyword, interpretation, type, im
             src={image}
             alt={keyword}
             fill
+            priority={image.includes('SD_gold_pig')}
             className="object-cover"
             sizes="(max-width:768px) 128px, 128px"
           />
