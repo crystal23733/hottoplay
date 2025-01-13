@@ -3,7 +3,7 @@ import { pigDreams } from './pigDreams';
 import { celebrityDreams } from './celebrityDreams';
 import { politicianDreams } from './politicianDreams';
 import { snakeDreams } from './snakeDreams';
-import { toothDreams } from './tooth';
+import { toothDreams } from './toothDreams';
 
 export const dreamData: DreamData[] = [
   ...pigDreams,
@@ -14,4 +14,4 @@ export const dreamData: DreamData[] = [
 ];
 
 // 개별 export도 제공
-export { pigDreams, celebrityDreams };
+export { pigDreams, celebrityDreams, politicianDreams, snakeDreams, toothDreams };
