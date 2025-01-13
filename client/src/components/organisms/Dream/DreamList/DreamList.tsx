@@ -16,6 +16,7 @@ const DreamList: React.FC<DreamListProps> = ({ dreams, searchTerm }) => {
           keyword={dream.keyword}
           interpretation={dream.interpretation}
           type={dream.type}
+          image={dream.image}
         />
       ))}
     </div>
