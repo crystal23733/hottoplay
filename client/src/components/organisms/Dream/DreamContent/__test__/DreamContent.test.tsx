@@ -1,39 +1,53 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DreamContent from '../DreamContent';
 
+// Pagination 컴포넌트 모킹
+jest.mock('@/components/molecules/Pagination/Pagination', () => {
+  return function MockPagination({ currentPage }: { currentPage: number }) {
+    return (
+      <div data-testid="pagination" data-current-page={currentPage}>
+        <button>이전</button>
+        <span>{currentPage}</span>
+        <button>다음</button>
+      </div>
+    );
+  };
+});
+
 // dreamData 모킹
 jest.mock('@/data/dreams', () => ({
-  dreamData: [
-    {
-      keyword: '돼지',
-      interpretation: '재물운을 상징합니다',
-      type: 'good',
-      image: '/images/dreams/pig.jpg',
-    },
-    {
-      keyword: '뱀',
-      interpretation: '변화의 징조입니다',
-      type: 'bad',
-      image: '/images/dreams/snake.jpg',
-    },
-  ],
+  dreamData: Array.from({ length: 15 }, (_, i) => ({
+    keyword: `꿈${i + 1}`,
+    interpretation: `해몽${i + 1}`,
+    type: i % 2 === 0 ? 'good' : 'bad',
+    image: `/images/dreams/dream${i + 1}.jpg`,
+  })),
 }));
 
 describe('DreamContent', () => {
-  it('검색 기능이 올바르게 동작해야 합니다', () => {
+  it('검색 시 페이지가 1페이지로 리셋되어야 합니다', () => {
     render(<DreamContent />);
-    const input = screen.getByPlaceholderText(/꿈 키워드를 입력하세요/);
 
-    fireEvent.change(input, { target: { value: '돼지' } });
+    // 검색 수행
+    const searchInput = screen.getByPlaceholderText(/꿈 키워드를 입력하세요/);
+    fireEvent.change(searchInput, { target: { value: '꿈1' } });
 
-    expect(screen.getByText('돼지')).toBeInTheDocument();
-    expect(screen.queryByText('뱀')).not.toBeInTheDocument();
+    // 페이지네이션이 1페이지를 가리키는지 확인
+    expect(screen.getByTestId('pagination')).toHaveAttribute('data-current-page', '1');
   });
 
-  it('초기에 모든 꿈이 표시되어야 합니다', () => {
+  it('검색어를 지우면 모든 컨텐츠가 다시 표시되어야 합니다', () => {
     render(<DreamContent />);
+    const searchInput = screen.getByPlaceholderText(/꿈 키워드를 입력하세요/);
 
-    expect(screen.getByText('돼지')).toBeInTheDocument();
-    expect(screen.getByText('뱀')).toBeInTheDocument();
+    // 검색어 입력
+    fireEvent.change(searchInput, { target: { value: '꿈1' } });
+    expect(screen.getByText('꿈1')).toBeInTheDocument();
+    expect(screen.queryByText('꿈2')).not.toBeInTheDocument();
+
+    // 검색어 지우기
+    fireEvent.change(searchInput, { target: { value: '' } });
+    expect(screen.getByText('꿈1')).toBeInTheDocument();
+    expect(screen.getByText('꿈2')).toBeInTheDocument();
   });
 });
