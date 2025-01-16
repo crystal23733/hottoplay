@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/Tabs';
 import GenerateNumbers from '@/components/features/GenerateNumbers/GenerateNumbers';
 import SearchNumbers from '@/components/features/SearchNumbers';
-// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
+import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 /**
  * 번호 생성과 번호 조회 탭 컴포넌트
@@ -24,14 +24,14 @@ const TabContent: React.FC = () => {
           번호 조회
         </TabsTrigger>
       </TabsList>
-      {/* <AdLayout> */}
-      <TabsContent value="generate" className="mt-2">
-        <GenerateNumbers />
-      </TabsContent>
-      <TabsContent value="search" className="mt-2">
-        <SearchNumbers />
-      </TabsContent>
-      {/* </AdLayout> */}
+      <AdLayout>
+        <TabsContent value="generate" className="mt-2">
+          <GenerateNumbers />
+        </TabsContent>
+        <TabsContent value="search" className="mt-2">
+          <SearchNumbers />
+        </TabsContent>
+      </AdLayout>
     </Tabs>
   );
 };

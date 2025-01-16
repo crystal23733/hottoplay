@@ -2,8 +2,6 @@
  * 광고 공간 컴포넌트의 Props 타입 정의
  */
 export interface AdSpaceProps {
-  /** 광고 영역 식별 라벨 */
-  label: string;
   /** 광고 공간의 크기 */
   size?: 'leaderboard' | 'large-rectangle' | 'medium-rectangle' | 'mobile-banner' | 'skyscraper';
   /** 추가 스타일링을 위한 클래스명 */
