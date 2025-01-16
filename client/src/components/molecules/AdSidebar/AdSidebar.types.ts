@@ -4,6 +4,6 @@
 export default interface AdSidebarProps {
   /** 사이드바 위치 */
   position: 'left' | 'right';
-  /** 시작 광고 번호 */
-  startAdNumber: number;
+  /** 광고 번호 */
+  adNumber: number;
 }
