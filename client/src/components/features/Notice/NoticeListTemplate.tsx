@@ -5,7 +5,6 @@ import { MainLayout } from '../MainLayout/MainLayout';
 import { ArrowLeft } from 'lucide-react';
 import NoticeList from '@/components/molecules/Notice/NoticeList/NoticeList';
 import { useRouter } from 'next/navigation';
-// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 const NoticeListTemplate = () => {
   const router = useRouter();
@@ -13,7 +12,6 @@ const NoticeListTemplate = () => {
   return (
     <MainLayout>
       <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 min-h-screen pt-8 pb-12">
-        {/* <AdLayout> */}
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* 뒤로가기 버튼 */}
@@ -30,7 +28,6 @@ const NoticeListTemplate = () => {
             <NoticeList />
           </div>
         </div>
-        {/* </AdLayout> */}
       </div>
     </MainLayout>
   );
