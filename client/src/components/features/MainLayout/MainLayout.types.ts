@@ -3,4 +3,5 @@
  */
 export default interface MainLayoutProps {
   children: React.ReactNode;
+  showAd?: boolean;
 }
