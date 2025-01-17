@@ -7,3 +7,5 @@ export const CoupangAd: React.FC<CoupangAdProps> = ({ size = 'rectangle', classN
     </div>
   );
 };
+
+export default CoupangAd;
