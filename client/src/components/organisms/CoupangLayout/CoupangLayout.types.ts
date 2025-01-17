@@ -4,4 +4,5 @@
 export default interface CoupangLayoutProps {
   children: React.ReactNode;
   showMobileAd?: boolean;
+  showSidebar?: boolean;
 }
