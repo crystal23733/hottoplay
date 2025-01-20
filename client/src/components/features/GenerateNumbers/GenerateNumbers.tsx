@@ -49,6 +49,8 @@ export default function GenerateNumbers() {
               <SelectItem value="unique">유니크 번호 생성</SelectItem>
               <SelectItem value="many">많이 나온 번호 생성</SelectItem>
               <SelectItem value="custom">커스텀 번호 생성</SelectItem>
+              <SelectItem value="statistics">통계 기반 번호 생성</SelectItem>
+              <SelectItem value="pattern">패턴 기반 번호 생성</SelectItem>
             </SelectContent>
           </Select>
           {generateType && <GenerationMethodInfo type={generateType} />}
