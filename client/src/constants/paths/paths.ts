@@ -6,6 +6,7 @@ const IMAGE_PATHS = {
     PIG: '/images/dreams/SD_gold_pig.png',
     CELEBRITY: '/images/dreams/SD_k_pop.png',
     POLITICIAN: '/images/dreams/SD_Politician.png',
+    DRAGON: '/images/dreams/SD_Dragon.png',
   },
 } as const;
 
