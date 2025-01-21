@@ -9,7 +9,11 @@ import { GenerateType } from '../GenerateNumbers.types';
  * @param {number[]} selectedNumbers - 커스텀 생성 시 선택된 번호들
  * @returns {number[]} 생성된 6개의 로또 번호
  */
-export default async (type: GenerateType, selectedNumbers: number[] = []): Promise<number[]> => {
+export default async (
+  type: GenerateType,
+  selectedNumbers: number[] = [],
+  options?: { statisticsType?: string }
+): Promise<number[]> => {
   const endpoint = process.env.NEXT_PUBLIC_LOTTO_CREATE_ENDPOINT as string;
   switch (type) {
     case 'default':
@@ -47,6 +51,14 @@ export default async (type: GenerateType, selectedNumbers: number[] = []): Promi
       };
       const manyNumber = await fetchUniqueNumber(endpoint, many);
       return manyNumber.numbers;
+
+    case 'statistics':
+      const statistics = {
+        type: 'statistics',
+        statisticsType: options?.statisticsType || 'hot',
+      };
+      const statisticsNumber = await fetchUniqueNumber(endpoint, statistics);
+      return statisticsNumber.numbers;
 
     default:
       return [];

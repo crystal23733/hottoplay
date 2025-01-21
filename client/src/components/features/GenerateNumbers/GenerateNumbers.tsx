@@ -32,7 +32,9 @@ export default function GenerateNumbers() {
   const [patternType, setPatternType] = useState<PatternType>('sequential');
 
   const handleGenerate = async () => {
-    const numbers = await generateLottoNumbers(generateType, selectedNumbers);
+    const numbers = await generateLottoNumbers(generateType, selectedNumbers, {
+      statisticsType: statisticsType,
+    });
     if (numbers.length === 6) {
       setGeneratedNumbers({
         numbers,
