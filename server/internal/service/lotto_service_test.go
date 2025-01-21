@@ -21,6 +21,8 @@ func (m *mockS3Client) LoadLottoData(ctx context.Context) ([]models.LottoData, e
 func TestLottoService(t *testing.T) {
 	// 테스트 데이터 준비
 	testData := []models.LottoData{
+		{DrwNo: 1, DrwtNo1: 1, DrwtNo2: 2, DrwtNo3: 3, DrwtNo4: 4, DrwtNo5: 5, DrwtNo6: 6},
+		{DrwNo: 2, DrwtNo1: 7, DrwtNo2: 8, DrwtNo3: 9, DrwtNo4: 10, DrwtNo5: 11, DrwtNo6: 12},
 		{
 			DrwNo:   1,
 			DrwtNo1: 1, DrwtNo2: 2, DrwtNo3: 3,
@@ -75,6 +77,58 @@ func TestLottoService(t *testing.T) {
 		// 정렬되어 있는지 확인
 		if !sort.IntsAreSorted(numbers) {
 			t.Error("Generated numbers are not sorted")
+		}
+	})
+
+	t.Run("GenerateStatisticsBasedNumbers", func(t *testing.T) {
+		testCases := []struct {
+			name           string
+			statisticsType string
+			wantLen        int
+		}{
+			{"Hot Numbers", "hot", 6},
+			{"Cold Numbers", "cold", 6},
+			{"Balanced Numbers", "balanced", 6},
+			{"Weighted Numbers", "weighted", 6},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				numbers, err := service.GenerateStatisticsBasedNumbers(tc.statisticsType)
+				if err != nil {
+					t.Errorf("GenerateStatisticsBasedNumbers(%s) error = %v", tc.statisticsType, err)
+				}
+
+				// 길이 체크
+				if len(numbers) != tc.wantLen {
+					t.Errorf("GenerateStatisticsBasedNumbers(%s) returned %d numbers, want %d",
+						tc.statisticsType, len(numbers), tc.wantLen)
+				}
+
+				// 정렬 체크
+				if !sort.IntsAreSorted(numbers) {
+					t.Errorf("GenerateStatisticsBasedNumbers(%s) returned unsorted numbers",
+						tc.statisticsType)
+				}
+
+				// 범위 체크 (1-45)
+				for _, num := range numbers {
+					if num < 1 || num > 45 {
+						t.Errorf("GenerateStatisticsBasedNumbers(%s) returned invalid number: %d",
+							tc.statisticsType, num)
+					}
+				}
+
+				// 중복 체크
+				seen := make(map[int]bool)
+				for _, num := range numbers {
+					if seen[num] {
+						t.Errorf("GenerateStatisticsBasedNumbers(%s) returned duplicate number: %d",
+							tc.statisticsType, num)
+					}
+					seen[num] = true
+				}
+			})
 		}
 	})
 
