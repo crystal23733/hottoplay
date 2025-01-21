@@ -1,4 +1,4 @@
-export type StatisticsType = 'hot' | 'cold' | 'bonus' | 'weighted';
+export type StatisticsType = 'hot' | 'cold' | 'balanced' | 'weighted';
 
 /**
  * 통계 기반 번호 생성 옵션 컴포넌트 속성

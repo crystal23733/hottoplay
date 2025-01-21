@@ -13,19 +13,19 @@ const StatisticsOptions: React.FC<StatisticsOptionsProps> = ({ value, onChange }
     <RadioGroup value={value} onValueChange={onChange as (value: string) => void}>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="hot" id="hot" />
-        <Label htmlFor="hot">핫 넘버 (등장 빈도가 높음)</Label>
+        <Label htmlFor="hot">핫 넘버 (상위 20% + 중간 50% 조합)</Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="cold" id="cold" />
-        <Label htmlFor="cold">콜드 넘버 (등장 빈도가 낮음)</Label>
+        <Label htmlFor="cold">콜드 넘버 (최근 50회차 기준 저빈도)</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="bonus" id="bonus" />
-        <Label htmlFor="bonus">보너스 넘버 (보너스 번호 기반)</Label>
+        <RadioGroupItem value="balanced" id="balanced" />
+        <Label htmlFor="balanced">밸런스 (구간별 균등 분배)</Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="weighted" id="weighted" />
-        <Label htmlFor="weighted">가중치 기반</Label>
+        <Label htmlFor="weighted">가중치 기반 (전체 빈도 반영)</Label>
       </div>
     </RadioGroup>
   );
