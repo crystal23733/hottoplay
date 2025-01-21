@@ -20,7 +20,8 @@ type LottoData struct {
 
 // LottoRequest는 로또 번호 생성 요청의 구조를 정의합니다.
 type LottoRequest struct {
-	Type string `json:"type"` // 번호 생성 타입 (default, unique, many, custom)
+	Type           string `json:"type"`           // 번호 생성 타입 (default, unique, many, custom)\
+	StatisticsType string `json:"statisticsType"` // 통계 기반 생성시 사용할 타입 (hot, cold, balanced, weighted)
 }
 
 // LottoResponse는 로또 번호 생성 응답의 구조를 정의합니다.
