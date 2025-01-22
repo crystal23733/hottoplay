@@ -3,6 +3,7 @@ package handler_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"server/internal/api/handler"
@@ -41,6 +42,21 @@ func (m *MockLottoService) GetPopularWatch(popular string) ([]*models.PopularRes
 		{Numbers: 1, Freq: 50},
 		{Numbers: 2, Freq: 40},
 	}, nil
+}
+
+func (m *MockLottoService) GenerateStatisticsBasedNumbers(statisticsType string) ([]int, error) {
+	switch statisticsType {
+	case "hot":
+		return []int{1, 2, 3, 4, 5, 6}, nil
+	case "cold":
+		return []int{7, 8, 9, 10, 11, 12}, nil
+	case "balanced":
+		return []int{13, 14, 15, 16, 17, 18}, nil
+	case "weighted":
+		return []int{19, 20, 21, 22, 23, 24}, nil
+	default:
+		return nil, fmt.Errorf("지원하지 않는 통계 타입입니다: %s", statisticsType)
+	}
 }
 
 func TestLottoHandler(t *testing.T) {
@@ -111,5 +127,52 @@ func TestLottoHandler(t *testing.T) {
 		assert.Equal(t, 2, len(resp))
 		assert.Equal(t, 1, resp[0].Numbers)
 		assert.Equal(t, 50, resp[0].Freq)
+	})
+
+	t.Run("GenerateNumbers - Statistics Based", func(t *testing.T) {
+		testCases := []struct {
+			name         string
+			requestBody  string
+			expectedCode int
+			expectedNums []int
+		}{
+			{
+				name:         "Hot Numbers",
+				requestBody:  `{"type": "statistics", "statisticsType": "hot"}`,
+				expectedCode: http.StatusOK,
+				expectedNums: []int{1, 2, 3, 4, 5, 6},
+			},
+			{
+				name:         "Cold Numbers",
+				requestBody:  `{"type": "statistics", "statisticsType": "cold"}`,
+				expectedCode: http.StatusOK,
+				expectedNums: []int{7, 8, 9, 10, 11, 12},
+			},
+			{
+				name:         "Invalid Statistics Type",
+				requestBody:  `{"type": "statistics", "statisticsType": "invalid"}`,
+				expectedCode: http.StatusBadRequest,
+				expectedNums: nil,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				req := httptest.NewRequest(http.MethodPost, "/lotto/numbers",
+					bytes.NewBufferString(tc.requestBody))
+				req.Header.Set("Content-Type", "application/json")
+				rec := httptest.NewRecorder()
+
+				lottoHandler.GenerateNumbers(rec, req)
+
+				assert.Equal(t, tc.expectedCode, rec.Code)
+				if tc.expectedNums != nil {
+					var resp models.LottoResponse
+					err := json.NewDecoder(rec.Body).Decode(&resp)
+					assert.NoError(t, err)
+					assert.Equal(t, tc.expectedNums, resp.Numbers)
+				}
+			})
+		}
 	})
 }

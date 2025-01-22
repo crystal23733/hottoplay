@@ -7,7 +7,7 @@
  * @property {'many'} many - 많이 나온 번호 기반 생성
  * @property {'custom'} custom - 사용자 지정 번호 기반 생성
  */
-export type GenerateType = 'default' | 'unique' | 'many' | 'custom';
+export type GenerateType = 'default' | 'unique' | 'many' | 'custom' | 'statistics' | 'pattern';
 
 /**
  * 생성된 로또 번호 세트

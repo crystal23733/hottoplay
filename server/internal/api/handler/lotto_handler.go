@@ -38,6 +38,17 @@ func (h *LottoHandler) GenerateNumbers(w http.ResponseWriter, r *http.Request) {
 		numbers, err = h.service.GenerateUniqueNumbers()
 	case "many":
 		numbers = h.service.GeneratePopularBasedNumbers()
+	case "statistics":
+		if req.StatisticsType == "" {
+			http.Error(w, "통계 타입이 지정되지 않았습니다", http.StatusBadRequest)
+			return
+		}
+		validTypes := map[string]bool{"hot": true, "cold": true, "balanced": true, "weighted": true}
+		if !validTypes[req.StatisticsType] {
+			http.Error(w, "지원하지 않는 통계 타입입니다", http.StatusBadRequest)
+			return
+		}
+		numbers, err = h.service.GenerateStatisticsBasedNumbers(req.StatisticsType)
 	default:
 		http.Error(w, "지원하지 않는 생성 타입입니다", http.StatusBadRequest)
 		return

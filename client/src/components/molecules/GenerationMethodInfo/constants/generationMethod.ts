@@ -20,4 +20,12 @@ export default {
     title: '커스텀 번호 생성',
     description: '선택하신 번호들을 포함하여 나머지 번호를 무작위로 생성합니다.',
   },
+  statistics: {
+    title: '통계 기반 번호 생성',
+    description: '당첨 통계를 기반으로 확률이 높은 번호를 생성합니다.',
+  },
+  pattern: {
+    title: '패턴 기반 번호 생성',
+    description: '특정 패턴(연속번호, 홀짝비율 등)을 기반으로 생성합니다.',
+  },
 } as const;

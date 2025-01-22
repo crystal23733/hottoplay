@@ -42,6 +42,10 @@ func (m *MockLottoService) GetPopularWatch(popular string) ([]*models.PopularRes
 	}, nil
 }
 
+func (m *MockLottoService) GenerateStatisticsBasedNumbers(statisticsType string) ([]int, error) {
+	return []int{1, 2, 3, 4, 5, 6}, nil
+}
+
 func TestRouter(t *testing.T) {
 	mockService := &MockLottoService{}
 	lottoHandler := handler.NewLottoHandler(mockService)
@@ -79,5 +83,18 @@ func TestRouter(t *testing.T) {
 		r.ServeHTTP(rec, req)
 
 		assert.Equal(t, http.StatusNotFound, rec.Code)
+	})
+
+	t.Run("Valid POST /api/v1/lotto/numbers - Statistics", func(t *testing.T) {
+		reqBody := `{"type": "statistics", "statisticsType": "hot"}`
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/lotto/numbers",
+			bytes.NewBufferString(reqBody))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-API-Key", apiKey)
+		rec := httptest.NewRecorder()
+
+		r.ServeHTTP(rec, req)
+
+		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 }

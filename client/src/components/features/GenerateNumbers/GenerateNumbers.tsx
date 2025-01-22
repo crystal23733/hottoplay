@@ -9,6 +9,10 @@ import LottoResult from '@/components/organisms/LottoResult/LottoResult';
 import generateLottoNumbers from './utils/generateLottoNumbers';
 import { GeneratedNumberSet, GenerateType } from './GenerateNumbers.types';
 import GenerationMethodInfo from '@/components/molecules/GenerationMethodInfo/GenerationMethodInfo';
+import StatisticsOptions from '@/components/molecules/StatisticsOptions/StatisticsOptions';
+import { StatisticsType } from '@/components/molecules/StatisticsOptions/StatisticsOptions.types';
+import { PatternType } from '@/components/molecules/PatternOptions/PatternOptions.types';
+import PatternOptions from '@/components/molecules/PatternOptions/PatternOptions';
 
 /**
  * 로또 번호 생성 기능을 제공하는 템플릿 컴포넌트
@@ -24,9 +28,14 @@ export default function GenerateNumbers() {
   const [generateType, setGenerateType] = useState<GenerateType>('default');
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const [generatedNumbers, setGeneratedNumbers] = useState<GeneratedNumberSet | null>(null);
+  const [statisticsType, setStatisticsType] = useState<StatisticsType>('hot');
+  const [patternType, setPatternType] = useState<PatternType>('sequential');
 
   const handleGenerate = async () => {
-    const numbers = await generateLottoNumbers(generateType, selectedNumbers);
+    const numbers = await generateLottoNumbers(generateType, selectedNumbers, {
+      statisticsType: statisticsType,
+      patternType: patternType,
+    });
     if (numbers.length === 6) {
       setGeneratedNumbers({
         numbers,
@@ -49,6 +58,8 @@ export default function GenerateNumbers() {
               <SelectItem value="unique">유니크 번호 생성</SelectItem>
               <SelectItem value="many">많이 나온 번호 생성</SelectItem>
               <SelectItem value="custom">커스텀 번호 생성</SelectItem>
+              <SelectItem value="statistics">통계 기반 번호 생성</SelectItem>
+              <SelectItem value="pattern">패턴 기반 번호 생성</SelectItem>
             </SelectContent>
           </Select>
           {generateType && <GenerationMethodInfo type={generateType} />}
@@ -67,6 +78,14 @@ export default function GenerateNumbers() {
               }}
               maxSelection={6}
             />
+          )}
+
+          {generateType === 'statistics' && (
+            <StatisticsOptions value={statisticsType} onChange={setStatisticsType} />
+          )}
+
+          {generateType === 'pattern' && (
+            <PatternOptions value={patternType} onChange={setPatternType} />
           )}
 
           <Button
