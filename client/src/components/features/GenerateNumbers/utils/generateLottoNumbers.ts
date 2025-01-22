@@ -1,5 +1,10 @@
 import fetchUniqueNumber from '@/api/uniqueNumber/fetchUniqueNumber';
 import { GenerateType } from '../GenerateNumbers.types';
+import {
+  generateDistributedPattern,
+  generateOddEvenPattern,
+  generateSequentialPattern,
+} from './patternGenerators';
 
 /**
  * 선택된 생성 방식에 따라 로또 번호를 생성하는 함수
@@ -12,7 +17,7 @@ import { GenerateType } from '../GenerateNumbers.types';
 export default async (
   type: GenerateType,
   selectedNumbers: number[] = [],
-  options?: { statisticsType?: string }
+  options?: { statisticsType?: string; patternType?: string }
 ): Promise<number[]> => {
   const endpoint = process.env.NEXT_PUBLIC_LOTTO_CREATE_ENDPOINT as string;
   switch (type) {
@@ -59,6 +64,16 @@ export default async (
       };
       const statisticsNumber = await fetchUniqueNumber(endpoint, statistics);
       return statisticsNumber.numbers;
+
+    case 'pattern':
+      switch (options?.patternType) {
+        case 'sequential':
+          return generateSequentialPattern();
+        case 'oddEven':
+          return generateOddEvenPattern();
+        case 'distributed':
+          return generateDistributedPattern();
+      }
 
     default:
       return [];

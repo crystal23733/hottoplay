@@ -34,6 +34,7 @@ export default function GenerateNumbers() {
   const handleGenerate = async () => {
     const numbers = await generateLottoNumbers(generateType, selectedNumbers, {
       statisticsType: statisticsType,
+      patternType: patternType,
     });
     if (numbers.length === 6) {
       setGeneratedNumbers({

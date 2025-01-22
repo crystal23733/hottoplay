@@ -1,4 +1,4 @@
-export type PatternType = 'sequential' | 'oddeven' | 'distributed';
+export type PatternType = 'sequential' | 'oddEven' | 'distributed';
 
 /**
  * 패턴 기반 번호 생성 옵션 컴포넌트 속성

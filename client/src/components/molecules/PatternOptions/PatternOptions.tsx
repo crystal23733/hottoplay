@@ -10,8 +10,8 @@ const PatternOptions: React.FC<PatternOptionsProps> = ({ value, onChange }) => {
         <Label htmlFor="sequential">연속된 숫자 포함</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="oddeven" id="oddeven" />
-        <Label htmlFor="oddeven">홀짝 비율 조정</Label>
+        <RadioGroupItem value="oddEven" id="oddEven" />
+        <Label htmlFor="oddEven">홀짝 비율 조정</Label>
       </div>
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="distributed" id="distributed" />
