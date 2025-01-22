@@ -1,7 +1,7 @@
 const PATTERN_METHODS = {
   sequential: {
     title: '연속 번호 포함',
-    description: '3개의 연속된 번호를 포함하고, 나머지는 랜덤하게 생성합니다..',
+    description: '3개의 연속된 번호를 포함하고, 나머지는 랜덤하게 생성합니다.',
   },
   oddEven: {
     title: '홀짝 균형 조합',
