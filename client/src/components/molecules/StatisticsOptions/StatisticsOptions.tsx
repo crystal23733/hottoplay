@@ -1,6 +1,5 @@
-import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
-import StatisticsOptionsProps from './StatisticsOptions.types';
-import { Label } from '@/ui/label';
+import StatisticsOptionsProps, { StatisticsType } from './StatisticsOptions.types';
+import STATISTICS_METHODS from './constants/statisticsMethod';
 
 /**
  * 통계 기반 번호 생성 옵션
@@ -8,26 +7,39 @@ import { Label } from '@/ui/label';
  * @param onChange - 옵션 변경 함수
  * @returns
  */
-const StatisticsOptions: React.FC<StatisticsOptionsProps> = ({ value, onChange }) => {
+export const StatisticsOptions: React.FC<StatisticsOptionsProps> = ({ value, onChange }) => {
   return (
-    <RadioGroup value={value} onValueChange={onChange as (value: string) => void}>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="hot" id="hot" />
-        <Label htmlFor="hot">핫 넘버 (상위 20% + 중간 50% 조합)</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="cold" id="cold" />
-        <Label htmlFor="cold">콜드 넘버 (최근 50회차 기준 저빈도)</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="balanced" id="balanced" />
-        <Label htmlFor="balanced">밸런스 (구간별 균등 분배)</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="weighted" id="weighted" />
-        <Label htmlFor="weighted">가중치 기반 (전체 빈도 반영)</Label>
-      </div>
-    </RadioGroup>
+    <div className="space-y-3" role="radiogroup" aria-label="통계 기반 번호 생성 옵션">
+      {Object.entries(STATISTICS_METHODS).map(([key, { title, description }]) => (
+        <div
+          key={key}
+          className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+            value === key
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/50'
+              : 'border-gray-200 hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700'
+          }`}
+          onClick={() => onChange(key as StatisticsType)}
+        >
+          <label className="flex items-start gap-3 cursor-pointer">
+            <div className="flex-shrink-0 mt-1">
+              <input
+                type="radio"
+                name="statistics-option"
+                value={key}
+                checked={value === key}
+                onChange={() => onChange(key as StatisticsType)}
+                className="w-4 h-4 text-blue-500"
+                aria-label={title}
+              />
+            </div>
+            <div className="flex-grow">
+              <h3 className="font-medium text-sm text-gray-900 dark:text-gray-100">{title}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
+            </div>
+          </label>
+        </div>
+      ))}
+    </div>
   );
 };
 
