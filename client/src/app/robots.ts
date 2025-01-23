@@ -9,9 +9,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
-        // 특정 경로 차단이 필요한 경우
-        // disallow: ['/admin/', '/private/']
+        allow: ['/', '/notices', '/content/dream', '/sitemap.xml'],
+        disallow: ['https://api.hottoplay.com/*'],
+        // 크롤러의 과도한 요청 방지
+        crawlDelay: 1,
       },
     ],
     sitemap: 'https://hottoplay.com/sitemap.xml',

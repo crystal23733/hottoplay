@@ -39,6 +39,8 @@ export const metadata: Metadata = {
     '유니크 로또 번호',
     '로또 번호 추천',
     '로또 당첨 통계',
+    'lotto',
+    'hotto',
 
     // 브랜드 키워드
     'hottoplay',
