@@ -36,13 +36,6 @@ const PopularNumbersResult: React.FC<PopularNumbersResultProps> = ({ numbers, ti
       <div
         className="h-[500px] md:h-[1000px] 
         overflow-y-auto 
-        scrollbar-thin 
-        scrollbar-thumb-primary/40 
-        hover:scrollbar-thumb-primary/60 
-        dark:scrollbar-thumb-primary/30 
-        dark:hover:scrollbar-thumb-primary/50
-        scrollbar-track-transparent
-        scrollbar-thumb-rounded-full
         pr-2"
       >
         <div className="space-y-2">
