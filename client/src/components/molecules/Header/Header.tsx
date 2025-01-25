@@ -1,6 +1,7 @@
 import Logo from '@/components/atoms/Logo/Logo';
 import NoticeLink from '@/components/atoms/Button/NoticeButton/NoticeButton';
 import DreamButton from '@/components/atoms/Button/DreamButton/DreamButton';
+import TranslateToggle from '../TranslateToggle/TranslateToggle';
 
 const Header: React.FC = () => (
   <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -10,6 +11,7 @@ const Header: React.FC = () => (
         <div className="flex items-center gap-2">
           <DreamButton />
           <NoticeLink />
+          <TranslateToggle />
         </div>
       </div>
     </nav>
