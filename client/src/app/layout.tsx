@@ -5,6 +5,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
 import hottoplay from '@/constants/hottoplay';
+import { Providers } from './providers';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -126,8 +127,10 @@ export default function RootLayout({
         <GoogleAnalytics gaId={env.analytics.gaId} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
