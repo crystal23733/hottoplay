@@ -1,9 +1,9 @@
 'use client';
 
-import { MainLayout } from '@/components/features/MainLayout/MainLayout';
-import HomeIntro from '@/components/features/HomeIntro/HomeIntro';
-import TabContent from '@/components/features/TabContent/TabContent';
-import NoticeBanner from '@/components/molecules/Notice/NoticeBanner/NoticeBanner';
+import { MainLayout } from '@/lotto/components/features/MainLayout/MainLayout';
+import HomeIntro from '@/lotto/components/features/HomeIntro/HomeIntro';
+import TabContent from '@/lotto/components/features/TabContent/TabContent';
+import NoticeBanner from '@/lotto/components/molecules/Notice/NoticeBanner/NoticeBanner';
 
 export default function Home() {
   return (

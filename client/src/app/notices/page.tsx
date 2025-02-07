@@ -1,8 +1,8 @@
 'use client';
 
-import Loading from '@/components/atoms/Loading/Loading';
-import NoticeDetailTemplate from '@/components/features/Notice/NoticeDetailTemplate';
-import NoticeListTemplate from '@/components/features/Notice/NoticeListTemplate';
+import Loading from '@/lotto/components/atoms/Loading/Loading';
+import NoticeDetailTemplate from '@/lotto/components/features/Notice/NoticeDetailTemplate';
+import NoticeListTemplate from '@/lotto/components/features/Notice/NoticeListTemplate';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 

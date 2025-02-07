@@ -1,6 +1,6 @@
 'use client';
 
-import DreamTemplate from '@/components/features/Dream/DreamTemplate';
+import DreamTemplate from '@/lotto/components/features/Dream/DreamTemplate';
 
 export default function DreamPage() {
   return <DreamTemplate />;

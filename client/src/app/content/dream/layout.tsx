@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import env from '@/config/meta/env';
-import hottoplay from '@/constants/hottoplay';
+import hottoplay from '@/lotto/constants/hottoplay';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),

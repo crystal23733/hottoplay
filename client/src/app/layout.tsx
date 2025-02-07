@@ -4,7 +4,7 @@ import '../../style/globals.css';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
-import hottoplay from '@/constants/hottoplay';
+import hottoplay from '@/lotto/constants/hottoplay';
 import { Providers } from './providers';
 
 const geistSans = localFont({
