@@ -1,21 +1,6 @@
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
-import '../../../style/globals.css';
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
-import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
-
-const geistSans = localFont({
-  src: '../fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
-});
-const geistMono = localFont({
-  src: '../fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
@@ -119,16 +104,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="ko">
-      <head>
-        <GoogleTagManager gtmId={env.analytics.gtmId} />
-        <GoogleAnalytics gaId={env.analytics.gaId} />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  );
+  return <>{children}</>;
 }
