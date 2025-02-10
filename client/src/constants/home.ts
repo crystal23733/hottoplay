@@ -1,3 +1,6 @@
+/**
+ * 게임 목록
+ */
 export const games = [
   {
     title: '한국 로또 6/45',
@@ -19,6 +22,9 @@ export const games = [
   },
 ];
 
+/**
+ * 기능 목록
+ */
 export const features = [
   {
     title: '다양한 생성 방식',
