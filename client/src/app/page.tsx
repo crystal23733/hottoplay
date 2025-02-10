@@ -1,3 +1,5 @@
+import HomeTemplate from '@/components/features/HomeTemplate/Hometemplate';
+
 export default function Home() {
-  return <div>Hello World!</div>
+  return <HomeTemplate />;
 }

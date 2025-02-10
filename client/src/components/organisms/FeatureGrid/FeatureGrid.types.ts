@@ -7,4 +7,3 @@ import FeatureCardProps from '@/components/molecules/FeatureCard/FeatureCard.typ
 export default interface FeatureGridProps {
   features: FeatureCardProps[];
 }
-
