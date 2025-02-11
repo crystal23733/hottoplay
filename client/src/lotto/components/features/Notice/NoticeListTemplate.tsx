@@ -17,7 +17,7 @@ const NoticeListTemplate = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {/* 뒤로가기 버튼 */}
-            <Button variant="ghost" className="mb-6" onClick={() => router.push('/')}>
+            <Button variant="ghost" className="mb-6" onClick={() => router.push('/lotto')}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               돌아가기
             </Button>

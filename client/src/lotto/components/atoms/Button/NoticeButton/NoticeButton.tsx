@@ -8,7 +8,7 @@ const NoticeLink: React.FC = () => {
   return (
     <Button
       variant="ghost"
-      onClick={() => router.push('/notices')}
+      onClick={() => router.push('/lotto/notices')}
       className="text-sm font-medium text-muted-foreground hover:text-primary"
     >
       공지사항

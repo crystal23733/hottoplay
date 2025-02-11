@@ -23,7 +23,7 @@ const NoticeBanner = () => {
 
   return (
     <Link
-      href={`/notices?nid=${latestTimestamp}`}
+      href={`/lotto/notices?nid=${latestTimestamp}`}
       className="bg-gradient-to-r from-indigo-500/10 to-blue-500/10 dark:from-indigo-500/20 dark:to-blue-500/20 
         border border-blue-100 dark:border-blue-800
         shadow-sm

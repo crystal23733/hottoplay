@@ -14,7 +14,7 @@ const NoticeList = () => {
   const totalPages = data ? calculatePagination(data.total, data.limit) : 0;
 
   const handleNoticeClick = (noticeId: string) => {
-    router.push(`/notices?nid=${noticeId}`);
+    router.push(`/lotto/notices?nid=${noticeId}`);
   };
 
   return (

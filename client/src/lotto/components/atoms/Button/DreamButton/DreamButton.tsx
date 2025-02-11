@@ -9,7 +9,7 @@ const DreamButton = () => {
   return (
     <Button
       variant="ghost"
-      onClick={() => router.push('/content/dream')}
+      onClick={() => router.push('/lotto/content/dream')}
       className="text-sm font-medium text-muted-foreground hover:text-primary"
     >
       행운의 꿈 해몽

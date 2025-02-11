@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import DreamList from '../DreamList';
 
 // DreamCard 컴포넌트 모킹
-jest.mock('@/components/molecules/Dream/DreamCard/DreamCard', () => {
+jest.mock('@/lotto/components/molecules/Dream/DreamCard/DreamCard', () => {
   return {
     __esModule: true,
     default: ({ keyword, interpretation }: { keyword: string; interpretation: string }) => (
