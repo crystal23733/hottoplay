@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: ['/', '/notices', '/content/dream', '/sitemap.xml'],
+        allow: ['/', '/lotto', '/lotto/notices', '/lotto/content/dream', '/sitemap.xml'],
         disallow: ['https://api.hottoplay.com/*'],
         // 크롤러의 과도한 요청 방지
         crawlDelay: 1,

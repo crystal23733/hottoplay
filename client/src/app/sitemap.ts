@@ -27,12 +27,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
     },
     {
-      path: '/notices',
+      path: '/lotto',
       priority: 0.8,
       changeFrequency: 'daily',
     },
     {
-      path: '/content/dream',
+      path: '/lotto/notices',
+      priority: 0.8,
+      changeFrequency: 'daily',
+    },
+    {
+      path: '/lotto/content/dream',
       priority: 0.8,
       changeFrequency: 'daily',
     },
