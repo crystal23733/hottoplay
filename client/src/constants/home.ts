@@ -21,21 +21,3 @@ export const games = [
     language: 'English',
   },
 ];
-
-/**
- * 기능 목록
- */
-export const features = [
-  {
-    title: '다양한 생성 방식',
-    description: '여러 가지 번호 생성 전략 중 원하는 방식을 선택할 수 있습니다.',
-  },
-  {
-    title: '무료 서비스',
-    description: '모든 기능을 무료로 이용하실 수 있습니다.',
-  },
-  {
-    title: 'Real-time Updates',
-    description: 'Stay updated with latest lottery results and statistics',
-  },
-];
