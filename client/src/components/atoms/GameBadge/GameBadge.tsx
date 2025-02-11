@@ -1,3 +1,5 @@
+'use client';
+
 import GameBadgeProps from './GameBadge.types';
 
 /**

@@ -1,3 +1,5 @@
+'use client';
+
 import SectionTitle from '@/components/atoms/SectionTitle/SectionTitle';
 import FeatureGrid from '@/components/organisms/FeatureGrid/FeatureGrid';
 import GameGrid from '@/components/organisms/GameGrid/GameGrid';

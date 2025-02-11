@@ -1,3 +1,5 @@
+'use client';
+
 import FeatureCard from '@/components/molecules/FeatureCard/FeatureCard';
 import FeatureGridProps from './FeatureGrid.types';
 

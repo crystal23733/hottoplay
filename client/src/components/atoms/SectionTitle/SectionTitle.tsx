@@ -1,3 +1,5 @@
+'use client';
+
 import SectionTitleProps from './SectionTitle.types';
 
 /**

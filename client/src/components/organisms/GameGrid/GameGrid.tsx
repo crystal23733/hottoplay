@@ -1,3 +1,5 @@
+'use client';
+
 import GameCard from '@/components/molecules/GameCard/GameCard';
 import GameGridProps from './GameGrid.types';
 

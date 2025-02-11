@@ -1,3 +1,5 @@
+'use client';
+
 import FeatureCardProps from './FeatureCard.types';
 
 /**
