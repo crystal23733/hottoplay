@@ -9,12 +9,14 @@ import LanguageButton from '@/components/atoms/Button/LanguageButton/LanguageBut
 import PageHeader from '@/components/molecules/PageHeader/PageHeader';
 import SectionTitle from '@/components/atoms/SectionTitle/SectionTitle';
 import AdBanner from '@/components/atoms/AdBanner/AdBanner';
+import useWindowSize from '@/hooks/HomeTemplate/useWindowSize';
 /**
  * 홈 템플릿
  * @returns {JSX.Element} - 홈 템플릿
  */
 const HomeTemplate = () => {
   const { language, toggleLanguage } = useLanguageToggle();
+  const { width } = useWindowSize();
   const currentFeatures = language === 'en' ? englishFeatures : koreanFeatures;
   const featureTitle = language === 'en' ? 'Features' : '서비스 특징';
 
@@ -56,10 +58,7 @@ const HomeTemplate = () => {
 
         {/* 하단 광고 */}
         <div className="w-full flex justify-center mt-16">
-          <AdBanner
-            size={window.innerWidth < 768 ? 'mobile-banner' : 'leaderboard'}
-            className="mx-auto"
-          />
+          <AdBanner size={width < 768 ? 'mobile-banner' : 'leaderboard'} className="mx-auto" />
         </div>
       </div>
     </div>
