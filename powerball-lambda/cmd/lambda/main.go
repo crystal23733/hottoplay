@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"os"
 	"powerball-lambda/internal/cache"
@@ -9,7 +10,17 @@ import (
 	"powerball-lambda/internal/models"
 	"powerball-lambda/internal/s3client"
 	"time"
+
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
 )
+
+// Response는 API Gateway에 맞춘 응답 구조체입니다.
+type Response struct {
+	StatusCode int               `json:"statusCode"`
+	Headers    map[string]string `json:"headers"`
+	Body       string            `json:"body"`
+}
 
 // GenerateRequest는 번호 생성 요청의 구조를 정의합니다.
 type GenerateRequest struct {
@@ -50,24 +61,67 @@ func init() {
 }
 
 // HandleRequest는 Lambda요청을 처리합니다.
-func HandleRequest(ctx context.Context, request GenerateRequest) (GenerateResponse, error) {
-	// 요청 유효성 검사
-	if err := validateRequest(request); err != nil {
-		return GenerateResponse{Error: err.Error()}, nil
+func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
+	// CORS 헤더 설정
+	headers := map[string]string{
+		"Access-Control-Allow-Origin":      "https://hottoplay.com, https://www.hottoplay.com",
+		"Access-Control-Allow-Methods":     "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
 	}
 
-	// 캐시된 데이터 확인 및 필요시 새로 로드
+	// OPTIONS 요청 처리 (CORS preflight)
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
+	}
+
+	// 요청 본문 파싱
+	var generateRequest GenerateRequest
+	if err := json.Unmarshal([]byte(request.Body), &generateRequest); err != nil {
+		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
+	}
+
+	// 요청 유효성 검사
+	if err := validateRequest(generateRequest); err != nil {
+		return createErrorResponse(headers, err.Error(), 400), nil
+	}
+
+	// 데이터 로드 확인
 	if err := ensureDataLoaded(); err != nil {
-		return GenerateResponse{Error: "데이터 로드 실패: " + err.Error()}, nil
+		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
 
 	// 번호 생성
-	numbers, err := generateNumbers(request)
+	numbers, err := generateNumbers(generateRequest)
 	if err != nil {
-		return GenerateResponse{Error: err.Error()}, nil
+		return createErrorResponse(headers, "번호 생성 실패: "+err.Error(), 500), nil
 	}
 
-	return GenerateResponse{Numbers: numbers}, nil
+	// 응답 생성
+	responseBody, err := json.Marshal(GenerateResponse{Numbers: numbers})
+	if err != nil {
+		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
+	}
+
+	return Response{
+		StatusCode: 200,
+		Headers:    headers,
+		Body:       string(responseBody),
+	}, nil
+}
+
+// createErrorResponse는 에러 응답을 생성합니다.
+func createErrorResponse(headers map[string]string, message string, statusCode int) Response {
+	body, _ := json.Marshal(map[string]string{"error": message})
+	return Response{
+		StatusCode: statusCode,
+		Headers:    headers,
+		Body:       string(body),
+	}
 }
 
 // validateRequest는 요청의 유효성을 검사합니다.
@@ -119,7 +173,7 @@ func generateNumbers(request GenerateRequest) ([]models.GeneratedNumbers, error)
 		var err error
 
 		switch request.Method {
-		case "ramdom":
+		case "random":
 			number = numberGenerator.GenerateRandom()
 		case "hot":
 			number = numberGenerator.GenerateHotNumbers()
@@ -145,4 +199,8 @@ func loadDataFromS3() ([]models.PowerballDraw, error) {
 	}
 
 	return s3client.LoadDataFromS3(s3BucketName, s3ObjectKey)
+}
+
+func main() {
+	lambda.Start(HandleRequest)
 }
