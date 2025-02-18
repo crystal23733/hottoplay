@@ -146,8 +146,51 @@ jobs:
             labels: ['🐛버그']
           });
 
+  powerball-lambda-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 코드 체크아웃
+      uses: actions/checkout@v4
+      
+    - name: Go 설정
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.23'
+
+    - name: Go 애플리케이션 빌드
+      id: build
+      run: |
+        cd powerball-lambda
+        go build -v ./...
+
+    - name: Go 테스트 실행
+      id: test
+      run: |
+        cd powerball-lambda
+        go test -v ./...
+
+    - name: 실패 시 이슈 생성
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const { repo, owner } = context.repo;
+          const failedStep = steps.test.outcome === 'failure' ? '테스트' : '빌드';
+          await github.rest.issues.create({
+            owner,
+            repo,
+            title: `🚨 파워볼 람다 ${failedStep} 실패 - PR #${context.payload.pull_request.number}`,
+            body: `파워볼 람다 ${failedStep} 과정에서 오류가 발생했습니다.
+            \n브랜치: ${context.payload.pull_request.head.ref}
+            \n커밋: ${context.sha}
+            \n워크플로우 실행 링크: ${process.env.GITHUB_SERVER_URL}/${owner}/${repo}/actions/runs/${context.runId}`,
+            labels: ['🐛버그']
+          });
+
   auto-merge:
-    needs: [client-validation, server-validation, board-server-validation]
+    needs: [client-validation, server-validation, board-server-validation, powerball-lambda-validation]
     runs-on: ubuntu-latest
     if: success()
     
