@@ -27,7 +27,7 @@ type Rules struct {
 	WhiteBallRange []int `json:"white_ball_range"`
 
 	// PowerBallRange는 파워볼의 번호 범위를 나타냅니다. [최소값, 최대값]
-	PowerBallRange []int `json:"powerball_range"`
+	PowerBallRange []int `json:"power_ball_range"`
 }
 
 // GeneratedNumbers는 생성된 파워볼 번호 조합을 나타내는 구조체입니다.
