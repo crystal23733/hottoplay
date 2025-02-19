@@ -11,5 +11,5 @@ export default interface PowerBallGeneratorProps {
   onCountChange: (count: number) => void;
   onGenerate: () => void;
   isLoading: boolean;
-  disabled?:boolean;
+  disabled?: boolean;
 }

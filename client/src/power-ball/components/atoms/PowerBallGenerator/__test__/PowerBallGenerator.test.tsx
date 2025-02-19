@@ -4,7 +4,7 @@ import PowerBallGenerator from '../PowerBallGenerator';
 // 아이콘 모킹
 jest.mock('lucide-react', () => ({
   Loader2: () => <div data-testid="loader-icon" />,
-  Info: () => <div data-testid="info-icon" />
+  Info: () => <div data-testid="info-icon" />,
 }));
 
 describe('PowerBallGenerator', () => {
@@ -21,7 +21,9 @@ describe('PowerBallGenerator', () => {
       <PowerBallGenerator
         count={5}
         onCountChange={mockOnCountChange}
-        onGenerate={mockOnGenerate} isLoading={false}      />
+        onGenerate={mockOnGenerate}
+        isLoading={false}
+      />
     );
 
     expect(screen.getByLabelText('Number of Sets')).toHaveValue(5);
@@ -32,7 +34,9 @@ describe('PowerBallGenerator', () => {
       <PowerBallGenerator
         count={5}
         onCountChange={mockOnCountChange}
-        onGenerate={mockOnGenerate} isLoading={false}      />
+        onGenerate={mockOnGenerate}
+        isLoading={false}
+      />
     );
 
     const input = screen.getByLabelText('Number of Sets');
@@ -45,11 +49,13 @@ describe('PowerBallGenerator', () => {
       <PowerBallGenerator
         count={5}
         onCountChange={mockOnCountChange}
-        onGenerate={mockOnGenerate} isLoading={false}      />
+        onGenerate={mockOnGenerate}
+        isLoading={false}
+      />
     );
 
     const input = screen.getByLabelText('Number of Sets');
-    
+
     fireEvent.change(input, { target: { value: '15' } });
     expect(mockOnCountChange).toHaveBeenCalledWith(10);
 
@@ -77,7 +83,9 @@ describe('PowerBallGenerator', () => {
       <PowerBallGenerator
         count={5}
         onCountChange={mockOnCountChange}
-        onGenerate={mockOnGenerate} isLoading={false}      />
+        onGenerate={mockOnGenerate}
+        isLoading={false}
+      />
     );
 
     expect(screen.getByTestId('info-icon')).toBeInTheDocument();

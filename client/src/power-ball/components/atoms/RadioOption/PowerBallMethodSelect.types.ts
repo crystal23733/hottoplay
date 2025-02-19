@@ -1,4 +1,4 @@
-export type PowerBallMethod = "random" | "hot" | "cold" | "unique"
+export type PowerBallMethod = 'random' | 'hot' | 'cold' | 'unique';
 
 /**
  * 파워볼 메서드 정보

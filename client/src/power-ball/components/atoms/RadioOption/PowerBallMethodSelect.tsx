@@ -1,9 +1,9 @@
-import { RadioGroup, RadioGroupItem } from "@/ui/radio-group";
-import PowerBallMethodSelectProps from "./PowerBallMethodSelect.types";
-import { Label } from "@/ui/label";
-import POWERBALL_METHODS from "./constants/powerBallMethod";
-import { Card, CardContent } from "@/ui/Card";
-import { cn } from "@/lib/utils";
+import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
+import PowerBallMethodSelectProps from './PowerBallMethodSelect.types';
+import { Label } from '@/ui/label';
+import POWERBALL_METHODS from './constants/powerBallMethod';
+import { Card, CardContent } from '@/ui/Card';
+import { cn } from '@/lib/utils';
 
 /**
  * 파워볼 메서드 선택 컴포넌트
@@ -12,7 +12,11 @@ import { cn } from "@/lib/utils";
  * @example
  * <PowerBallMethodSelect value={value} onChange={onChange} disabled={disabled} />
  */
-const PowerBallMethodSelect:React.FC<PowerBallMethodSelectProps> = ({value, onChange, disabled = false}) => {
+const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
+  value,
+  onChange,
+  disabled = false,
+}) => {
   return (
     <div className="space-y-4">
       <RadioGroup
@@ -21,12 +25,12 @@ const PowerBallMethodSelect:React.FC<PowerBallMethodSelectProps> = ({value, onCh
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
         disabled={disabled}
       >
-        {POWERBALL_METHODS.map((method) => (
-          <Card 
+        {POWERBALL_METHODS.map(method => (
+          <Card
             key={method.id}
             className={cn(
-              "cursor-pointer transition-all hover:border-primary",
-              value === method.id && "border-primary bg-primary/5"
+              'cursor-pointer transition-all hover:border-primary',
+              value === method.id && 'border-primary bg-primary/5'
             )}
             onClick={() => !disabled && onChange(method.id)}
           >
@@ -40,16 +44,14 @@ const PowerBallMethodSelect:React.FC<PowerBallMethodSelectProps> = ({value, onCh
                       {method.label}
                     </Label>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {method.shortDescription}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{method.shortDescription}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </RadioGroup>
-      
+
       {/* 선택된 방식의 자세한 설명 */}
       <Card className="bg-muted">
         <CardContent className="p-4">
@@ -60,6 +62,6 @@ const PowerBallMethodSelect:React.FC<PowerBallMethodSelectProps> = ({value, onCh
       </Card>
     </div>
   );
-}
+};
 
 export default PowerBallMethodSelect;

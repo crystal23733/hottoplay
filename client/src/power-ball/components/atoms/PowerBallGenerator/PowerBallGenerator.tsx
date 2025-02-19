@@ -1,8 +1,8 @@
-import { Label } from "@/ui/label";
-import PowerBallGeneratorProps from "./PowerBallGenerator.types";
-import { Input } from "@/ui/input";
-import { Button } from "@/ui/Button";
-import { Info, Loader2 } from "lucide-react";
+import { Label } from '@/ui/label';
+import PowerBallGeneratorProps from './PowerBallGenerator.types';
+import { Input } from '@/ui/input';
+import { Button } from '@/ui/Button';
+import { Info, Loader2 } from 'lucide-react';
 
 /**
  * 파워볼 번호 생성기 컴포넌트
@@ -11,20 +11,20 @@ import { Info, Loader2 } from "lucide-react";
  * @example
  * <PowerBallGenerator count={5} onCountChange={() => {}} onGenerate={() => {}} isLoading={false} disabled={false} />
  */
-const PowerBallGenerator:React.FC<PowerBallGeneratorProps> = ({
+const PowerBallGenerator: React.FC<PowerBallGeneratorProps> = ({
   count,
   onCountChange,
   onGenerate,
   isLoading,
   disabled,
 }) => {
-  const handleCountChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+  const handleCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
     if (isNaN(value)) return;
     // 1-5 사이의 값만 허용
     const clampedValue = Math.max(1, Math.min(10, value));
     onCountChange(clampedValue);
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -45,21 +45,22 @@ const PowerBallGenerator:React.FC<PowerBallGeneratorProps> = ({
               disabled={disabled || isLoading}
             />
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Generate up to 5 sets at once
-          </p>
+          <p className="mt-1 text-xs text-muted-foreground">Generate up to 5 sets at once</p>
         </div>
 
-        <Button size="lg" className="w-full md:w-auto md:px-8" onClick={onGenerate} disabled={disabled || isLoading}>
+        <Button
+          size="lg"
+          className="w-full md:w-auto md:px-8"
+          onClick={onGenerate}
+          disabled={disabled || isLoading}
+        >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Generating...
             </>
           ) : (
-            <>
-              Generate Numbers
-            </>
+            <>Generate Numbers</>
           )}
         </Button>
       </div>
@@ -67,13 +68,12 @@ const PowerBallGenerator:React.FC<PowerBallGeneratorProps> = ({
       <div className="flex items-start gap-2 text-sm text-muted-foreground">
         <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
         <p>
-          This is a free number generator for entertainment purposes only. 
-          The numbers are generated based on your selected method. 
-          Good luck with your picks!
+          This is a free number generator for entertainment purposes only. The numbers are generated
+          based on your selected method. Good luck with your picks!
         </p>
       </div>
     </div>
   );
-}
+};
 
 export default PowerBallGenerator;

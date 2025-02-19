@@ -1,8 +1,8 @@
-import { toast } from "@/common/hooks/use-toast";
-import PowerBallSetProps from "./PowerBallSet.types";
-import { Card } from "@/ui/Card";
-import { Copy } from "lucide-react";
-import PowerBallNumber from "../../atoms/PowerBallNumber/PowerBallNumber";
+import { toast } from '@/common/hooks/use-toast';
+import PowerBallSetProps from './PowerBallSet.types';
+import { Card } from '@/ui/Card';
+import { Copy } from 'lucide-react';
+import PowerBallNumber from '../../atoms/PowerBallNumber/PowerBallNumber';
 
 /**
  * 파워볼 번호 세트 컴포넌트
@@ -11,7 +11,7 @@ import PowerBallNumber from "../../atoms/PowerBallNumber/PowerBallNumber";
  * @example
  * <PowerBallSet whiteNumbers={[1, 2, 3, 4, 5]} powerball={10} setNumber={1} />
  */
-const PowerBallSet:React.FC<PowerBallSetProps> = ({
+const PowerBallSet: React.FC<PowerBallSetProps> = ({
   whiteNumbers,
   powerball,
   setNumber,
@@ -19,16 +19,16 @@ const PowerBallSet:React.FC<PowerBallSetProps> = ({
 }) => {
   const handleCopy = async () => {
     try {
-      const numbers = [...whiteNumbers, powerball].join(" - ");
+      const numbers = [...whiteNumbers, powerball].join(' - ');
       await navigator.clipboard.writeText(numbers);
       toast({
-        description: "Numbers copied to clipboard!"
+        description: 'Numbers copied to clipboard!',
       });
     } catch (error) {
       console.error('Clipboard error:', error);
       toast({
-        description: "Failed to copy numbers",
-        variant: "destructive"
+        description: 'Failed to copy numbers',
+        variant: 'destructive',
       });
     }
   };
@@ -36,9 +36,7 @@ const PowerBallSet:React.FC<PowerBallSetProps> = ({
   return (
     <Card className="p-4 animate-fadeIn" style={{ animationDelay: `${animationDelay}ms` }}>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-medium text-muted-foreground">
-          Set #{setNumber}
-        </span>
+        <span className="text-sm font-medium text-muted-foreground">Set #{setNumber}</span>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
@@ -68,6 +66,6 @@ const PowerBallSet:React.FC<PowerBallSetProps> = ({
       </div>
     </Card>
   );
-}  
+};
 
 export default PowerBallSet;

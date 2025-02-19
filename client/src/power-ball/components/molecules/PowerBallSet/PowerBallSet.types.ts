@@ -6,8 +6,8 @@
  * @property animationDelay 애니메이션 지연 시간 (ms)
  */
 export default interface PowerBallSetProps {
-  whiteNumbers:number[];
-  powerball:number;
-  setNumber:number;
-  animationDelay?:number;
+  whiteNumbers: number[];
+  powerball: number;
+  setNumber: number;
+  animationDelay?: number;
 }
