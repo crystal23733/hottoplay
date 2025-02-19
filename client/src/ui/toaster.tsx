@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/lotto/hooks/use-toast';
+import { useToast } from '@/common/hooks/use-toast';
 import {
   Toast,
   ToastClose,

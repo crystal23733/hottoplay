@@ -1,4 +1,4 @@
-import { useToast } from '../use-toast';
+import { useToast } from '../../../common/hooks/use-toast';
 import { TOAST_MESSAGES, TOAST_VARIANTS } from './constants/toast';
 import UseCopyToClipBoardReturn from './useCopyToClipBoard.types';
 
