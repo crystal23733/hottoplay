@@ -1,4 +1,4 @@
-import { toast } from '@/common/hooks/use-toast';
+import { useToast } from '@/common/hooks/use-toast';
 import PowerBallSetProps from './PowerBallSet.types';
 import { Card } from '@/ui/Card';
 import { Copy } from 'lucide-react';
@@ -17,6 +17,8 @@ const PowerBallSet: React.FC<PowerBallSetProps> = ({
   setNumber,
   animationDelay = 0,
 }) => {
+  const { toast } = useToast();
+
   const handleCopy = async () => {
     try {
       const numbers = [...whiteNumbers, powerball].join(' - ');
@@ -34,7 +36,11 @@ const PowerBallSet: React.FC<PowerBallSetProps> = ({
   };
 
   return (
-    <Card className="p-4 animate-fadeIn" style={{ animationDelay: `${animationDelay}ms` }}>
+    <Card
+      className="p-4 animate-fadeIn"
+      style={{ animationDelay: `${animationDelay}ms` }}
+      role="article"
+    >
       <div className="flex items-center justify-between mb-3">
         <span className="text-sm font-medium text-muted-foreground">Set #{setNumber}</span>
         <button
@@ -56,7 +62,7 @@ const PowerBallSet: React.FC<PowerBallSetProps> = ({
             style={{ animationDelay: `${animationDelay + (index + 1) * 100}ms` }}
           />
         ))}
-        <div className="w-4 h-px bg-gray-200 mx-2" />
+        <div className="w-4 h-px bg-gray-200 mx-2" role="separator" aria-orientation="vertical" />
         <PowerBallNumber
           number={powerball}
           isPowerball
