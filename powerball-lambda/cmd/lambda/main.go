@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"powerball-lambda/internal/cache"
 	"powerball-lambda/internal/generator"
@@ -201,6 +204,47 @@ func loadDataFromS3() ([]models.PowerballDraw, error) {
 	return s3client.LoadDataFromS3(s3BucketName, s3ObjectKey)
 }
 
+// Lambda handler를 일반 HTTP 서버로 변경
 func main() {
-	lambda.Start(HandleRequest)
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
+		// Lambda 환경일 때
+		lambda.Start(HandleRequest)
+	} else {
+		// 로컬 환경일 때
+		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			// CORS 헤더 설정
+			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+			// OPTIONS 요청 처리
+			if r.Method == "OPTIONS" {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+
+			// r.Body를 문자열로 변환
+			bodyBytes, err := io.ReadAll(r.Body)
+			if err != nil {
+				http.Error(w, "요청 본문을 읽는데 실패했습니다", http.StatusBadRequest)
+				return
+			}
+
+			// 기존 Lambda 핸들러 로직 실행
+			response, err := HandleRequest(context.Background(), events.APIGatewayProxyRequest{
+				Body: string(bodyBytes),
+				// 필요한 다른 요청 정보 설정
+			})
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			w.Write([]byte(response.Body))
+		})
+
+		fmt.Println("서버가 8080 포트에서 시작됩니다...")
+		http.ListenAndServe(":8080", nil)
+	}
 }
