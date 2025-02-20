@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"powerball-lambda/internal/cache"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/joho/godotenv"
 )
 
 // Response는 API Gateway에 맞춘 응답 구조체입니다.
@@ -61,6 +63,13 @@ var (
 func init() {
 	// 24시간 TTL로 캐시 초기화
 	powerballCache = cache.NewCache(24 * time.Hour)
+	// 로컬 환경에서 .env 파일 로드
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
 }
 
 // HandleRequest는 Lambda요청을 처리합니다.
@@ -197,11 +206,22 @@ func generateNumbers(request GenerateRequest) ([]models.GeneratedNumbers, error)
 
 // loadDataFromS3는 s3client 패키지의 함수를 호출합니다.
 func loadDataFromS3() ([]models.PowerballDraw, error) {
-	if s3BucketName == "" || s3ObjectKey == "" {
+	// 여기서 새로 변수를 선언하지 말고 전역 변수를 사용하도록 수정
+	if os.Getenv("S3_BUCKET_NAME") == "" || os.Getenv("S3_OBJECT_KEY") == "" {
 		return nil, errors.New("S3 설정이 없습니다")
 	}
 
-	return s3client.LoadDataFromS3(s3BucketName, s3ObjectKey)
+	// 디버깅을 위한 로그는 유지
+	fmt.Printf("S3 설정 확인:\n")
+	fmt.Printf("Bucket: %s\n", os.Getenv("S3_BUCKET_NAME"))
+	fmt.Printf("Key: %s\n", os.Getenv("S3_OBJECT_KEY"))
+	fmt.Printf("AWS Region: %s\n", os.Getenv("AWS_REGION"))
+	fmt.Printf("AWS Access Key ID: %s\n", os.Getenv("AWS_ACCESS_KEY_ID")[:5]+"...")
+
+	return s3client.LoadDataFromS3(
+		os.Getenv("S3_BUCKET_NAME"),
+		os.Getenv("S3_OBJECT_KEY"),
+	)
 }
 
 // Lambda handler를 일반 HTTP 서버로 변경
@@ -211,7 +231,7 @@ func main() {
 		lambda.Start(HandleRequest)
 	} else {
 		// 로컬 환경일 때
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.HandleFunc("/api/powerball", func(w http.ResponseWriter, r *http.Request) {
 			// CORS 헤더 설정
 			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
