@@ -80,6 +80,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 		"Access-Control-Allow-Methods":     "GET, POST, PUT, DELETE, PATCH, OPTIONS",
 		"Access-Control-Allow-Headers":     "Content-Type",
 		"Access-Control-Allow-Credentials": "true",
+		"Content-Type":                     "application/json",
 	}
 
 	// OPTIONS 요청 처리 (CORS preflight)
@@ -128,6 +129,7 @@ func HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (
 
 // createErrorResponse는 에러 응답을 생성합니다.
 func createErrorResponse(headers map[string]string, message string, statusCode int) Response {
+	headers["Content-Type"] = "application/json"
 	body, _ := json.Marshal(map[string]string{"error": message})
 	return Response{
 		StatusCode: statusCode,
@@ -236,7 +238,7 @@ func main() {
 			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
+			w.Header().Set("Content-Type", "application/json")
 			// OPTIONS 요청 처리
 			if r.Method == "OPTIONS" {
 				w.WriteHeader(http.StatusOK)
