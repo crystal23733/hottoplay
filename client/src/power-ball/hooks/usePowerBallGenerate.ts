@@ -19,6 +19,7 @@ export default () => {
     setLoading(true);
     try {
       const response = await powerBallService.generate({ method, count });
+      console.log('API Response:', response);
       setData(response.numbers);
     } catch (err) {
       setError(err instanceof Error ? err.message : '번호 생성 중 오류가 발생했습니다.');
