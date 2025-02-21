@@ -5,7 +5,7 @@ import { Card } from '@/ui/Card';
 import PowerBallMethodSelect from '../../atoms/RadioOption/PowerBallMethodSelect';
 import PowerBallGenerator from '../../atoms/PowerBallGenerator/PowerBallGenerator';
 import { Alert, AlertDescription } from '@/ui/alert';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Info } from 'lucide-react';
 import PowerBallResults from '../../organisms/PowerBallResults/PowerBallResults';
 // import AdBanner from '@/components/atoms/AdBanner/AdBanner';
 
@@ -21,6 +21,15 @@ const PowerBall = () => {
 
   return (
     <div className="space-y-8">
+      {/* 데이터 참고 시점 안내 */}
+      <div className="flex items-center gap-2 p-4 bg-muted/50 rounded-lg">
+        <Info className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">
+          All statistical data and number patterns are based on Powerball drawings since October 7,
+          2015.
+        </p>
+      </div>
+
       {/* 상단 광고(데스크톱) */}
       {/* <div className="hidden md:block">
         <AdBanner size="leaderboard" className="mx-auto" />
