@@ -213,13 +213,6 @@ func loadDataFromS3() ([]models.PowerballDraw, error) {
 		return nil, errors.New("S3 설정이 없습니다")
 	}
 
-	// 디버깅을 위한 로그는 유지
-	fmt.Printf("S3 설정 확인:\n")
-	fmt.Printf("Bucket: %s\n", os.Getenv("S3_BUCKET_NAME"))
-	fmt.Printf("Key: %s\n", os.Getenv("S3_OBJECT_KEY"))
-	fmt.Printf("AWS Region: %s\n", os.Getenv("AWS_REGION"))
-	fmt.Printf("AWS Access Key ID: %s\n", os.Getenv("AWS_ACCESS_KEY_ID")[:5]+"...")
-
 	return s3client.LoadDataFromS3(
 		os.Getenv("S3_BUCKET_NAME"),
 		os.Getenv("S3_OBJECT_KEY"),
