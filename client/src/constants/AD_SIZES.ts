@@ -12,4 +12,6 @@ export const AD_SIZES = {
   'medium-rectangle': 'w-[300px] h-[250px]',
   'mobile-banner': 'w-[300px] h-[50px]',
   skyscraper: 'w-[160px] h-[600px]',
+  'mobile-leaderboard': 'w-[320px] h-[50px]',
+  'mobile-banner-two': 'w-[320px] h-[100px]',
 } as const;
