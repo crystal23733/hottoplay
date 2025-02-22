@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
+import PowerBallNav from '@/power-ball/components/atoms/PowerBallNav/PowerBallNav';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
@@ -87,5 +88,18 @@ export default function PowerBallLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <div className="container max-w-4xl mx-auto py-8 px-4">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Powerball Number Generator</h1>
+        <p className="text-muted-foreground">
+          Generate your Powerball numbers using different strategies or analyze number statistics.
+        </p>
+      </div>
+
+      <PowerBallNav />
+
+      {children}
+    </div>
+  );
 }
