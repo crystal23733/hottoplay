@@ -13,6 +13,7 @@ import (
 	"powerball-lambda/internal/generator"
 	"powerball-lambda/internal/models"
 	"powerball-lambda/internal/s3client"
+	"powerball-lambda/internal/statistics"
 	"time"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -52,12 +53,6 @@ var (
 
 	// 전역 생성기 인스턴스
 	numberGenerator *generator.Generator
-)
-
-// 환경 변수로 S3 설정을 관리
-var (
-	s3BucketName = os.Getenv("S3_BUCKET_NAME")
-	s3ObjectKey  = os.Getenv("S3_OBJECT_KEY")
 )
 
 func init() {
@@ -219,47 +214,134 @@ func loadDataFromS3() ([]models.PowerballDraw, error) {
 	)
 }
 
+// StatisticsRequest는 통계 요청의 구조를 정의합니다.
+type StatisticsRequest struct {
+	Numbers []int `json:"numbers"` // 분석할 번호들
+}
+
+// HandleStatisticsRequest는 통계 Lambda 요청을 처리합니다.
+func HandleStatisticsRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
+	headers := map[string]string{
+		"Access-Control-Allow-Origin":      "https://hottoplay.com, https://www.hottoplay.com",
+		"Access-Control-Allow-Methods":     "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+		"Content-Type":                     "application/json",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
+	}
+
+	// 요청 본문 파싱
+	var statsRequest StatisticsRequest
+	if err := json.Unmarshal([]byte(request.Body), &statsRequest); err != nil {
+		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
+	}
+
+	// 데이터 로드 확인
+	if err := ensureDataLoaded(); err != nil {
+		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
+	}
+
+	// 통계 분석기 생성
+	draws, _ := powerballCache.Get()
+	analyzer := statistics.NewAnalyzer(draws)
+
+	// 통계 분석
+	response := models.StatisticsResponse{
+		NumberStats:      analyzer.GetNumberStatistics(statsRequest.Numbers),
+		CombinationStats: analyzer.GetCombinationStatistics(statsRequest.Numbers),
+	}
+
+	// 응답 생성
+	responseBody, err := json.Marshal(response)
+	if err != nil {
+		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
+	}
+
+	return Response{
+		StatusCode: 200,
+		Headers:    headers,
+		Body:       string(responseBody),
+	}, nil
+}
+
 // Lambda handler를 일반 HTTP 서버로 변경
 func main() {
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
-		// Lambda 환경일 때
 		lambda.Start(HandleRequest)
 	} else {
-		// 로컬 환경일 때
-		http.HandleFunc("/api/powerball", func(w http.ResponseWriter, r *http.Request) {
-			// CORS 헤더 설정
-			w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-			w.Header().Set("Content-Type", "application/json")
-			// OPTIONS 요청 처리
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusOK)
-				return
+		// CORS 헤더 설정을 공통으로 처리하는 미들웨어
+		corsMiddleware := func(next http.HandlerFunc) http.HandlerFunc {
+			return func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+				w.Header().Set("Content-Type", "application/json")
+
+				if r.Method == "OPTIONS" {
+					w.WriteHeader(http.StatusOK)
+					return
+				}
+				next(w, r)
 			}
+		}
 
-			// r.Body를 문자열로 변환
-			bodyBytes, err := io.ReadAll(r.Body)
-			if err != nil {
-				http.Error(w, "요청 본문을 읽는데 실패했습니다", http.StatusBadRequest)
-				return
-			}
+		// 번호 생성 핸들러
+		http.HandleFunc("/api/generate", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+			handleLocalRequest(w, r, "/generate")
+		}))
 
-			// 기존 Lambda 핸들러 로직 실행
-			response, err := HandleRequest(context.Background(), events.APIGatewayProxyRequest{
-				Body: string(bodyBytes),
-				// 필요한 다른 요청 정보 설정
-			})
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			w.Write([]byte(response.Body))
-		})
+		// 통계 핸들러
+		http.HandleFunc("/api/statistics", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+			handleLocalRequest(w, r, "/statistics")
+		}))
 
 		fmt.Println("서버가 8080 포트에서 시작됩니다...")
 		http.ListenAndServe(":8080", nil)
 	}
+}
+
+// handleLocalRequest는 로컬 요청을 Lambda 핸들러로 변환하여 처리합니다.
+func handleLocalRequest(w http.ResponseWriter, r *http.Request, path string) {
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "요청 본문을 읽는데 실패했습니다", http.StatusBadRequest)
+		return
+	}
+
+	// APIGateway 요청 형식으로 변환
+	request := events.APIGatewayProxyRequest{
+		Path:       path,
+		Body:       string(bodyBytes),
+		HTTPMethod: r.Method,
+	}
+
+	var response Response
+	var handlerErr error
+
+	// 경로에 따라 적절한 핸들러 호출
+	switch path {
+	case "/generate":
+		response, handlerErr = HandleRequest(context.Background(), request)
+	case "/statistics":
+		response, handlerErr = HandleStatisticsRequest(context.Background(), request)
+	default:
+		http.Error(w, "잘못된 경로입니다", http.StatusNotFound)
+		return
+	}
+
+	if handlerErr != nil {
+		http.Error(w, handlerErr.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(response.StatusCode)
+	w.Write([]byte(response.Body))
 }
