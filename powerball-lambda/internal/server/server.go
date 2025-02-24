@@ -61,7 +61,7 @@ func (s *Server) handleStatistics(w http.ResponseWriter, r *http.Request) {
 func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path string) {
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "요청 본문을 읽는데 실패했습니다", http.StatusBadRequest)
+		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
 
@@ -82,7 +82,7 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path stri
 	case "/statistics":
 		response, handlerErr = s.handler.HandleStatisticsRequest(context.Background(), request)
 	default:
-		http.Error(w, "잘못된 경로입니다", http.StatusNotFound)
+		http.Error(w, "Invalid path", http.StatusNotFound)
 		return
 	}
 
