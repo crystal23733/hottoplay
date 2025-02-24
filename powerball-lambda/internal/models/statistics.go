@@ -2,10 +2,11 @@ package models
 
 // NumberStatistics는 특정 번호의 통계 정보를 나타냅니다.
 type NumberStatistics struct {
-	Number         int    `json:"number"`
-	WhiteBallCount int    `json:"white_ball_count"` // 흰 공으로 선택된 횟수
-	PowerBallCount int    `json:"power_ball_count"` // 파워볼로 선택된 횟수
-	LastDrawDate   string `json:"last_draw_date"`   // 마지막으로 뽑힌 날짜
+	Number            int    `json:"number"`
+	WhiteBallCount    int    `json:"white_ball_count"`     // 흰 공으로 선택된 횟수
+	PowerBallCount    int    `json:"power_ball_count"`     // 파워볼로 선택된 횟수
+	LastWhiteBallDate string `json:"last_white_ball_date"` // 흰 공이 마지막으로 뽑힌 날짜
+	LastPowerBallDate string `json:"last_power_ball_date"` // 파워볼이 마지막으로 뽑힌 날짜
 }
 
 // CombinationStatistics는 선택된 번호 조합의 통계 정보를 나타냅니다.

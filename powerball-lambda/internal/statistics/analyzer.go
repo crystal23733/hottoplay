@@ -31,14 +31,18 @@ func (a *Analyzer) GetNumberStatistics(numbers []int) []models.NumberStatistics 
 			for _, whiteNum := range draw.WhiteNumbers {
 				if parseInt(whiteNum) == num {
 					stat.WhiteBallCount++
-					stat.LastDrawDate = draw.Date
+					if draw.Date > stat.LastWhiteBallDate {
+						stat.LastWhiteBallDate = draw.Date
+					}
 				}
 			}
 
 			// 파워볼로 사용된 경우 확인
 			if parseInt(draw.Powerball) == num {
 				stat.PowerBallCount++
-				stat.LastDrawDate = draw.Date
+				if draw.Date > stat.LastPowerBallDate {
+					stat.LastPowerBallDate = draw.Date
+				}
 			}
 		}
 
