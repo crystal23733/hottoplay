@@ -34,9 +34,9 @@ export default class PowerBallService implements IPowerBallService {
    * @param number - 통계를 조회할 번호 배열
    * @returns 통계 응답
    */
-  async getStatistics(number: StatisticsRequest): Promise<StatisticsResponse> {
+  async getStatistics(numbers: StatisticsRequest): Promise<StatisticsResponse> {
     return await this.apiStatistics.request(`${ENDPOINT.POWER_BALL_STATISTICS}`, 'POST', {
-      number,
+      numbers: numbers.numbers,
     });
   }
 }
