@@ -63,7 +63,7 @@ export interface CombinationStatistics {
  */
 export interface StatisticsResponse {
   numberStats: NumberStatistics[];
-  combinationStats: CombinationStatistics[];
+  combinationStats: CombinationStatistics;
 }
 
 /**
@@ -71,5 +71,5 @@ export interface StatisticsResponse {
  * @property {number[]} number - 통계를 조회할 번호 배열
  */
 export interface StatisticsRequest {
-  number: number[];
+  numbers: number[];
 }

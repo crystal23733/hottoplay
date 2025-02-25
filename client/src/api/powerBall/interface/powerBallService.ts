@@ -11,5 +11,5 @@ import {
  */
 export default interface IPowerBallService {
   generate: (params: PowerBallGenerateRequest) => Promise<PowerBallGenerateResponse>;
-  getStatistics: (number: StatisticsRequest) => Promise<StatisticsResponse>;
+  getStatistics: (numbers: StatisticsRequest) => Promise<StatisticsResponse>;
 }
