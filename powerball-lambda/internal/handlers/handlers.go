@@ -56,35 +56,40 @@ type Response struct {
 	Body       string            `json:"body"`
 }
 
-// HandleRequest는 번호 생성 요청을 처리합니다.
+// HandleRequest는 Lambda 함수의 진입점입니다.
 func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
 		"Content-Type": "application/json",
 	}
 
-	// 요청 본문 파싱
-	var generateRequest GenerateRequest
-	if err := json.Unmarshal([]byte(request.Body), &generateRequest); err != nil {
-		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
+	switch request.Path {
+	case "/generate":
+		var generateRequest GenerateRequest
+		if err := json.Unmarshal([]byte(request.Body), &generateRequest); err != nil {
+			return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
+		}
+		return h.handleGenerateNumbers(generateRequest, headers)
+	case "/statistics":
+		return h.HandleStatisticsRequest(ctx, request)
+	default:
+		return createErrorResponse(headers, "잘못된 경로입니다", 404), nil
 	}
+}
 
-	// 요청 유효성 검사
-	if err := validateRequest(generateRequest); err != nil {
+func (h *Handler) handleGenerateNumbers(request GenerateRequest, headers map[string]string) (Response, error) {
+	if err := validateRequest(request); err != nil {
 		return createErrorResponse(headers, err.Error(), 400), nil
 	}
 
-	// 데이터 로드 확인
 	if err := h.ensureDataLoaded(); err != nil {
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
 
-	// 번호 생성
-	numbers, err := h.generateNumbers(generateRequest)
+	numbers, err := h.generateNumbers(request)
 	if err != nil {
 		return createErrorResponse(headers, "번호 생성 실패: "+err.Error(), 500), nil
 	}
 
-	// 응답 생성
 	response := GenerateResponse{
 		Numbers: numbers,
 	}
@@ -107,13 +112,11 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 		"Content-Type": "application/json",
 	}
 
-	// 요청 본문 파싱
 	var statsRequest StatisticsRequest
 	if err := json.Unmarshal([]byte(request.Body), &statsRequest); err != nil {
 		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
 	}
 
-	// 데이터 로드 확인
 	if err := h.ensureDataLoaded(); err != nil {
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
@@ -123,14 +126,12 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "데이터를 불러올 수 없습니다", 500), nil
 	}
 
-	// 통계 분석
 	analyzer := statistics.NewAnalyzer(draws)
 	response := models.StatisticsResponse{
 		NumberStats:      analyzer.GetNumberStatistics(statsRequest.Numbers),
 		CombinationStats: analyzer.GetCombinationStatistics(statsRequest.Numbers),
 	}
 
-	// 응답 생성
 	responseBody, err := json.Marshal(response)
 	if err != nil {
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil

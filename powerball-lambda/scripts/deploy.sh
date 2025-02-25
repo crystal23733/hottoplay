@@ -81,16 +81,17 @@ fi
 if [ ! -z "$API_GATEWAY_ID" ]; then
   echo "🔑 API Gateway 설정을 진행합니다..."
   
+  # /generate 리소스 설정
   # 1. 리소스 ID 가져오기
-  RESOURCE_ID=$(aws apigateway get-resources \
+  GENERATE_RESOURCE_ID=$(aws apigateway get-resources \
     --rest-api-id $API_GATEWAY_ID \
     --region $AWS_REGION \
     --query 'items[?path==`/generate`].id' \
     --output text)
     
-  if [ -z "$RESOURCE_ID" ]; then
+  if [ -z "$GENERATE_RESOURCE_ID" ]; then
     echo "📝 /generate 리소스를 생성합니다..."
-    RESOURCE_ID=$(aws apigateway create-resource \
+    GENERATE_RESOURCE_ID=$(aws apigateway create-resource \
       --rest-api-id $API_GATEWAY_ID \
       --parent-id $(aws apigateway get-resources \
         --rest-api-id $API_GATEWAY_ID \
@@ -111,7 +112,7 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
   echo "📝 POST 메서드를 설정합니다..."
   aws apigateway put-method \
     --rest-api-id $API_GATEWAY_ID \
-    --resource-id $RESOURCE_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
     --http-method POST \
     --authorization-type NONE \
     --region $AWS_REGION 2>/dev/null || true
@@ -120,7 +121,7 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
   echo "🔗 Lambda 통합을 설정합니다..."
   aws apigateway put-integration \
     --rest-api-id $API_GATEWAY_ID \
-    --resource-id $RESOURCE_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
     --http-method POST \
     --type AWS_PROXY \
     --integration-http-method POST \
@@ -129,6 +130,58 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
 
   if [ $? -ne 0 ]; then
     echo "❌ Lambda 통합 설정 실패!"
+    exit 1
+  fi
+
+  # /statistics 리소스 설정
+  echo "⚙️ /statistics 엔드포인트 설정..."
+  STATISTICS_RESOURCE_ID=$(aws apigateway get-resources \
+    --rest-api-id $API_GATEWAY_ID \
+    --region $AWS_REGION \
+    --query 'items[?path==`/statistics`].id' \
+    --output text)
+    
+  if [ -z "$STATISTICS_RESOURCE_ID" ]; then
+    echo "📝 /statistics 리소스를 생성합니다..."
+    STATISTICS_RESOURCE_ID=$(aws apigateway create-resource \
+      --rest-api-id $API_GATEWAY_ID \
+      --parent-id $(aws apigateway get-resources \
+        --rest-api-id $API_GATEWAY_ID \
+        --query 'items[?path==`/`].id' \
+        --output text) \
+      --path-part "statistics" \
+      --region $AWS_REGION \
+      --query 'id' \
+      --output text)
+    
+    if [ $? -ne 0 ]; then
+      echo "❌ 리소스 생성 실패!"
+      exit 1
+    fi
+  fi
+
+  # Statistics POST 메서드 설정
+  echo "📝 Statistics POST 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics Lambda 통합 설정
+  echo "🔗 Statistics Lambda 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --type AWS_PROXY \
+    --integration-http-method POST \
+    --uri arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations \
+    --region $AWS_REGION
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Statistics Lambda 통합 설정 실패!"
     exit 1
   fi
 
