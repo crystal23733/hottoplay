@@ -1,4 +1,9 @@
-import { PowerBallGenerateRequest, PowerBallGenerateResponse } from '../powerBall.types';
+import {
+  PowerBallGenerateRequest,
+  PowerBallGenerateResponse,
+  StatisticsRequest,
+  StatisticsResponse,
+} from '../powerBall.types';
 
 /**
  * 파워볼 서비스 인터페이스
@@ -6,4 +11,5 @@ import { PowerBallGenerateRequest, PowerBallGenerateResponse } from '../powerBal
  */
 export default interface IPowerBallService {
   generate: (params: PowerBallGenerateRequest) => Promise<PowerBallGenerateResponse>;
+  getStatistics: (number: StatisticsRequest) => Promise<StatisticsResponse>;
 }
