@@ -113,8 +113,10 @@ export default function RootLayout({
         <GoogleAnalytics gaId={env.analytics.gaId} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
