@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     title: `US Powerball Number Generator | Free Lottery Number Generator`,
     description:
       'Free Powerball number generator with multiple generation methods based on historical data analysis.',
-    url: env.url.base,
+    url: `${env.url.base}/power-ball`,
     siteName: hottoplay,
     locale: 'en_US',
     type: 'website',
