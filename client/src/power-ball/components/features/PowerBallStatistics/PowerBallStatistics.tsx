@@ -8,6 +8,7 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/ui/alert';
 import NumberStatCard from '../../atoms/NumberStatCard/NumberStatCard';
 import CombinationStatCard from '../../organisms/CombinationStatCard/CombinationStatCard';
+// import AdBanner from '@/components/atoms/AdBanner/AdBanner';
 
 /**
  * 파워볼 통계 컴포넌트
@@ -20,6 +21,15 @@ const PowerBallStatistics = () => {
 
   return (
     <div className="space-y-8">
+      {/* 상단 광고(데스크톱) */}
+      {/* <div className="hidden md:block">
+        <AdBanner size="leaderboard" className="mx-auto" />
+      </div> */}
+
+      {/* 상단 광고(모바일) */}
+      {/* <div className="md:hidden">
+        <AdBanner size="mobile-leaderboard" className="mx-auto" />
+      </div> */}
       {/* 번호 선택 그리드 */}
       <div>
         <h2 className="text-lg font-semibold mb-4">{MESSAGES.INSTRUCTION}</h2>
@@ -62,6 +72,13 @@ const PowerBallStatistics = () => {
       </AnimatePresence>
 
       {/* 통계 결과 */}
+      {/* 중간 광고 */}
+      {/* <div className="hidden md:block">
+        <AdBanner size="large-rectangle" className="mx-auto" />
+      </div>
+      <div className="md:hidden">
+        <AdBanner size="mobile-banner-two" className="mx-auto" />
+      </div> */}
       {data && (
         <div className="grid gap-6">
           {/* 개별 번호 통계 */}
@@ -100,6 +117,13 @@ const PowerBallStatistics = () => {
           </motion.div>
         </div>
       )}
+      {/* 하단 광고 */}
+      {/* <div className="hidden md:block">
+        <AdBanner size="leaderboard" className="mx-auto" />
+      </div>
+      <div className="md:hidden">
+        <AdBanner size="mobile-banner-two" className="mx-auto" />
+      </div> */}
     </div>
   );
 };
