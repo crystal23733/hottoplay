@@ -28,6 +28,7 @@ func TestHandleRequest(t *testing.T) {
 	t.Run("유효한 요청 처리", func(t *testing.T) {
 		request := events.APIGatewayProxyRequest{
 			Body: `{"method":"random","count":1}`,
+			Path: "/generate",
 		}
 
 		response, err := handler.HandleRequest(context.Background(), request)
@@ -43,6 +44,7 @@ func TestHandleRequest(t *testing.T) {
 	t.Run("잘못된 요청 처리", func(t *testing.T) {
 		request := events.APIGatewayProxyRequest{
 			Body: `{"method":"invalid","count":0}`,
+			Path: "/generate",
 		}
 
 		response, err := handler.HandleRequest(context.Background(), request)
