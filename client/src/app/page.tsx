@@ -1,20 +1,5 @@
-'use client';
-
-import { MainLayout } from '@/components/features/MainLayout/MainLayout';
-import HomeIntro from '@/components/features/HomeIntro/HomeIntro';
-import TabContent from '@/components/features/TabContent/TabContent';
-import NoticeBanner from '@/components/molecules/Notice/NoticeBanner/NoticeBanner';
+import HomeTemplate from '@/components/features/HomeTemplate/Hometemplate';
 
 export default function Home() {
-  return (
-    <MainLayout>
-      <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 pt-8 pb-12 min-h-screen">
-        <div className="container mx-auto px-4">
-          <HomeIntro />
-          <NoticeBanner />
-          <TabContent />
-        </div>
-      </div>
-    </MainLayout>
-  );
+  return <HomeTemplate />;
 }
