@@ -83,20 +83,23 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
   
   # /generate 리소스 설정
   # 1. 리소스 ID 가져오기
+  ROOT_RESOURCE_ID=$(aws apigateway get-resources \
+  --rest-api-id $API_GATEWAY_ID \
+  --region $AWS_REGION \
+  --query 'items[?path==`/`].id' \
+  --output text)
+
   GENERATE_RESOURCE_ID=$(aws apigateway get-resources \
     --rest-api-id $API_GATEWAY_ID \
     --region $AWS_REGION \
     --query 'items[?path==`/generate`].id' \
     --output text)
-    
+
   if [ -z "$GENERATE_RESOURCE_ID" ]; then
     echo "📝 /generate 리소스를 생성합니다..."
     GENERATE_RESOURCE_ID=$(aws apigateway create-resource \
       --rest-api-id $API_GATEWAY_ID \
-      --parent-id $(aws apigateway get-resources \
-        --rest-api-id $API_GATEWAY_ID \
-        --query 'items[?path==`/`].id' \
-        --output text) \
+      --parent-id $ROOT_RESOURCE_ID \
       --path-part "generate" \
       --region $AWS_REGION \
       --query 'id' \
@@ -145,10 +148,7 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     echo "📝 /statistics 리소스를 생성합니다..."
     STATISTICS_RESOURCE_ID=$(aws apigateway create-resource \
       --rest-api-id $API_GATEWAY_ID \
-      --parent-id $(aws apigateway get-resources \
-        --rest-api-id $API_GATEWAY_ID \
-        --query 'items[?path==`/`].id' \
-        --output text) \
+      --parent-id $ROOT_RESOURCE_ID \
       --path-part "statistics" \
       --region $AWS_REGION \
       --query 'id' \
