@@ -120,6 +120,65 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --authorization-type NONE \
     --region $AWS_REGION 2>/dev/null || true
 
+  # OPTIONS 메서드 설정
+  echo "📝 OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 응답 설정
+  echo "⚙️ OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 통합 설정
+  echo "🔗 OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # POST 메서드 응답 설정
+  echo "⚙️ POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
   # 3. Lambda 통합 설정
   echo "🔗 Lambda 통합을 설정합니다..."
   aws apigateway put-integration \
@@ -136,7 +195,18 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     exit 1
   fi
 
-  # /statistics 리소스 설정
+  # POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # /statistics 리소스 설정 (위와 동일한 패턴으로 설정)
   echo "⚙️ /statistics 엔드포인트 설정..."
   STATISTICS_RESOURCE_ID=$(aws apigateway get-resources \
     --rest-api-id $API_GATEWAY_ID \
@@ -160,6 +230,53 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     fi
   fi
 
+  # Statistics OPTIONS 메서드 설정
+  echo "📝 Statistics OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 응답 설정
+  echo "⚙️ Statistics OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 통합 설정
+  echo "🔗 Statistics OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ Statistics OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
   # Statistics POST 메서드 설정
   echo "📝 Statistics POST 메서드를 설정합니다..."
   aws apigateway put-method \
@@ -167,6 +284,18 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --resource-id $STATISTICS_RESOURCE_ID \
     --http-method POST \
     --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics POST 메서드 응답 설정
+  echo "⚙️ Statistics POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
     --region $AWS_REGION 2>/dev/null || true
 
   # Statistics Lambda 통합 설정
@@ -184,6 +313,17 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     echo "❌ Statistics Lambda 통합 설정 실패!"
     exit 1
   fi
+
+  # Statistics POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
 
   # 4. Lambda 권한 설정
   echo "🔑 Lambda 권한을 설정합니다..."

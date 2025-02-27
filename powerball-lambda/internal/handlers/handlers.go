@@ -57,9 +57,22 @@ type Response struct {
 }
 
 // HandleRequest는 Lambda 함수의 진입점입니다.
-func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
+func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) { // CORS 헤더 기본 설정
 	headers := map[string]string{
-		"Content-Type": "application/json",
+		"Access-Control-Allow-Origin":      "https://hottoplay.com",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
 	}
 
 	switch request.Path {
@@ -109,7 +122,20 @@ func (h *Handler) handleGenerateNumbers(request GenerateRequest, headers map[str
 // HandleStatisticsRequest는 통계 요청을 처리합니다.
 func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
-		"Content-Type": "application/json",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Origin":      "https://hottoplay.com",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
 	}
 
 	var statsRequest StatisticsRequest
@@ -146,7 +172,6 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 
 // createErrorResponse는 오류 응답을 생성합니다.
 func createErrorResponse(headers map[string]string, message string, statusCode int) Response {
-	headers["Content-Type"] = "application/json"
 	body, _ := json.Marshal(map[string]string{"error": message})
 	return Response{
 		StatusCode: statusCode,
