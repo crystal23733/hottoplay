@@ -45,9 +45,9 @@ export default function SearchNumbers() {
 
   const roundOptions = useMemo(
     () =>
-      Array.from({ length: 1160 }, (_, i) => ({
-        value: String(1160 - i),
-        label: `${1160 - i}회차`,
+      Array.from({ length: 1161 }, (_, i) => ({
+        value: String(1161 - i),
+        label: `${1161 - i}회차`,
       })),
     []
   );
