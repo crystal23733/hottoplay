@@ -12,6 +12,11 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 )
 
+const (
+	pathGenerate   = "/generate"
+	pathStatistics = "/statistics"
+)
+
 // Handler는 모든 요청을 처리하는 핸들러입니다.
 type Handler struct {
 	cache           *cache.Cache
@@ -76,13 +81,13 @@ func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayPr
 	}
 
 	switch request.Path {
-	case "/generate":
+	case pathGenerate:
 		var generateRequest GenerateRequest
 		if err := json.Unmarshal([]byte(request.Body), &generateRequest); err != nil {
 			return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
 		}
 		return h.handleGenerateNumbers(generateRequest, headers)
-	case "/statistics":
+	case pathStatistics:
 		return h.HandleStatisticsRequest(ctx, request)
 	default:
 		return createErrorResponse(headers, "잘못된 경로입니다", 404), nil
