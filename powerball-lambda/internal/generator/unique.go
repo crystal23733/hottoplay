@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"powerball-lambda/internal/models"
+	"powerball-lambda/internal/utils"
 	"sort"
 	"strings"
 )
@@ -40,11 +41,11 @@ func (g *Generator) createExistingCombinationsMap() map[string]bool {
 		// 흰 공 번호를 정수로 변환
 		whiteNumbers := make([]int, len(draw.WhiteNumbers))
 		for i, numStr := range draw.WhiteNumbers {
-			whiteNumbers[i] = parseInt(numStr)
+			whiteNumbers[i] = utils.ParseInt(numStr)
 		}
 
 		// 파워볼 번호 변환
-		powerball := parseInt(draw.Powerball)
+		powerball := utils.ParseInt(draw.Powerball)
 
 		// GenerateNumbers 구조체 생성
 		numbers := models.GeneratedNumbers{

@@ -2,6 +2,7 @@ package generator
 
 import (
 	"powerball-lambda/internal/models"
+	"powerball-lambda/internal/utils"
 	"sort"
 )
 
@@ -24,12 +25,12 @@ func (g *Generator) analyzeFrequency(isPowerball bool) []NumberFrequency {
 	for _, draw := range g.draws {
 		if isPowerball {
 			// 파워볼 번호 분석
-			num := parseInt(draw.Powerball)
+			num := utils.ParseInt(draw.Powerball)
 			frequency[num]++
 		} else {
 			// 흰 공 번호 분석
 			for _, numStr := range draw.WhiteNumbers {
-				num := parseInt(numStr)
+				num := utils.ParseInt(numStr)
 				frequency[num]++
 			}
 		}
@@ -124,16 +125,4 @@ func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
 		WhiteNumbers: whiteNumbers,
 		Powerball:    powerball,
 	}
-}
-
-// parseInt는 문자열을 정수로 변환합니다.
-func parseInt(s string) int {
-	num := 0
-	for _, ch := range s {
-		if ch >= '0' && ch <= '9' {
-			num = num*10 + int(ch-'0')
-		}
-	}
-
-	return num
 }
