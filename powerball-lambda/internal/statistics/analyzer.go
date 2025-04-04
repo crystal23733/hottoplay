@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"powerball-lambda/internal/models"
+	"powerball-lambda/internal/utils"
 	"sort"
 	"time"
 )
@@ -37,7 +38,7 @@ func (a *Analyzer) GetNumberStatistics(numbers []int) []models.NumberStatistics 
 		for _, draw := range a.draws {
 			// 흰 공으로 사용된 경우 확인
 			for _, whiteNum := range draw.WhiteNumbers {
-				if parseInt(whiteNum) == num {
+				if utils.ParseInt(whiteNum) == num {
 					stat.WhiteBallCount++
 					currentTime, _ := parseDate(draw.Date)
 					if currentTime.After(lastWhiteBallTime) {
@@ -48,7 +49,7 @@ func (a *Analyzer) GetNumberStatistics(numbers []int) []models.NumberStatistics 
 			}
 
 			// 파워볼로 사용된 경우 확인
-			if parseInt(draw.Powerball) == num {
+			if utils.ParseInt(draw.Powerball) == num {
 				stat.PowerBallCount++
 				currentTime, _ := parseDate(draw.Date)
 				if currentTime.After(lastPowerBallTime) {
@@ -86,7 +87,7 @@ func (a *Analyzer) GetCombinationStatistics(numbers []int) *models.CombinationSt
 	for _, draw := range a.draws {
 		drawNumbers := make([]int, len(draw.WhiteNumbers))
 		for i, num := range draw.WhiteNumbers {
-			drawNumbers[i] = parseInt(num)
+			drawNumbers[i] = utils.ParseInt(num)
 		}
 		sort.Ints(drawNumbers)
 
@@ -128,15 +129,4 @@ func containsAll(source, target []int) bool {
 	}
 
 	return targetIdx == len(target)
-}
-
-// parseInt는 문자열을 정수로 변환합니다.
-func parseInt(s string) int {
-	num := 0
-	for _, ch := range s {
-		if ch >= '0' && ch <= '9' {
-			num = num*10 + int(ch-'0')
-		}
-	}
-	return num
 }
