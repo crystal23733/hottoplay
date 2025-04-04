@@ -42,6 +42,9 @@ func (s *Server) Start(port string) error {
 	// 라우터 설정
 	http.HandleFunc("/api/generate", corsMiddleware(s.handleGenerate))
 	http.HandleFunc("/api/statistics", corsMiddleware(s.handleStatistics))
+	http.HandleFunc("/api/draws", corsMiddleware(s.handleDrawList))
+	http.HandleFunc("/api/draw", corsMiddleware(s.handleDrawDetail))
+	http.HandleFunc("/api/number-frequency", corsMiddleware(s.handleNumberFrequency))
 
 	// 서버 시작
 	return http.ListenAndServe(port, nil)
@@ -81,6 +84,12 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path stri
 		response, handlerErr = s.handler.HandleRequest(context.Background(), request)
 	case "/statistics":
 		response, handlerErr = s.handler.HandleStatisticsRequest(context.Background(), request)
+	case "/draws":
+		response, handlerErr = s.handler.HandleDrawListRequest(context.Background(), request)
+	case "/draw":
+		response, handlerErr = s.handler.HandleDrawDetailRequest(context.Background(), request)
+	case "/number-frequency":
+		response, handlerErr = s.handler.HandleNumberFrequencyRequest(context.Background(), request)
 	default:
 		http.Error(w, "Invalid path", http.StatusNotFound)
 		return
@@ -93,4 +102,19 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path stri
 
 	w.WriteHeader(response.StatusCode)
 	w.Write([]byte(response.Body))
+}
+
+// handleDrawList는 회차 목록 요청을 처리합니다.
+func (s *Server) handleDrawList(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/draws")
+}
+
+// handleDrawDetail는 특정 회차 요청을 처리합니다.
+func (s *Server) handleDrawDetail(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/draw")
+}
+
+// handleNumberFrequency는 번호 빈도 요청을 처리합니다.
+func (s *Server) handleNumberFrequency(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/number-frequency")
 }
