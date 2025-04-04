@@ -19,6 +19,39 @@ type PowerballDraw struct {
 
 	// Rules는 해당 회차의 규칙을 나타냅니다.
 	Rules Rules `json:"rules"`
+
+	// EstimatedJackpot는 추정 당첨금을 나타냅니다.
+	EstimatedJackpot string `json:"estimated_jackpot,omitempty"`
+
+	// CashValue는 현금 당첨금을 나타냅니다.
+	CashValue string `json:"cash_value,omitempty"`
+
+	// JackpotWinnersLocation는 당첨자 위치를 나타냅니다.
+	JackpotWinnersLocation string `json:"jackpot_winners_location,omitempty"`
+
+	// Match5PPWinnersLocation는 5+1 당첨자 위치를 나타냅니다.
+	Match5PPWinnersLocation string `json:"match5_pp_winners_location,omitempty"`
+
+	// Match5WinnersLocation는 5+0 당첨자 위치를 나타냅니다.
+	Match5WinnersLocation string `json:"match5_winners_location,omitempty"`
+
+	// PrizeBreakdown는 각 당첨 단계별 정보를 나타냅니다.
+	PrizeBreakdown []PrizeTier `json:"prize_breakdown,omitempty"`
+}
+
+// PrizeTier는 각 당첨 단계별 정보를 나타냅니다.
+type PrizeTier struct {
+	// PrizeTier는 당첨 단계를 나타냅니다.
+	PrizeTier string `json:"prize_tier"`
+
+	// Winners는 당첨자 수를 나타냅니다.
+	Winners string `json:"winners"`
+
+	// Prize는 당첨금을 나타냅니다.
+	Prize string `json:"prize"`
+
+	// PowerPlay는 파워플레이 배수를 나타냅니다.
+	PowerPlay string `json:"power_play"`
 }
 
 // Rules는 파워볼 게임의 규칙을 나타내는 구조체입니다.
