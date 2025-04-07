@@ -261,7 +261,20 @@ func (h *Handler) generateNumbers(request GenerateRequest) ([]models.GeneratedNu
 // 회차 목록 반환 핸들러
 func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
-		"Content-Type": "application/json",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Origin":      "https://hottoplay.com",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
 	}
 
 	var req models.DrawListRequest
@@ -348,7 +361,20 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 // 특정 회차 상세 정보 핸들러
 func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
-		"Content-Type": "application/json",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Origin":      "https://hottoplay.com",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
 	}
 
 	var req models.DrawDetailRequest
@@ -398,7 +424,20 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 // 번호별 출현 빈도 핸들러
 func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
-		"Content-Type": "application/json",
+		"Content-Type":                     "application/json",
+		"Access-Control-Allow-Origin":      "https://hottoplay.com",
+		"Access-Control-Allow-Methods":     "OPTIONS,POST",
+		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Credentials": "true",
+	}
+
+	// OPTIONS 요청 처리
+	if request.HTTPMethod == "OPTIONS" {
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       "",
+		}, nil
 	}
 
 	if err := h.ensureDataLoaded(); err != nil {
