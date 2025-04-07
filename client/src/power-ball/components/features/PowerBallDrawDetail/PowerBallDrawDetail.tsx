@@ -58,7 +58,7 @@ const PowerBallDrawDetail: React.FC<PowerBallDrawDetailProps> = ({ date }) => {
         <div className="text-center py-12">
           <h2 className="text-xl font-medium">Drawing result not found</h2>
           <p className="text-muted-foreground mt-2">
-            We couldn't find the drawing result for {date}
+            We couldn&apos;t find the drawing result for {date}
           </p>
           <Button asChild className="mt-4">
             <Link href="/power-ball/draws">
