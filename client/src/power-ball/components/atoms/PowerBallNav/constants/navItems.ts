@@ -1,4 +1,4 @@
-import { BarChart2, ChartBar, Dices } from 'lucide-react';
+import { BarChart2, ChartBar, Dices, List } from 'lucide-react';
 
 const navItems = [
   {
@@ -15,6 +15,11 @@ const navItems = [
     title: 'Number Frequency',
     href: '/power-ball/frequency',
     icon: ChartBar,
+  },
+  {
+    title: 'Draw Results',
+    href: '/power-ball/draws',
+    icon: List,
   },
 ];
 
