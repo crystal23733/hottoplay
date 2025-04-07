@@ -1,3 +1,5 @@
+'use client';
+
 import Loading from '@/lotto/components/atoms/Loading/Loading';
 import PowerBallDrawDetail from '@/power-ball/components/features/PowerBallDrawDetail/PowerBallDrawDetail';
 import { Suspense } from 'react';
