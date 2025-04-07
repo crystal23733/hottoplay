@@ -5,6 +5,7 @@ import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
 import { Metadata } from 'next';
 import hottoplay from '@/lotto/constants/hottoplay';
+import AdLayout from '@/power-ball/components/common/AdLayout';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -111,10 +112,25 @@ export default function RootLayout({
       <head>
         <GoogleTagManager gtmId={env.analytics.gtmId} />
         <GoogleAnalytics gaId={env.analytics.gaId} />
+        {/* 
+          구글 애드센스 스크립트 (승인 후 주석 해제)
+          <script 
+            async 
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" 
+            crossOrigin="anonymous"
+          />
+        */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
-        <Toaster />
+        <div className='min-h-screen bg-background'>
+          {/* 모든 페이지 광고 적용 */}
+          <AdLayout>
+            <div className='relative flex min-h-screen flex-col'>
+              <main className='flex-1'>{children}</main>
+            </div>
+            <Toaster />
+          </AdLayout>
+        </div>
       </body>
     </html>
   );
