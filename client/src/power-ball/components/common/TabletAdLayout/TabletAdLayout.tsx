@@ -34,34 +34,22 @@ export default function TabletAdLayout({ children }: { children: React.ReactNode
   return (
     <div className="flex flex-col">
       {/* 상단 광고 - 태블릿용 */}
-      <div className="sticky top-0 z-10 bg-background">
-        {/* 
-          광고 활성화 시 아래 주석 해제
-          <Advertisement adSlot="8765432109" adSize="leaderboard" className="mx-auto my-2" />
+      <div className="sticky top-0 z-10">
+        {/* 승인 후 아래 주석 해제
+        <Advertisement adSlot="8765432109" adSize="leaderboard" className="mx-auto my-2" />
         */}
-        {/* 주석 제거 시 아래 코드 삭제 */}
-        <div className="w-full h-[90px] bg-muted/30 flex items-center justify-center text-muted text-xs text-center mx-auto my-2">
-          태블릿 상단 광고 영역
-          <br />
-          (구글 애드센스 승인 후 활성화)
-        </div>
+        <div className="w-full h-[90px] mx-auto my-2"></div>
       </div>
 
       {/* 컨텐츠 */}
       <div className="min-h-[calc(100vh-190px)] py-4">{children}</div>
 
       {/* 하단 광고 - 태블릿용 */}
-      <div className="sticky bottom-0 z-10 bg-background">
-        {/* 
-          광고 활성화 시 아래 주석 해제
-          <Advertisement adSlot="9876543210" adSize="leaderboard" className="mx-auto my-2" />
+      <div className="sticky bottom-0 z-10">
+        {/* 승인 후 아래 주석 해제
+        <Advertisement adSlot="9876543210" adSize="leaderboard" className="mx-auto my-2" />
         */}
-        {/* 주석 제거 시 아래 코드 삭제 */}
-        <div className="w-full h-[90px] bg-muted/30 flex items-center justify-center text-muted text-xs text-center mx-auto my-2">
-          태블릿 하단 광고 영역
-          <br />
-          (구글 애드센스 승인 후 활성화)
-        </div>
+        <div className="w-full h-[90px] mx-auto my-2"></div>
       </div>
     </div>
   );

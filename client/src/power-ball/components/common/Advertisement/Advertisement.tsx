@@ -57,20 +57,5 @@ export default function Advertisement({ adSlot, adSize, className }: Advertiseme
     };
   }, [adSlot, pathname]); // pathname을 의존성에 추가하여 페이지 변경 시 새로운 광고 로드
 
-  return (
-    <div
-      ref={adRef}
-      className={cn(
-        'bg-muted/30 flex items-center justify-center text-muted mx-auto',
-        AD_SIZES[adSize],
-        className
-      )}
-    >
-      <div className="text-xs text-center p-2">
-        Advertisement
-        <br />
-        <span className="text-[10px]">(광고는 사이트 운영 비용에 사용됩니다)</span>
-      </div>
-    </div>
-  );
+  return <div ref={adRef} className={cn(AD_SIZES[adSize], className)}></div>;
 }
