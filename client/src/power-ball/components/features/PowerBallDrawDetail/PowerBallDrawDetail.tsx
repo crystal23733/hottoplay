@@ -85,22 +85,31 @@ const PowerBallDrawDetail: React.FC<PowerBallDrawDetailProps> = ({ date }) => {
         <p className="text-muted-foreground">Power Play: {data.power_play}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 gap-6 mb-8">
         <Card>
-          <CardHeader>
+          <CardHeader className="pb-2">
             <CardTitle>Winning Numbers</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap items-center gap-3 justify-center">
+          <CardContent className="pt-0">
+            <div className="flex flex-wrap items-center gap-4 justify-center p-2">
               {data.white_numbers.map((number, index) => (
-                <PowerBallNumber key={index} number={parseInt(number)} isPowerball={false} />
+                <PowerBallNumber
+                  key={index}
+                  number={parseInt(number)}
+                  isPowerball={false}
+                  className="md:w-16 md:h-16"
+                />
               ))}
               <div
-                className="w-6 h-px bg-gray-200 mx-2"
+                className="w-8 h-px bg-gray-200 mx-2 md:mx-4"
                 role="separator"
                 aria-orientation="vertical"
               />
-              <PowerBallNumber number={parseInt(data.powerball)} isPowerball={true} />
+              <PowerBallNumber
+                number={parseInt(data.powerball)}
+                isPowerball={true}
+                className="md:w-16 md:h-16"
+              />
             </div>
           </CardContent>
         </Card>

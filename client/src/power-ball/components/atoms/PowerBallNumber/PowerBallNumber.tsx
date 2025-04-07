@@ -20,10 +20,11 @@ const PowerBallNumber: React.FC<PowerBallNumberProps> = ({
     <div
       className={cn(
         'flex items-center justify-center',
-        'w-10 h-10 md:w-12 md:h-12',
+        'w-10 h-10 md:w-12 md:h-12', // 기본 크기를 약간 키움
         'rounded-full font-bold text-lg md:text-xl',
-        'transition-transform hover:scale-110',
+        'transition-transform hover:scale-105', // 호버 효과 약간 줄임
         isPowerball ? 'bg-red-600 text-white' : 'bg-white text-gray-800 border-2 border-gray-200',
+        'flex-shrink-0', // flex container에서 공이 축소되지 않게 설정
         className
       )}
       style={style}
