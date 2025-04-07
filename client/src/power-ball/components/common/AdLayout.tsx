@@ -1,5 +1,5 @@
-import DesktopAdLayout from './DesktopLayout/DesktopLayout';
-import MobileAdLayout from './MobileAdLayout/MobileAdLayout';
+import DesktopAdLayout from "./DesktopLayout/DesktopLayout";
+import MobileAdLayout from "./MobileAdLayout/MobileAdLayout";
 
 /**
  * 통합 광고 레이아웃 컴포넌트
@@ -10,7 +10,9 @@ import MobileAdLayout from './MobileAdLayout/MobileAdLayout';
 export default function AdLayout({ children }: { children: React.ReactNode }) {
   return (
     <DesktopAdLayout>
-      <MobileAdLayout>{children}</MobileAdLayout>
+      <MobileAdLayout>
+        {children}
+      </MobileAdLayout>
     </DesktopAdLayout>
   );
 }
