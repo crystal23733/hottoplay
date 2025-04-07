@@ -1,12 +1,13 @@
 import PowerBallDrawDetail from '@/power-ball/components/features/PowerBallDrawDetail/PowerBallDrawDetail';
 
 interface PowerBallDrawDetailPageProps {
-  params: {
+  params: Promise<{
     date: string;
-  };
+  }>;
 }
 
-export default function PowerBallDrawDetailPage({ params }: PowerBallDrawDetailPageProps) {
-  const decodedDate = decodeURIComponent(params.date);
+export default async function PowerBallDrawDetailPage({ params }: PowerBallDrawDetailPageProps) {
+  const { date } = await params;
+  const decodedDate = decodeURIComponent(date);
   return <PowerBallDrawDetail date={decodedDate} />;
 }
