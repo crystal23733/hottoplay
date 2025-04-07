@@ -20,7 +20,7 @@ const PowerBallNumber: React.FC<PowerBallNumberProps> = ({
     <div
       className={cn(
         'flex items-center justify-center',
-        'w-10 h10 md:w-12 md:h-12',
+        'w-10 h-10 md:w-12 md:h-12',
         'rounded-full font-bold text-lg md:text-xl',
         'transition-transform hover:scale-110',
         isPowerball ? 'bg-red-600 text-white' : 'bg-white text-gray-800 border-2 border-gray-200',
