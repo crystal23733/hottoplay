@@ -1,7 +1,6 @@
 import MainLayoutProps from './MainLayout.types';
 import Header from '@/lotto/components/molecules/Header/Header';
 import Footer from '@/lotto/components/molecules/Footer/Footer';
-// import { AdSpace } from '@/components/atoms/AdSpace/AdSpace';
 
 /**
  * 전체 페이지 레이아웃을 구성하는 컴포넌트
@@ -10,11 +9,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-6">
-        <div className="mb-6">
-          {/* <AdSpace label="광고 영역 1" size="leaderboard" className="hidden md:block mx-auto" />
-          <AdSpace label="광고 영역 (모바일)" size="mobile-banner" className="md:hidden mx-auto" /> */}
-        </div>
+      <main className="mx-auto w-full max-w-xl sm:max-w-2xl md:max-w-3xl lg:max-w-4xl px-4 py-4 md:py-6">
         {children}
       </main>
       <Footer />
