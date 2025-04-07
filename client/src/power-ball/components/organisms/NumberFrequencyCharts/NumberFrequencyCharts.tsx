@@ -60,16 +60,16 @@ const NumberFrequencyCharts: React.FC<NumberFrequencyChartsProps> = ({ data, loa
               title="Power Ball Number Frequencies"
               color="#3b82f6" // 파란색
               label="Power Ball Appearances"
-              height={400}
+              height={2000}
             />
           </TabsContent>
           <TabsContent value="power">
             <FrequencyChart
               data={data.power_balls}
-              title="Power Ball 번호 출현 빈도"
+              title="Power Ball Number Frequencies"
               color="#ef4444" // 빨간색
-              label="Power Ball 출현 횟수"
-              height={400}
+              label="Power Ball Appearances"
+              height={1000}
             />
           </TabsContent>
         </Tabs>

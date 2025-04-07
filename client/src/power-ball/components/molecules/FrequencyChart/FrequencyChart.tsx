@@ -21,7 +21,7 @@ const FrequencyChart: React.FC<FrequencyChartProps> = ({
   title,
   color,
   label = 'Frequency',
-  height = 300,
+  height = 2000,
 }) => {
   // 시각화를 위한 데이터 포맷팅
   const chartData = data.map(item => ({
@@ -34,16 +34,27 @@ const FrequencyChart: React.FC<FrequencyChartProps> = ({
       <h3 className="text-lg font-medium">{title}</h3>
       <div style={{ width: '100%', height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 20, right: 30, left: 50, bottom: 20 }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="number" />
-            <YAxis />
+            <XAxis type="number" />
+            <YAxis
+              type="category"
+              dataKey="number"
+              interval={0}
+              width={60}
+              fontSize={12}
+              tickMargin={10}
+            />
             <Tooltip
               formatter={value => [`${value} times`, label]}
               labelFormatter={value => `Number ${value}`}
             />
             <Legend />
-            <Bar dataKey="count" name={label} fill={color} />
+            <Bar dataKey="count" name={label} fill={color} barSize={20} />
           </BarChart>
         </ResponsiveContainer>
       </div>
