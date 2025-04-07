@@ -122,11 +122,11 @@ export default function RootLayout({
         */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <div className='min-h-screen bg-background'>
+        <div className="min-h-screen bg-background">
           {/* 모든 페이지 광고 적용 */}
           <AdLayout>
-            <div className='relative flex min-h-screen flex-col'>
-              <main className='flex-1'>{children}</main>
+            <div className="relative flex min-h-screen flex-col">
+              <main className="flex-1">{children}</main>
             </div>
             <Toaster />
           </AdLayout>

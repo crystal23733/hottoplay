@@ -4,7 +4,6 @@ import FeatureGrid from '@/components/organisms/FeatureGrid/FeatureGrid';
 import GameGrid from '@/components/organisms/GameGrid/GameGrid';
 import { games } from '@/constants/home';
 import { koreanFeatures, englishFeatures } from '@/constants/features';
-import useLanguageToggle from '@/hooks/LanguageToggle/useLanguageToggle';
 import LanguageButton from '@/components/atoms/Button/LanguageButton/LanguageButton';
 import PageHeader from '@/components/molecules/PageHeader/PageHeader';
 import SectionTitle from '@/components/atoms/SectionTitle/SectionTitle';
