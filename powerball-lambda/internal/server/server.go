@@ -60,6 +60,21 @@ func (s *Server) handleStatistics(w http.ResponseWriter, r *http.Request) {
 	s.handleRequest(w, r, "/statistics")
 }
 
+// handleDrawList는 회차 목록 요청을 처리합니다.
+func (s *Server) handleDrawList(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/draws")
+}
+
+// handleDrawDetail는 특정 회차 요청을 처리합니다.
+func (s *Server) handleDrawDetail(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/draw")
+}
+
+// handleNumberFrequency는 번호 빈도 요청을 처리합니다.
+func (s *Server) handleNumberFrequency(w http.ResponseWriter, r *http.Request) {
+	s.handleRequest(w, r, "/number-frequency")
+}
+
 // handleRequest는 요청을 처리하는 공통 함수입니다.
 func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path string) {
 	bodyBytes, err := io.ReadAll(r.Body)
@@ -102,19 +117,4 @@ func (s *Server) handleRequest(w http.ResponseWriter, r *http.Request, path stri
 
 	w.WriteHeader(response.StatusCode)
 	w.Write([]byte(response.Body))
-}
-
-// handleDrawList는 회차 목록 요청을 처리합니다.
-func (s *Server) handleDrawList(w http.ResponseWriter, r *http.Request) {
-	s.handleRequest(w, r, "/draws")
-}
-
-// handleDrawDetail는 특정 회차 요청을 처리합니다.
-func (s *Server) handleDrawDetail(w http.ResponseWriter, r *http.Request) {
-	s.handleRequest(w, r, "/draw")
-}
-
-// handleNumberFrequency는 번호 빈도 요청을 처리합니다.
-func (s *Server) handleNumberFrequency(w http.ResponseWriter, r *http.Request) {
-	s.handleRequest(w, r, "/number-frequency")
 }
