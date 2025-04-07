@@ -3,7 +3,7 @@ import Description from '@/lotto/components/organisms/Description/Description';
 
 const HomeIntro: React.FC = () => {
   return (
-    <div className="relative mb-16">
+    <div className="relative mb-16 max-w-3xl mx-auto">
       {/* 배경 효과 */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl" />

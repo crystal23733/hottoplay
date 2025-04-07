@@ -7,7 +7,6 @@ import PowerBallGenerator from '../../atoms/PowerBallGenerator/PowerBallGenerato
 import { Alert, AlertDescription } from '@/ui/alert';
 import { AlertCircle, Info } from 'lucide-react';
 import PowerBallResults from '../../organisms/PowerBallResults/PowerBallResults';
-// import AdBanner from '@/components/atoms/AdBanner/AdBanner';
 
 /**
  * 파워볼 번호 생성 페이지
@@ -29,16 +28,6 @@ const PowerBall = () => {
           2015.
         </p>
       </div>
-
-      {/* 상단 광고(데스크톱) */}
-      {/* <div className="hidden md:block">
-        <AdBanner size="leaderboard" className="mx-auto" />
-      </div> */}
-
-      {/* 상단 광고(모바일) */}
-      {/* <div className="md:hidden">
-        <AdBanner size="mobile-leaderboard" className="mx-auto" />
-      </div> */}
 
       <Card className="p-6">
         <div className="space-y-6">
@@ -66,27 +55,7 @@ const PowerBall = () => {
         </Alert>
       )}
 
-      {/* 중간 광고 - 결과가 있을 때만 표시 */}
-      {/* {data && data.length > 0 && (
-        <>
-          <div className="hidden md:block">
-            <AdBanner size="large-rectangle" className="mx-auto" />
-          </div>
-          <div className="md:hidden">
-            <AdBanner size="mobile-banner-two" className="mx-auto" />
-          </div>
-        </>
-      )} */}
-
       {data && data.length > 0 && <PowerBallResults numbers={data} method={method} />}
-
-      {/* 하단 광고 */}
-      {/* <div className="hidden md:block">
-        <AdBanner size="leaderboard" className="mx-auto" />
-      </div>
-      <div className="md:hidden">
-        <AdBanner size="mobile-banner-two" className="mx-auto" />
-      </div> */}
     </div>
   );
 };

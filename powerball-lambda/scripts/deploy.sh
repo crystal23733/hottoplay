@@ -120,6 +120,65 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --authorization-type NONE \
     --region $AWS_REGION 2>/dev/null || true
 
+  # OPTIONS 메서드 설정
+  echo "📝 OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 응답 설정
+  echo "⚙️ OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 통합 설정
+  echo "🔗 OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # POST 메서드 응답 설정
+  echo "⚙️ POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
   # 3. Lambda 통합 설정
   echo "🔗 Lambda 통합을 설정합니다..."
   aws apigateway put-integration \
@@ -136,7 +195,18 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     exit 1
   fi
 
-  # /statistics 리소스 설정
+  # POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $GENERATE_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # /statistics 리소스 설정 (위와 동일한 패턴으로 설정)
   echo "⚙️ /statistics 엔드포인트 설정..."
   STATISTICS_RESOURCE_ID=$(aws apigateway get-resources \
     --rest-api-id $API_GATEWAY_ID \
@@ -160,6 +230,53 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     fi
   fi
 
+  # Statistics OPTIONS 메서드 설정
+  echo "📝 Statistics OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 응답 설정
+  echo "⚙️ Statistics OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 통합 설정
+  echo "🔗 Statistics OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ Statistics OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
   # Statistics POST 메서드 설정
   echo "📝 Statistics POST 메서드를 설정합니다..."
   aws apigateway put-method \
@@ -167,6 +284,18 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --resource-id $STATISTICS_RESOURCE_ID \
     --http-method POST \
     --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Statistics POST 메서드 응답 설정
+  echo "⚙️ Statistics POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
     --region $AWS_REGION 2>/dev/null || true
 
   # Statistics Lambda 통합 설정
@@ -184,6 +313,374 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     echo "❌ Statistics Lambda 통합 설정 실패!"
     exit 1
   fi
+
+  # Statistics POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $STATISTICS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # /draws 리소스 설정
+  echo "⚙️ /draws 엔드포인트 설정..."
+  DRAWS_RESOURCE_ID=$(aws apigateway get-resources \
+    --rest-api-id $API_GATEWAY_ID \
+    --region $AWS_REGION \
+    --query 'items[?path==`/draws`].id' \
+    --output text)
+    
+  if [ -z "$DRAWS_RESOURCE_ID" ]; then
+    echo "📝 /draws 리소스를 생성합니다..."
+    DRAWS_RESOURCE_ID=$(aws apigateway create-resource \
+      --rest-api-id $API_GATEWAY_ID \
+      --parent-id $ROOT_RESOURCE_ID \
+      --path-part "draws" \
+      --region $AWS_REGION \
+      --query 'id' \
+      --output text)
+    
+    if [ $? -ne 0 ]; then
+      echo "❌ 리소스 생성 실패!"
+      exit 1
+    fi
+  fi
+
+  # Draws OPTIONS 메서드 설정
+  echo "📝 Draws OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws OPTIONS 메서드 응답 설정
+  echo "⚙️ Draws OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws OPTIONS 메서드 통합 설정
+  echo "🔗 Draws OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ Draws OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws POST 메서드 설정
+  echo "📝 Draws POST 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method POST \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws POST 메서드 응답 설정
+  echo "⚙️ Draws POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draws Lambda 통합 설정
+  echo "🔗 Draws Lambda 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method POST \
+    --type AWS_PROXY \
+    --integration-http-method POST \
+    --uri arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations \
+    --region $AWS_REGION
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Draws Lambda 통합 설정 실패!"
+    exit 1
+  fi
+
+  # Draws POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAWS_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # /draw 리소스 설정
+  echo "⚙️ /draw 엔드포인트 설정..."
+  DRAW_RESOURCE_ID=$(aws apigateway get-resources \
+    --rest-api-id $API_GATEWAY_ID \
+    --region $AWS_REGION \
+    --query 'items[?path==`/draw`].id' \
+    --output text)
+    
+  if [ -z "$DRAW_RESOURCE_ID" ]; then
+    echo "📝 /draw 리소스를 생성합니다..."
+    DRAW_RESOURCE_ID=$(aws apigateway create-resource \
+      --rest-api-id $API_GATEWAY_ID \
+      --parent-id $ROOT_RESOURCE_ID \
+      --path-part "draw" \
+      --region $AWS_REGION \
+      --query 'id' \
+      --output text)
+    
+    if [ $? -ne 0 ]; then
+      echo "❌ 리소스 생성 실패!"
+      exit 1
+    fi
+  fi
+
+  # Draw OPTIONS 메서드 설정
+  echo "📝 Draw OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw OPTIONS 메서드 응답 설정
+  echo "⚙️ Draw OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw OPTIONS 메서드 통합 설정
+  echo "🔗 Draw OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ Draw OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw POST 메서드 설정
+  echo "📝 Draw POST 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method POST \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw POST 메서드 응답 설정
+  echo "⚙️ Draw POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Draw Lambda 통합 설정
+  echo "🔗 Draw Lambda 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method POST \
+    --type AWS_PROXY \
+    --integration-http-method POST \
+    --uri arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations \
+    --region $AWS_REGION
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Draw Lambda 통합 설정 실패!"
+    exit 1
+  fi
+
+  # Draw POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $DRAW_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # /number-frequency 리소스 설정
+  echo "⚙️ /number-frequency 엔드포인트 설정..."
+  NUMBER_FREQUENCY_RESOURCE_ID=$(aws apigateway get-resources \
+    --rest-api-id $API_GATEWAY_ID \
+    --region $AWS_REGION \
+    --query 'items[?path==`/number-frequency`].id' \
+    --output text)
+    
+  if [ -z "$NUMBER_FREQUENCY_RESOURCE_ID" ]; then
+    echo "📝 /number-frequency 리소스를 생성합니다..."
+    NUMBER_FREQUENCY_RESOURCE_ID=$(aws apigateway create-resource \
+      --rest-api-id $API_GATEWAY_ID \
+      --parent-id $ROOT_RESOURCE_ID \
+      --path-part "number-frequency" \
+      --region $AWS_REGION \
+      --query 'id' \
+      --output text)
+    
+    if [ $? -ne 0 ]; then
+      echo "❌ 리소스 생성 실패!"
+      exit 1
+    fi
+  fi
+
+  # Number-Frequency OPTIONS 메서드 설정
+  echo "📝 Number-Frequency OPTIONS 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method OPTIONS \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency OPTIONS 메서드 응답 설정
+  echo "⚙️ Number-Frequency OPTIONS 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": true,
+      \"method.response.header.Access-Control-Allow-Methods\": true,
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency OPTIONS 메서드 통합 설정
+  echo "🔗 Number-Frequency OPTIONS 메서드 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method OPTIONS \
+    --type MOCK \
+    --request-templates "{\"application/json\":\"{\\\"statusCode\\\": 200}\"}" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency OPTIONS 메서드 통합 응답 설정
+  echo "⚙️ Number-Frequency OPTIONS 메서드 통합 응답을 설정합니다..."
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method OPTIONS \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency POST 메서드 설정
+  echo "📝 Number-Frequency POST 메서드를 설정합니다..."
+  aws apigateway put-method \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method POST \
+    --authorization-type NONE \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency POST 메서드 응답 설정
+  echo "⚙️ Number-Frequency POST 메서드 응답을 설정합니다..."
+  aws apigateway put-method-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": true
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
+
+  # Number-Frequency Lambda 통합 설정
+  echo "🔗 Number-Frequency Lambda 통합을 설정합니다..."
+  aws apigateway put-integration \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method POST \
+    --type AWS_PROXY \
+    --integration-http-method POST \
+    --uri arn:aws:apigateway:${AWS_REGION}:lambda:path/2015-03-31/functions/arn:aws:lambda:${AWS_REGION}:${AWS_ACCOUNT_ID}:function:${LAMBDA_FUNCTION_NAME}/invocations \
+    --region $AWS_REGION
+
+  if [ $? -ne 0 ]; then
+    echo "❌ Number-Frequency Lambda 통합 설정 실패!"
+    exit 1
+  fi
+
+  # Number-Frequency POST 메서드 통합 응답 설정
+  aws apigateway put-integration-response \
+    --rest-api-id $API_GATEWAY_ID \
+    --resource-id $NUMBER_FREQUENCY_RESOURCE_ID \
+    --http-method POST \
+    --status-code 200 \
+    --response-parameters "{
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
+    }" \
+    --region $AWS_REGION 2>/dev/null || true
 
   # 4. Lambda 권한 설정
   echo "🔑 Lambda 권한을 설정합니다..."
