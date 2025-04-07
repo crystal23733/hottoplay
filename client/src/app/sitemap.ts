@@ -51,6 +51,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
       changeFrequency: 'daily',
     },
+    {
+      path: '/power-ball/draws',
+      priority: 0.8,
+      changeFrequency: 'daily',
+    },
+    {
+      path: '/power-ball/frequency',
+      priority: 0.8,
+      changeFrequency: 'daily',
+    },
   ];
 
   // 기본 사이트맵 생성

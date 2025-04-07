@@ -1,7 +1,6 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/ui/Tabs';
 import GenerateNumbers from '@/lotto/components/features/GenerateNumbers/GenerateNumbers';
 import SearchNumbers from '@/lotto/components/features/SearchNumbers';
-// import { AdLayout } from '@/components/features/AdLayout/AdLayout';
 
 /**
  * 번호 생성과 번호 조회 탭 컴포넌트
@@ -9,7 +8,7 @@ import SearchNumbers from '@/lotto/components/features/SearchNumbers';
  */
 const TabContent: React.FC = () => {
   return (
-    <Tabs defaultValue="generate" className="w-full">
+    <Tabs defaultValue="generate" className="w-full max-w-3xl mx-auto">
       <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm shadow-lg">
         <TabsTrigger
           value="generate"
@@ -24,14 +23,12 @@ const TabContent: React.FC = () => {
           번호 조회
         </TabsTrigger>
       </TabsList>
-      {/* <AdLayout> */}
       <TabsContent value="generate" className="mt-2">
         <GenerateNumbers />
       </TabsContent>
       <TabsContent value="search" className="mt-2">
         <SearchNumbers />
       </TabsContent>
-      {/* </AdLayout> */}
     </Tabs>
   );
 };

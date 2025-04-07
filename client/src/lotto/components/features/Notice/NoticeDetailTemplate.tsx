@@ -6,7 +6,6 @@ import useNoticeDetail from '@/lotto/hooks/Notice/Detail/useNoticeDetail';
 import { MainLayout } from '../MainLayout/MainLayout';
 import ErrorMessage from '@/lotto/components/atoms/Errors/ErrorMessage';
 import NoticeDetailTemplateProps from './NoticeDetailTemplate.types';
-// import { AdLayout } from '../AdLayout/AdLayout';
 
 const NoticeDetailTemplate = ({ timestamp }: NoticeDetailTemplateProps) => {
   const { data, loading, error } = useNoticeDetail(timestamp);
@@ -42,9 +41,7 @@ const NoticeDetailTemplate = ({ timestamp }: NoticeDetailTemplateProps) => {
   return (
     <MainLayout>
       <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 min-h-screen pt-8 pb-12">
-        {/* <AdLayout> */}
         {renderContent()}
-        {/* </AdLayout> */}
       </div>
     </MainLayout>
   );
