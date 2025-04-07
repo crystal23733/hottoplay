@@ -17,6 +17,8 @@ export default function robots(): MetadataRoute.Robots {
           '/sitemap.xml',
           '/power-ball',
           '/power-ball/statistics',
+          '/power-ball/frequency',
+          '/power-ball/draws',
         ],
         disallow: ['https://api.hottoplay.com/*'],
         // 크롤러의 과도한 요청 방지
