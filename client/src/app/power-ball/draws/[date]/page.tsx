@@ -1,13 +1,23 @@
+import Loading from '@/lotto/components/atoms/Loading/Loading';
 import PowerBallDrawDetail from '@/power-ball/components/features/PowerBallDrawDetail/PowerBallDrawDetail';
+import { Suspense } from 'react';
 
-interface PowerBallDrawDetailPageProps {
-  params: Promise<{
-    date: string;
-  }>;
+export default async function PowerBallDrawDetailPage({
+  params,
+}: {
+  params: Promise<{ date: string }>;
+}) {
+  const resolvedParams = await params;
+
+  return (
+    <Suspense fallback={<Loading />}>
+      <DrawDetailContent date={resolvedParams.date} />
+    </Suspense>
+  );
 }
 
-export default async function PowerBallDrawDetailPage({ params }: PowerBallDrawDetailPageProps) {
-  const { date } = await params;
+async function DrawDetailContent({ date }: { date: string }) {
   const decodedDate = decodeURIComponent(date);
+
   return <PowerBallDrawDetail date={decodedDate} />;
 }
