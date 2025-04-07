@@ -1,0 +1,81 @@
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/ui/Card';
+import FrequencyChart from '../../molecules/FrequencyChart/FrequencyChart';
+import { memo } from 'react';
+import NumberFrequencyChartsProps from './NumberFrequencyCharts.types';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/ui/Tabs';
+
+/**
+ * 번호 빈도 차트 컴포넌트
+ * 흰공과 파워볼 빈도를 각각 차트로 표시
+ * @param {NumberFrequencyChartsProps} props - 차트 속성
+ * @returns {React.ReactNode} 번호 빈도 차트
+ */
+const NumberFrequencyCharts: React.FC<NumberFrequencyChartsProps> = ({ data, loading, error }) => {
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Number Frequency Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center">
+            <div className="animate-pulse">Loading...</div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Number Frequency Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-[300px] flex items-center justify-center text-destructive">
+            An error occurred while loading the data.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Number Frequency Analysis</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="white" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="white">White Balls</TabsTrigger>
+            <TabsTrigger value="power">Power Balls</TabsTrigger>
+          </TabsList>
+          <TabsContent value="white">
+            <FrequencyChart
+              data={data.white_balls}
+              title="Power Ball Number Frequencies"
+              color="#3b82f6" // 파란색
+              label="Power Ball Appearances"
+              height={400}
+            />
+          </TabsContent>
+          <TabsContent value="power">
+            <FrequencyChart
+              data={data.power_balls}
+              title="Power Ball 번호 출현 빈도"
+              color="#ef4444" // 빨간색
+              label="Power Ball 출현 횟수"
+              height={400}
+            />
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default memo(NumberFrequencyCharts);
