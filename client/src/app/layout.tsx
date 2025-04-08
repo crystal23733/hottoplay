@@ -6,6 +6,7 @@ import env from '@/config/meta/env';
 import { Metadata } from 'next';
 import hottoplay from '@/lotto/constants/hottoplay';
 import AdLayout from '@/power-ball/components/common/AdLayout';
+import Script from 'next/script';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -32,16 +33,18 @@ export const metadata: Metadata = {
     '번호 조합',
     'Powerball',
     'Lotto',
+    '이번주 로또 번호',
+    '파워볼 예측',
+    '로또 당첨 번호 예측',
+    '무료 로또 번호 생성',
+    '무료 파워볼 번호 생성',
+    '로또 번호 분석',
+    '파워볼 번호 분석',
     'number generator',
-    'number combination',
+    'lucky numbers',
     'winning numbers',
     'lotto number generator',
     'powerball number generator',
-    'lotto number combination',
-    'powerball number combination',
-    'lotto number combinations',
-    'powerball number combinations',
-    'number predictions',
   ],
   authors: [{ name: hottoplay }],
   creator: hottoplay,
@@ -100,6 +103,13 @@ export const metadata: Metadata = {
     'google-site-verification': env.siteVerification.google,
     'naver-site-verification': env.siteVerification.naver,
   },
+  alternates: {
+    canonical: env.url.base,
+    languages: {
+      ko: `${env.url.base}/lotto`,
+      'en-US': `${env.url.base}/power-ball`,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -120,6 +130,28 @@ export default function RootLayout({
             crossOrigin="anonymous"
           />
         */}
+
+        <Script
+          id="structured-data"
+          type="application/json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: hottoplay,
+              url: env.url.base,
+              applicationCategory: 'UtilityApplication',
+              operatingSystem: 'All',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+              description:
+                '파워볼과 로또 번호 조합을 위한 최적의 플랫폼. The optimal platform for Powerball and Lotto number generation.',
+            }),
+          }}
+        />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="min-h-screen bg-background">
