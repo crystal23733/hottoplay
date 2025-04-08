@@ -1,7 +1,7 @@
 import customHook from '@/api/lib/customHook/customHook';
 import { StatisticsResponse } from '@/api/powerBall/powerBall.types';
 import PowerBallService from '@/api/powerBall/PowerBallService';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * 파워볼 통계 커스텀 훅
@@ -11,34 +11,32 @@ export default () => {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
   const { data, setData, loading, setLoading, error, setError } = customHook<StatisticsResponse>();
 
-  const powerBallService = new PowerBallService();
+  const powerBallService = useMemo(() => new PowerBallService(), []);
+
+  const fetchStatistics = useCallback(async () => {
+    if (selectedNumbers.length === 0) {
+      setData(null);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await powerBallService.getStatistics({ numbers: selectedNumbers });
+      setData(response);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedNumbers, powerBallService, setData, setError, setLoading]);
 
   useEffect(() => {
-    const fetchStatistics = async () => {
-      // 선택된 번호가 없으면 API 호출하지 않음
-      if (selectedNumbers.length === 0) {
-        setData(null);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const response = await powerBallService.getStatistics({ numbers: selectedNumbers });
-        setData(response);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch statistics');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // 디바운스 처리 (너무 빈번한 API 호출 방지)
     const timeoutId = setTimeout(() => {
       fetchStatistics();
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedNumbers]); // selectedNumbers가 변경될 때마다 실행
+  }, [fetchStatistics]);
 
   /**
    * 번호 선택 핸들러
