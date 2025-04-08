@@ -11,7 +11,7 @@ import DrawListItemProps from './DrawListItem.types';
  */
 const DrawListItem: React.FC<DrawListItemProps> = ({ draw }) => {
   return (
-    <Link href={`/power-ball/draws/${encodeURIComponent(draw.date)}`} passHref>
+    <Link href={`/power-ball/draws/draw-detail?date=${encodeURIComponent(draw.date)}`} passHref>
       <Card className="p-4 transition-all hover:shadow-md cursor-pointer">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="space-y-2">

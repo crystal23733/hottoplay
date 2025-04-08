@@ -2,18 +2,21 @@
 
 import Loading from '@/lotto/components/atoms/Loading/Loading';
 import PowerBallDrawDetail from '@/power-ball/components/features/PowerBallDrawDetail/PowerBallDrawDetail';
-import { useParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
 function DrawDetailContent() {
-  const params = useParams();
-  const date = params.date as string;
-  const decodedDate = decodeURIComponent(date);
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date');
 
-  return <PowerBallDrawDetail date={decodedDate} />;
+  if (!date) {
+    return <div>날짜 정보가 없습니다.</div>;
+  }
+
+  return <PowerBallDrawDetail date={date} />;
 }
 
-export default function PowerBallDrawDetailPage() {
+export default function DrawDetailPage() {
   return (
     <Suspense fallback={<Loading />}>
       <DrawDetailContent />
