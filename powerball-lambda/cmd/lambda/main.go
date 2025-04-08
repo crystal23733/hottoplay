@@ -25,11 +25,25 @@ func main() {
 
 	// S3에서 초기 데이터 로드
 	if cfg != nil {
+		// 2015년 이후 데이터 로드
 		draws, err := s3client.LoadDataFromS3(cfg.S3BucketName, cfg.S3ObjectKey)
 		if err != nil {
 			log.Printf("Warning: S3 데이터 로드 실패: %v", err)
 		} else {
 			powerballCache.Set(draws)
+		}
+
+		// 모든 시기의 데이터 로드
+		allDraws, err := s3client.LoadAllDataFromS3(
+			cfg.S3BucketName,
+			cfg.S3ObjectKey,
+			cfg.S3ObjectKey2012to2015,
+			cfg.S3ObjectKeyBefore2012,
+		)
+		if err != nil {
+			log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
+		} else {
+			powerballCache.SetAllDraws(allDraws)
 		}
 	}
 

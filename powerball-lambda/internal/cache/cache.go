@@ -11,8 +11,12 @@ type Cache struct {
 	// draws는 파워볼 추첨 결과들을 저장합니다.
 	draws []models.PowerballDraw
 
+	// 전체 데이터를 저장하는 캐시 (모든 시기의 데이터)
+	allDraws []models.PowerballDraw
+
 	// lastUpdated는 마지막 업데이트 시간을 저장합니다.
-	lastUpdated time.Time
+	lastUpdated    time.Time
+	allLastUpdated time.Time
 
 	// ttl은 캐시의 유효 기간입니다.
 	ttl time.Duration
@@ -41,6 +45,15 @@ func (c *Cache) Set(draws []models.PowerballDraw) {
 	c.lastUpdated = time.Now()
 }
 
+// SetAllDraws는 모든 시기의 데이터를 저장합니다.
+func (c *Cache) SetAllDraws(draws []models.PowerballDraw) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	c.allDraws = draws
+	c.allLastUpdated = time.Now()
+}
+
 // Get은 캐시된 데이터를 반환합니다.
 //
 // 반환값은 캐시된 데이터와 캐시가 유효한지 여부입니다.
@@ -54,6 +67,18 @@ func (c *Cache) Get() ([]models.PowerballDraw, bool) {
 	}
 
 	return c.draws, true
+}
+
+// GetAllDraws는 모든 시기의 데이터를 반환합니다.
+func (c *Cache) GetAllDraws() ([]models.PowerballDraw, bool) {
+	c.mutex.RLock()
+	defer c.mutex.RUnlock()
+
+	if len(c.allDraws) == 0 || time.Since(c.allLastUpdated) > c.ttl {
+		return nil, false
+	}
+
+	return c.allDraws, true
 }
 
 // IsExpired는 캐시가 만료되었는지 확인합니다.
@@ -71,4 +96,6 @@ func (c *Cache) Clear() {
 
 	c.draws = nil
 	c.lastUpdated = time.Time{}
+	c.allDraws = nil
+	c.allLastUpdated = time.Time{}
 }
