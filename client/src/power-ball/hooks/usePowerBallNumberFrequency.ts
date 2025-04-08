@@ -1,7 +1,7 @@
 import customHook from '@/api/lib/customHook/customHook';
 import PowerBallDrawService from '@/api/powerBall/PowerBallDrawService';
 import { NumberFrequencyResponse } from '@/api/powerBall/powerBallDraw.types';
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 /**
  * 파워볼 번호 빈도 조회 훅
@@ -11,9 +11,9 @@ export default () => {
   const { data, setData, loading, setLoading, error, setError } =
     customHook<NumberFrequencyResponse>();
 
-  const powerBallDrawService = new PowerBallDrawService();
+  const powerBallDrawService = useMemo(() => new PowerBallDrawService(), []);
 
-  const fetchNumberFrequency = async () => {
+  const fetchNumberFrequency = useCallback(async () => {
     setLoading(true);
     try {
       const response = await powerBallDrawService.getNumberFrequency();
@@ -23,12 +23,11 @@ export default () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [powerBallDrawService, setData, setError, setLoading]);
 
-  // 컴포넌트 마운트 시 한 번만 호출
   useEffect(() => {
     fetchNumberFrequency();
-  }, []);
+  }, [fetchNumberFrequency]);
 
   return {
     data,

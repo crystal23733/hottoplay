@@ -50,9 +50,10 @@ export default function Advertisement({ adSlot, adSize, className }: Advertiseme
     initAd();
 
     // 페이지 변경 시 새로운 광고 로드
+    const currentRef = adRef.current;
     return () => {
-      if (adRef.current) {
-        adRef.current.innerHTML = '';
+      if (currentRef) {
+        currentRef.innerHTML = '';
       }
     };
   }, [adSlot, pathname]); // pathname을 의존성에 추가하여 페이지 변경 시 새로운 광고 로드
