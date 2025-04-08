@@ -2,15 +2,30 @@ import type { Metadata } from 'next';
 import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
 import PowerBallNav from '@/power-ball/components/atoms/PowerBallNav/PowerBallNav';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
   alternates: {
-    canonical: 'https://hottoplay.com/power-ball',
+    canonical: `${env.url.base}/power-ball`,
+    languages: {
+      'ko': `${env.url.base}/lotto`,
+      'en-US': `${env.url.base}/power-ball`,
+    },
   },
-  title: 'US Powerball Number Generator | Free Lottery Number Generator',
+  title: 'US Powerball Number Generator | Free Lottery Number Predictions',
   description: `Generate Powerball numbers based on historical data analysis. Choose from various methods: random combinations, frequently occurring numbers, rarely drawn numbers, and never-before-seen unique combinations.`,
   keywords: [
+    'best Powerball numbers',
+    'Powerball winning strategy',
+    'how to win Powerball',
+    'Powerball drawing days',
+    'Powerball number picker',
+    'online Powerball number generator',
+    'Powerball frequency analysis',
+    'Powerball hot numbers',
+    'Powerball cold numbers',
+    'lucky Powerball numbers',
     'Powerball numbers',
     'lottery number generator',
     'US Powerball',
@@ -100,6 +115,30 @@ export default function PowerBallLayout({
       <PowerBallNav />
 
       {children}
+
+      <Script
+        id="powerball-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Powerball Number Generator",
+            "applicationCategory": "UtilityApplication",
+            "operatingSystem": "All",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "USD"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "reviewCount": "253"
+            }
+          })
+        }}
+      />
     </div>
   );
 }

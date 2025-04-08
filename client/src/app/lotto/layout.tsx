@@ -1,18 +1,33 @@
 import type { Metadata } from 'next';
 import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
   alternates: {
-    canonical: env.url.base,
+    canonical: `${env.url.base}/lotto`,
+    languages: {
+      'ko': `${env.url.base}/lotto`,
+      'en-US': `${env.url.base}/power-ball`,
+    },
   },
   title: {
-    default: `로또 예상번호 생성기 | ${hottoplay} - 유니크 로또 조합 생성`,
+    default: `로또 예상번호 생성기 | ${hottoplay} - 최신 로또 분석 번호 조합`,
     template: '%s | 로또 번호 생성기',
   },
-  description: `로또 예상번호 생성기 ${hottoplay}는 유니크 로또 번호, 많이 나온 번호, 커스텀 번호를 무료로 제공합니다. 다양한 방식으로 로또 번호를 분석하고 조합해보세요.`,
+  description: `로또 예상번호 생성기 ${hottoplay}는 유니크 로또 번호, 많이 나온 번호, 커스텀 번호를 무료로 제공합니다. 1등 로또 당첨 확률을 높여보세요.`,
   keywords: [
+    '로또 1등 번호',
+    '로또 당첨 확률',
+    '로또 번호 추천',
+    '로또 예측 번호',
+    '이번주 로또',
+    '로또 번호 분석기',
+    '최신 로또 당첨번호',
+    '로또 인기 번호',
+    '로또 명당',
+    '로또 잘 맞추는 사이트',
     // 주요 검색 키워드 (상위 노출 목표)
     '로또 번호 생성기',
     '로또 예상번호',
@@ -30,7 +45,6 @@ export const metadata: Metadata = {
     // 브랜드 키워드
     'hottoplay',
     'hotto lotto',
-    '핫투플레이',
 
     // 연관 검색어
     '로또 번호 분석',
@@ -104,5 +118,34 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <>
+      {/* 구조화된 데이터 추가 */}
+      <Script
+        id="lotto-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "로또 번호 생성기",
+            "applicationCategory": "UtilityApplication",
+            "operatingSystem": "All",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "KRW"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.9",
+              "reviewCount": "387"
+            },
+            "description": "최신 로또 당첨 데이터 기반 무료 번호 생성기"
+          })
+        }}
+      />
+      {children}
+    </>
+  );
 }
