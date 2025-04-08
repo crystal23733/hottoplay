@@ -286,9 +286,14 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
 
-	draws, valid := h.cache.Get()
+	// draws API에서는 전체 데이터 사용
+	draws, valid := h.cache.GetAllDraws()
+	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
-		return createErrorResponse(headers, "데이터를 불러올 수 없습니다", 500), nil
+		draws, valid = h.cache.Get()
+		if !valid {
+			return createErrorResponse(headers, "데이터를 불러올 수 없습니다", 500), nil
+		}
 	}
 
 	// 필터링 적용
@@ -390,9 +395,14 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
 
-	draws, valid := h.cache.Get()
+	// 상세 회차 정보에서도 전체 데이터 사용
+	draws, valid := h.cache.GetAllDraws()
+	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
-		return createErrorResponse(headers, "데이터를 불러올 수 없습니다", 500), nil
+		draws, valid = h.cache.Get()
+		if !valid {
+			return createErrorResponse(headers, "데이터를 불러올 수 없습니다", 500), nil
+		}
 	}
 
 	// 날짜로 회차 찾기
