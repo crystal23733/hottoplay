@@ -57,7 +57,7 @@ describe('DrawListItem 컴포넌트', () => {
 
     // 링크 경로 확인
     const link = screen.getByTestId('link');
-    expect(link).toHaveAttribute('href', '/power-ball/draws/2023-04-01');
+    expect(link).toHaveAttribute('href', '/power-ball/draws/draw-detail?date=2023-04-01');
   });
 
   it('흰색 공과 파워볼이 올바르게 렌더링되어야 합니다', () => {
