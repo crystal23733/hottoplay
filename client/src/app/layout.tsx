@@ -28,12 +28,23 @@ export const metadata: Metadata = {
   description:
     '파워볼과 로또 번호 조합을 위한 최적의 플랫폼. 당신의 행운의 번호를 찾아보세요. The optimal platform for Powerball and Lotto number generation.',
   keywords: [
-    '파워볼', '로또', '번호 조합', 'Powerball', 'Lotto', 
-    '이번주 로또 번호', '파워볼 예측', '로또 당첨 번호 예측',
-    '무료 로또 번호 생성', '무료 파워볼 번호 생성',
-    '로또 번호 분석', '파워볼 번호 분석',
-    'number generator', 'lucky numbers', 'winning numbers',
-    'lotto number generator', 'powerball number generator'
+    '파워볼',
+    '로또',
+    '번호 조합',
+    'Powerball',
+    'Lotto',
+    '이번주 로또 번호',
+    '파워볼 예측',
+    '로또 당첨 번호 예측',
+    '무료 로또 번호 생성',
+    '무료 파워볼 번호 생성',
+    '로또 번호 분석',
+    '파워볼 번호 분석',
+    'number generator',
+    'lucky numbers',
+    'winning numbers',
+    'lotto number generator',
+    'powerball number generator',
   ],
   authors: [{ name: hottoplay }],
   creator: hottoplay,
@@ -95,7 +106,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: env.url.base,
     languages: {
-      'ko': `${env.url.base}/lotto`,
+      ko: `${env.url.base}/lotto`,
       'en-US': `${env.url.base}/power-ball`,
     },
   },
@@ -121,23 +132,24 @@ export default function RootLayout({
         */}
 
         <Script
-          id='structured-data'
-          type='application/json'
+          id="structured-data"
+          type="application/json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebApplication",
-              "name": hottoplay,
-              "url": env.url.base,
-              "applicationCategory": "UtilityApplication",
-              "operatingSystem": "All",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: hottoplay,
+              url: env.url.base,
+              applicationCategory: 'UtilityApplication',
+              operatingSystem: 'All',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
               },
-              "description": "파워볼과 로또 번호 조합을 위한 최적의 플랫폼. The optimal platform for Powerball and Lotto number generation."
-            })
+              description:
+                '파워볼과 로또 번호 조합을 위한 최적의 플랫폼. The optimal platform for Powerball and Lotto number generation.',
+            }),
           }}
         />
       </head>

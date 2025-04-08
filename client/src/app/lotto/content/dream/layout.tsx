@@ -69,27 +69,27 @@ export default function DreamLayout({ children }: { children: React.ReactNode })
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "headline": "행운의 꿈 해몽 로또 번호",
-            "author": {
-              "@type": "Organization",
-              "name": hottoplay
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: '행운의 꿈 해몽 로또 번호',
+            author: {
+              '@type': 'Organization',
+              name: hottoplay,
             },
-            "publisher": {
-              "@type": "Organization",
-              "name": hottoplay,
-              "logo": {
-                "@type": "ImageObject",
-                "url": `${env.url.base}/logo.png`
-              }
+            publisher: {
+              '@type': 'Organization',
+              name: hottoplay,
+              logo: {
+                '@type': 'ImageObject',
+                url: `${env.url.base}/logo.png`,
+              },
             },
-            "description": "로또 당첨과 관련된 꿈 해몽 정보",
-            "mainEntityOfPage": {
-              "@type": "WebPage",
-              "@id": `${env.url.base}/lotto/content/dream`
-            }
-          })
+            description: '로또 당첨과 관련된 꿈 해몽 정보',
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': `${env.url.base}/lotto/content/dream`,
+            },
+          }),
         }}
       />
       {children}

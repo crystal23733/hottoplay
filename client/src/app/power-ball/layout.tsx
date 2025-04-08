@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${env.url.base}/power-ball`,
     languages: {
-      'ko': `${env.url.base}/lotto`,
+      ko: `${env.url.base}/lotto`,
       'en-US': `${env.url.base}/power-ball`,
     },
   },
@@ -121,22 +121,22 @@ export default function PowerBallLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "Powerball Number Generator",
-            "applicationCategory": "UtilityApplication",
-            "operatingSystem": "All",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "USD"
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'Powerball Number Generator',
+            applicationCategory: 'UtilityApplication',
+            operatingSystem: 'All',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'USD',
             },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.8",
-              "reviewCount": "253"
-            }
-          })
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.8',
+              reviewCount: '253',
+            },
+          }),
         }}
       />
     </div>

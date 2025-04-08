@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${env.url.base}/lotto`,
     languages: {
-      'ko': `${env.url.base}/lotto`,
+      ko: `${env.url.base}/lotto`,
       'en-US': `${env.url.base}/power-ball`,
     },
   },
@@ -126,23 +126,23 @@ export default function RootLayout({
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "로또 번호 생성기",
-            "applicationCategory": "UtilityApplication",
-            "operatingSystem": "All",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "KRW"
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: '로또 번호 생성기',
+            applicationCategory: 'UtilityApplication',
+            operatingSystem: 'All',
+            offers: {
+              '@type': 'Offer',
+              price: '0',
+              priceCurrency: 'KRW',
             },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.9",
-              "reviewCount": "387"
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              reviewCount: '387',
             },
-            "description": "최신 로또 당첨 데이터 기반 무료 번호 생성기"
-          })
+            description: '최신 로또 당첨 데이터 기반 무료 번호 생성기',
+          }),
         }}
       />
       {children}
