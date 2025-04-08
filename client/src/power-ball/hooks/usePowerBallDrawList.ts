@@ -1,7 +1,7 @@
 import customHook from '@/api/lib/customHook/customHook';
 import PowerBallDrawService from '@/api/powerBall/PowerBallDrawService';
 import { DrawListRequest, DrawListResponse } from '@/api/powerBall/powerBallDraw.types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
  * 파워볼 추첨 결과 목록 조회 훅
@@ -20,10 +20,10 @@ export default () => {
 
   const { data, setData, loading, setLoading, error, setError } = customHook<DrawListResponse>();
 
-  const powerBallDrawService = new PowerBallDrawService();
+  const powerBallDrawService = useMemo(() => new PowerBallDrawService(), []);
 
   // 검색 파라미터 변경 및 결과 조회
-  const fetchDrawList = async () => {
+  const fetchDrawList = useCallback(async () => {
     setLoading(true);
     try {
       const params: DrawListRequest = {
@@ -51,7 +51,21 @@ export default () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    page,
+    pageSize,
+    searchTerm,
+    year,
+    month,
+    day,
+    startDate,
+    endDate,
+    number,
+    powerBallDrawService,
+    setData,
+    setError,
+    setLoading,
+  ]);
 
   // 페이지 변경
   const handlePageChange = (newPage: number) => {
@@ -101,7 +115,7 @@ export default () => {
   // 페이지, 페이지 사이즈, 필터 변경 시 데이터 조회
   useEffect(() => {
     fetchDrawList();
-  }, [page, pageSize, searchTerm, year, month, day, startDate, endDate, number]);
+  }, [fetchDrawList]);
 
   return {
     data,

@@ -1,25 +1,27 @@
 import type { Metadata } from 'next';
 import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
   alternates: {
-    canonical: 'https://hottoplay.com/power-ball/statistics',
+    canonical: `${env.url.base}/power-ball/statistics`,
   },
-  title: 'US Powerball Number Statistics | Historical Data Analysis',
+  title: 'Powerball Statistics & Analysis | Comprehensive Historical Data',
   description: `Analyze Powerball numbers based on historical data since October 7, 2015. Check frequency, patterns, and last appearance dates for any number combination.`,
   keywords: [
     'Powerball statistics',
-    'number frequency',
-    'lottery analysis',
-    'winning number patterns',
-    'Powerball history',
-    'number combinations',
-    'lottery statistics',
-    'number tracking',
-    'historical lottery data',
-    'Powerball trends',
+    'Powerball number analysis',
+    'Powerball historical data',
+    'Powerball number patterns',
+    'Powerball winning combinations',
+    'Powerball probability analysis',
+    'Powerball jackpot statistics',
+    'Powerball number pairs',
+    'Powerball data visualization',
+    'Powerball statistical trends',
+    'Powerball odds analysis',
   ],
   authors: [{ name: `${hottoplay}` }],
   creator: hottoplay,
@@ -30,7 +32,7 @@ export const metadata: Metadata = {
     telephone: false,
   },
   openGraph: {
-    title: `US Powerball Number Statistics | Historical Data Analysis`,
+    title: `Powerball Statistics & Analysis | Comprehensive Historical Data`,
     description:
       'Analyze Powerball numbers and track their frequency, patterns, and historical appearances.',
     url: `${env.url.base}/power-ball/statistics`,
@@ -96,6 +98,37 @@ export default function PowerBallLayout({
           frequency, patterns, and last appearance dates.
         </p>
       </div>
+
+      <Script
+        id="statistics-structured-data"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Dataset',
+            name: 'Powerball Statistics and Analysis',
+            description:
+              'Comprehensive statistical analysis of Powerball numbers and drawings since 2015',
+            keywords: ['Powerball', 'statistics', 'probability', 'analysis', 'historical data'],
+            url: `${env.url.base}/power-ball/statistics`,
+            creator: {
+              '@type': 'Organization',
+              name: hottoplay,
+            },
+            temporalCoverage: '2015-10/',
+            spatialCoverage: {
+              '@type': 'Place',
+              name: 'United States',
+            },
+            variableMeasured: [
+              'Number frequency',
+              'Pair analysis',
+              'Jackpot trends',
+              'Drawing probabilities',
+            ],
+          }),
+        }}
+      />
 
       {children}
     </div>
