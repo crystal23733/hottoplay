@@ -10,7 +10,7 @@ function DrawDetailContent() {
   const date = searchParams.get('date');
 
   if (!date) {
-    return <div>날짜 정보가 없습니다.</div>;
+    return <div>No date information available.</div>;
   }
 
   return <PowerBallDrawDetail date={date} />;
