@@ -141,3 +141,46 @@ func (g *Generator) GenerateHotNumbers() models.GeneratedNumbers {
 		MegaBall:     megaBall,
 	}
 }
+
+// GenerateColdNumbers는 드물게 나오는 번호를 기반으로 번호 조합을 생성합니다.
+func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
+	// 흰 공 빈도 정렬
+	whiteFreqs := getFrequencySortedNumbers(g.whiteNumberFrequency, true)
+
+	// 상위 빈도 번호에서 랜덤 선택 (상위 15개 중 5개)
+	numHotWhiteNumbers := len(whiteFreqs)
+	if numHotWhiteNumbers > 15 {
+		numHotWhiteNumbers = 15
+	}
+
+	whiteNumbers := make([]int, 0, 5)
+	whiteNumbersMap := make(map[int]bool)
+
+	for len(whiteNumbers) < 5 {
+		idx := g.rand.Intn(numHotWhiteNumbers)
+		num := whiteFreqs[idx].Number
+		if !whiteNumbersMap[num] {
+			whiteNumbers = append(whiteNumbers, num)
+			whiteNumbersMap[num] = true
+		}
+	}
+
+	// 오름차순 정렬
+	sort.Ints(whiteNumbers)
+
+	// 메가볼 빈도 정렬
+	megaFreqs := getFrequencySortedNumbers(g.megaBallFrequency, true)
+
+	// 상위 빈도 메가볼에서 선택 (상위 5개 중 1개)
+	numHotMegaBalls := len(megaFreqs)
+	if numHotMegaBalls > 5 {
+		numHotMegaBalls = 5
+	}
+
+	megaBall := megaFreqs[g.rand.Intn(numHotMegaBalls)].Number
+
+	return models.GeneratedNumbers{
+		WhiteNumbers: whiteNumbers,
+		MegaBall:     megaBall,
+	}
+}
