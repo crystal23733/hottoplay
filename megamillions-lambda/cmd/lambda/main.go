@@ -1,0 +1,68 @@
+package main
+
+import (
+	"log"
+	"megamillions-lambda/config"
+	"megamillions-lambda/internal/cache"
+	"megamillions-lambda/internal/handlers"
+	"megamillions-lambda/internal/s3client"
+	"megamillions-lambda/internal/server"
+	"os"
+	"time"
+
+	"github.com/aws/aws-lambda-go/lambda"
+)
+
+func main() {
+	// 설정 로드
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Printf("Warning: 설정 로드 실패: %v", err)
+	}
+
+	// 캐시 초기화
+	powerballCache := cache.NewCache(1 * time.Hour)
+
+	// S3에서 초기 데이터 로드
+	if cfg != nil {
+		// 2015년 이후 데이터 로드
+		draws, err := s3client.LoadDataFromS3(cfg.S3BucketName, cfg.S3ObjectKey)
+		if err != nil {
+			log.Printf("Warning: S3 데이터 로드 실패: %v", err)
+		} else {
+			powerballCache.Set(draws)
+		}
+
+		// 모든 시기의 데이터 로드
+		allDraws, err := s3client.LoadAllDataFromS3(
+			cfg.S3BucketName,
+			cfg.S3ObjectKey,
+			cfg.S3ObjectKey1999,
+			cfg.S3ObjectKey2002,
+			cfg.S3ObjectKey2005,
+			cfg.S3ObjectKey2013,
+			cfg.S3ObjectKey2017,
+			cfg.S3ObjectKey2025,
+			cfg.S3ObjectKeyCurrent,
+		)
+		if err != nil {
+			log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
+		} else {
+			powerballCache.SetAllDraws(allDraws)
+		}
+	}
+
+	// 핸들러 초기화
+	handler := handlers.NewHandler(powerballCache, nil)
+
+	// Lambda 또는 로컬 서버 실행
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
+		lambda.Start(handler.HandleRequest)
+	} else {
+		srv := server.NewServer(handler)
+		log.Println("서버가 8080 포트에서 시작됩니다...")
+		if err := srv.Start(":8080"); err != nil {
+			log.Fatalf("서버 시작 실패: %v", err)
+		}
+	}
+}
