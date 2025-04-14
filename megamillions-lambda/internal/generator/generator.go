@@ -1,9 +1,11 @@
 package generator
 
 import (
+	"errors"
 	"math/rand"
 	"megamillions-lambda/internal/models"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -183,4 +185,44 @@ func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
 		WhiteNumbers: whiteNumbers,
 		MegaBall:     megaBall,
 	}
+}
+
+// generateCombinationKey는 번호 조합의 고유 키를 생성합니다.
+func generateCombinationKey(whiteNumbers []int, megaBall int) string {
+	// 흰 공 번호 복사 및 정렬
+	sortedWhite := make([]int, len(whiteNumbers))
+	copy(sortedWhite, whiteNumbers)
+	sort.Ints(sortedWhite)
+
+	// 키 생성 (시간을 줄이기 위해 간단한 해시 방식 사용)
+	key := 0
+	for _, num := range sortedWhite {
+		key = key*100 + num
+	}
+	key = key*100 + megaBall
+
+	return strconv.Itoa(key)
+}
+
+// GenerateUniqueCombination은 과거에 나온 적 없는 조합을 생성합니다.
+func (g *Generator) GenerateUniqueCombination(maxAttempts int) (models.GeneratedNumbers, error) {
+	// 과거 당첨 번호 조합 맵 구성
+	pastCombinations := make(map[string]bool)
+	for _, draw := range g.draws {
+		// 키 생성 (흰 공 번호 + 메가볼)
+		key := generateCombinationKey(draw.WhiteNumbers, draw.MegaBall)
+		pastCombinations[key] = true
+	}
+
+	// 유니크한 조합 찾기
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		numbers := g.GenerateRandom()
+		key := generateCombinationKey(numbers.WhiteNumbers, numbers.MegaBall)
+
+		if !pastCombinations[key] {
+			return numbers, nil
+		}
+	}
+
+	return models.GeneratedNumbers{}, errors.New("failed to generate unique combination")
 }
