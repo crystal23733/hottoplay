@@ -1,8 +1,12 @@
 package generator
 
 import (
+	"math/rand"
 	"megamillions-lambda/internal/models"
+	"sort"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -15,8 +19,8 @@ func createTestDraws() []models.MegaMillionsDraw {
 			WhiteNumbers: []int{1, 15, 23, 44, 61},
 			MegaBall:     10,
 			Rules: models.Rules{
-				WhiteBallRange: []int{1, 70},
-				MegaBallRange:  []int{1, 25},
+				WhiteBallRange: []int{1, 69},
+				MegaBallRange:  []int{1, 24},
 			},
 		},
 		{
@@ -24,8 +28,8 @@ func createTestDraws() []models.MegaMillionsDraw {
 			WhiteNumbers: []int{5, 15, 25, 47, 62},
 			MegaBall:     15,
 			Rules: models.Rules{
-				WhiteBallRange: []int{1, 70},
-				MegaBallRange:  []int{1, 25},
+				WhiteBallRange: []int{1, 69},
+				MegaBallRange:  []int{1, 24},
 			},
 		},
 		{
@@ -33,8 +37,8 @@ func createTestDraws() []models.MegaMillionsDraw {
 			WhiteNumbers: []int{1, 15, 23, 44, 67},
 			MegaBall:     10,
 			Rules: models.Rules{
-				WhiteBallRange: []int{1, 70},
-				MegaBallRange:  []int{1, 25},
+				WhiteBallRange: []int{1, 69},
+				MegaBallRange:  []int{1, 24},
 			},
 		},
 	}
@@ -48,8 +52,8 @@ func TestNewGenerator(t *testing.T) {
 	// Generator가 올바르게 초기화되었는지 확인
 	assert.NotNil(t, g)
 	assert.Equal(t, draws, g.draws)
-	assert.Equal(t, []int{1, 70}, g.whiteBallRange)
-	assert.Equal(t, []int{1, 25}, g.megaBallRange)
+	assert.Equal(t, []int{1, 69}, g.whiteBallRange)
+	assert.Equal(t, []int{1, 24}, g.megaBallRange)
 	assert.NotNil(t, g.rand)
 
 	// 빈도수가 올바르게 계산되었는지 확인
@@ -443,4 +447,197 @@ func TestGenerateColdNumbersWithLargeDataset(t *testing.T) {
 		t.Logf("낮은 빈도 메가볼 %d의 생성 비율: %.2f%%", num, freq)
 		assert.Greater(t, freq, 10.0, "낮은 빈도 메가볼 %d가 생성 결과에 충분히 포함되지 않음", num)
 	}
+}
+
+// generateCombinationKey 함수 테스트
+func TestGenerateCombinationKey(t *testing.T) {
+	// 테스트 케이스 1: 기본 테스트
+	whiteNumbers := []int{1, 15, 23, 44, 61}
+	megaBall := 10
+	key := generateCombinationKey(whiteNumbers, megaBall)
+
+	// 예상 결과 검증
+	sortedWhite := make([]int, len(whiteNumbers))
+	copy(sortedWhite, whiteNumbers)
+	sort.Ints(sortedWhite)
+
+	expectedKey := 0
+	for _, num := range sortedWhite {
+		expectedKey = expectedKey*100 + num
+	}
+	expectedKey = expectedKey*100 + megaBall
+
+	assert.Equal(t, strconv.Itoa(expectedKey), key)
+
+	// 테스트 케이스 2: 동일한 번호 집합이지만 다른 순서
+	shuffledWhite := []int{61, 1, 44, 15, 23}
+	shuffledKey := generateCombinationKey(shuffledWhite, megaBall)
+
+	// 다른 순서로 제공되어도 같은 키를 생성해야 함
+	assert.Equal(t, key, shuffledKey)
+
+	// 테스트 케이스 3: 다른 번호 집합
+	differentWhite := []int{2, 16, 24, 45, 62}
+	differentKey := generateCombinationKey(differentWhite, megaBall)
+
+	// 다른 번호 집합은 다른 키를 생성해야 함
+	assert.NotEqual(t, key, differentKey)
+
+	// 테스트 케이스 4: 같은 흰 공 번호, 다른 메가볼
+	differentMegaKey := generateCombinationKey(whiteNumbers, 11)
+
+	// 메가볼이 다르면 다른 키를 생성해야 함
+	assert.NotEqual(t, key, differentMegaKey)
+}
+
+// GenerateUniqueCombination 함수 테스트
+func TestGenerateUniqueCombination(t *testing.T) {
+	// 테스트 케이스 1: 과거 조합이 없는 경우
+	testDraws := []models.MegaMillionsDraw{}
+	g := NewGenerator(testDraws)
+	g.whiteBallRange = []int{1, 69}
+	g.megaBallRange = []int{1, 24}
+
+	numbers, err := g.GenerateUniqueCombination(10)
+	assert.NoError(t, err)
+	assert.Len(t, numbers.WhiteNumbers, 5)
+
+	// 테스트 케이스 2: 과거 조합이 있는 경우
+	testDraws = []models.MegaMillionsDraw{
+		{
+			WhiteNumbers: []int{1, 15, 23, 44, 61},
+			MegaBall:     10,
+			Rules: models.Rules{
+				WhiteBallRange: []int{1, 69},
+				MegaBallRange:  []int{1, 24},
+			},
+		},
+	}
+	g = NewGenerator(testDraws)
+
+	numbers, err = g.GenerateUniqueCombination(100)
+	assert.NoError(t, err)
+
+	// 생성된 조합이 과거 조합과 다른지 확인
+	isDifferent := false
+	if len(numbers.WhiteNumbers) == 5 {
+		// 흰 공 번호와 메가볼이 정확히 동일하면 isDifferent는 false가 됨
+		allSame := true
+		sort.Ints(numbers.WhiteNumbers)
+		for i, num := range numbers.WhiteNumbers {
+			if num != testDraws[0].WhiteNumbers[i] {
+				allSame = false
+				break
+			}
+		}
+		if !allSame || numbers.MegaBall != testDraws[0].MegaBall {
+			isDifferent = true
+		}
+	}
+
+	assert.True(t, isDifferent, "생성된 조합이 과거 조합과 동일함")
+}
+
+// 테스트 케이스 3: 최대 시도 횟수 초과 시나리오
+func TestGenerateUniqueCombinationExceedMaxAttempts(t *testing.T) {
+	// 이미 모든 가능한 조합이 사용된 상황을 만들기 위해
+	// 아주 제한된 범위의 Generator 생성
+	limitedG := &Generator{
+		draws:                make([]models.MegaMillionsDraw, 0),
+		whiteNumberFrequency: make(map[int]int),
+		megaBallFrequency:    make(map[int]int),
+		whiteBallRange:       []int{1, 5}, // 매우 제한된 범위
+		megaBallRange:        []int{1, 1}, // 메가볼은 1개만 가능
+		rand:                 rand.New(rand.NewSource(time.Now().UnixNano())),
+	}
+
+	// 가능한 모든 조합 생성 (5C5 * 1 = 1가지 조합)
+	// 흰 공: 1, 2, 3, 4, 5, 메가볼: 1
+	whiteNumbers := []int{1, 2, 3, 4, 5}
+
+	// 이 조합을 과거 당첨 번호로 추가
+	limitedG.draws = append(limitedG.draws, models.MegaMillionsDraw{
+		WhiteNumbers: whiteNumbers,
+		MegaBall:     1,
+	})
+
+	// 이제 새로운 조합을 생성하려 시도하면 실패해야 함
+	// (가능한 모든 조합이 이미 과거에 나왔기 때문)
+	_, err := limitedG.GenerateUniqueCombination(5)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to generate unique combination")
+}
+
+// 많은 과거 당첨 조합이 있는 상황에서 테스트
+func TestGenerateUniqueCombinationWithManyPastDraws(t *testing.T) {
+	// 50개의 과거 당첨 번호 생성
+	testDraws := make([]models.MegaMillionsDraw, 50)
+
+	// 다양한 과거 조합 생성
+	for i := 0; i < 50; i++ {
+		whiteNumbers := make([]int, 5)
+		for j := 0; j < 5; j++ {
+			whiteNumbers[j] = (i*5+j)%69 + 1 // 1-69 범위 내 번호
+		}
+		sort.Ints(whiteNumbers)
+
+		testDraws[i] = models.MegaMillionsDraw{
+			WhiteNumbers: whiteNumbers,
+			MegaBall:     (i % 24) + 1, // 1-24 범위
+			Rules: models.Rules{
+				WhiteBallRange: []int{1, 69},
+				MegaBallRange:  []int{1, 24},
+			},
+		}
+	}
+
+	g := NewGenerator(testDraws)
+
+	// 유니크한 조합 생성 시도
+	numbers, err := g.GenerateUniqueCombination(1000)
+
+	// 오류가 없어야 하고 생성된 조합이 있어야 함
+	assert.NoError(t, err)
+	assert.Len(t, numbers.WhiteNumbers, 5)
+
+	// 생성된 조합이 과거 조합과 다른지 확인
+	key := generateCombinationKey(numbers.WhiteNumbers, numbers.MegaBall)
+
+	// 과거 조합 맵 구성
+	pastCombinations := make(map[string]bool)
+	for _, draw := range testDraws {
+		pastKey := generateCombinationKey(draw.WhiteNumbers, draw.MegaBall)
+		pastCombinations[pastKey] = true
+	}
+
+	// 생성된 키가 과거 조합에 없어야 함
+	assert.False(t, pastCombinations[key], "생성된 조합이 과거 조합과 중복됨")
+}
+
+// 엣지 케이스: 가능한 모든 조합이 이미 과거에 나왔을 때
+func TestGenerateUniqueCombinationWhenAllCombinationsExist(t *testing.T) {
+	// 가능한 모든 조합이 이미 나온 제한된 범위 설정
+	// 예: 화이트볼 1-5, 메가볼 1-2 (총 가능한 조합: C(5,5) * 2 = 2가지)
+	g := &Generator{
+		draws:          make([]models.MegaMillionsDraw, 0),
+		whiteBallRange: []int{1, 5},
+		megaBallRange:  []int{1, 2},
+		rand:           rand.New(rand.NewSource(time.Now().UnixNano())),
+	}
+
+	// 가능한 모든 조합을 과거 당첨 번호로 추가
+	g.draws = append(g.draws, models.MegaMillionsDraw{
+		WhiteNumbers: []int{1, 2, 3, 4, 5},
+		MegaBall:     1,
+	})
+
+	g.draws = append(g.draws, models.MegaMillionsDraw{
+		WhiteNumbers: []int{1, 2, 3, 4, 5},
+		MegaBall:     2,
+	})
+
+	// 이제 모든 가능한 조합이 이미 과거에 나왔으므로, 새로운 조합을 생성할 수 없음
+	_, err := g.GenerateUniqueCombination(10)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to generate unique combination")
 }
