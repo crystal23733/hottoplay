@@ -149,17 +149,17 @@ func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
 	// 흰 공 빈도 정렬
 	whiteFreqs := getFrequencySortedNumbers(g.whiteNumberFrequency, true)
 
-	// 상위 빈도 번호에서 랜덤 선택 (상위 15개 중 5개)
-	numHotWhiteNumbers := len(whiteFreqs)
-	if numHotWhiteNumbers > 15 {
-		numHotWhiteNumbers = 15
+	// 하위 빈도 번호에서 랜덤 선택 (하위 15개 중 5개)
+	numColdWhiteNumbers := len(whiteFreqs)
+	if numColdWhiteNumbers > 15 {
+		numColdWhiteNumbers = 15
 	}
 
 	whiteNumbers := make([]int, 0, 5)
 	whiteNumbersMap := make(map[int]bool)
 
 	for len(whiteNumbers) < 5 {
-		idx := g.rand.Intn(numHotWhiteNumbers)
+		idx := g.rand.Intn(numColdWhiteNumbers)
 		num := whiteFreqs[idx].Number
 		if !whiteNumbersMap[num] {
 			whiteNumbers = append(whiteNumbers, num)
@@ -173,13 +173,13 @@ func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
 	// 메가볼 빈도 정렬
 	megaFreqs := getFrequencySortedNumbers(g.megaBallFrequency, true)
 
-	// 상위 빈도 메가볼에서 선택 (상위 5개 중 1개)
-	numHotMegaBalls := len(megaFreqs)
-	if numHotMegaBalls > 5 {
-		numHotMegaBalls = 5
+	// 하위 빈도 메가볼에서 선택 (하위 5개 중 1개)
+	numColdMegaBalls := len(megaFreqs)
+	if numColdMegaBalls > 5 {
+		numColdMegaBalls = 5
 	}
 
-	megaBall := megaFreqs[g.rand.Intn(numHotMegaBalls)].Number
+	megaBall := megaFreqs[g.rand.Intn(numColdMegaBalls)].Number
 
 	return models.GeneratedNumbers{
 		WhiteNumbers: whiteNumbers,
