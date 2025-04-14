@@ -338,3 +338,109 @@ func TestGenerateHotNumbersWithLargeDataset(t *testing.T) {
 		assert.Greater(t, freq, 10.0, "높은 빈도 메가볼 %d가 생성 결과에 충분히 포함되지 않음", num)
 	}
 }
+
+// GenerateColdNumbers 함수 테스트
+func TestGenerateColdNumbers(t *testing.T) {
+	draws := createTestDraws()
+	g := NewGenerator(draws)
+
+	// 여러 번 번호 생성을 테스트
+	for i := 0; i < 10; i++ {
+		numbers := g.GenerateColdNumbers()
+
+		// 기본 검증
+		assert.Len(t, numbers.WhiteNumbers, 5)
+
+		// 중복 검증
+		numMap := make(map[int]bool)
+		for _, num := range numbers.WhiteNumbers {
+			assert.False(t, numMap[num], "흰 공 번호에 중복이 있습니다")
+			numMap[num] = true
+		}
+
+		// 정렬 검증
+		for i := 0; i < len(numbers.WhiteNumbers)-1; i++ {
+			assert.Less(t, numbers.WhiteNumbers[i], numbers.WhiteNumbers[i+1])
+		}
+
+		// 메가볼 범위 검증
+		assert.GreaterOrEqual(t, numbers.MegaBall, g.megaBallRange[0])
+		assert.LessOrEqual(t, numbers.MegaBall, g.megaBallRange[1])
+	}
+}
+
+// 많은 테스트 데이터로 GenerateColdNumbers 테스트
+func TestGenerateColdNumbersWithLargeDataset(t *testing.T) {
+	// 더 많은 테스트 데이터 생성
+	draws := make([]models.MegaMillionsDraw, 0)
+
+	// 흰 공 번호 (1-30 범위로 제한하고 일부 번호에 낮은 빈도 부여)
+	lowFreqWhite := []int{2, 8, 17, 22, 28}
+
+	// 메가볼 (1-10 범위로 제한하고 일부 번호에 낮은 빈도 부여)
+	lowFreqMega := []int{1, 9}
+
+	// 20개 데이터 생성
+	for i := 0; i < 20; i++ {
+		whiteNumbers := make([]int, 5)
+
+		// 자주 등장하지 않는 번호들 포함 (25%만 포함)
+		if i >= 15 { // 25%의 확률로만 덜 등장하는 번호 포함
+			for j := 0; j < 5; j++ {
+				whiteNumbers[j] = lowFreqWhite[j%len(lowFreqWhite)]
+			}
+		} else {
+			// 나머지는 자주 등장하는 번호 (10-14)
+			for j := 0; j < 5; j++ {
+				whiteNumbers[j] = j + 10
+			}
+		}
+
+		// 메가볼도 드물게 등장하는 번호 포함
+		megaBall := 5 // 기본 메가볼
+		if i >= 15 {  // 25%의 확률로만 드물게 등장하는 메가볼
+			megaBall = lowFreqMega[i%len(lowFreqMega)]
+		}
+
+		draws = append(draws, models.MegaMillionsDraw{
+			WhiteNumbers: whiteNumbers,
+			MegaBall:     megaBall,
+			Rules: models.Rules{
+				WhiteBallRange: []int{1, 30},
+				MegaBallRange:  []int{1, 10},
+			},
+		})
+	}
+
+	g := NewGenerator(draws)
+
+	// Cold number 빈도 확인을 위한 맵
+	coldWhiteCount := make(map[int]int)
+	coldMegaCount := make(map[int]int)
+
+	// 여러 번 번호 생성 테스트
+	iterations := 100
+	for i := 0; i < iterations; i++ {
+		numbers := g.GenerateColdNumbers()
+
+		// 각 생성된 번호 카운트
+		for _, num := range numbers.WhiteNumbers {
+			coldWhiteCount[num]++
+		}
+		coldMegaCount[numbers.MegaBall]++
+	}
+
+	// 드물게 등장하는 번호가 생성된 결과에 자주 포함되는지 확인
+	for _, num := range lowFreqWhite {
+		// 드물게 등장하는 번호는 결과에 더 많이 포함되어야 함
+		freq := float64(coldWhiteCount[num]) / float64(iterations) * 100
+		t.Logf("낮은 빈도 흰 공 번호 %d의 생성 비율: %.2f%%", num, freq)
+		assert.Greater(t, freq, 5.0, "낮은 빈도 번호 %d가 생성 결과에 충분히 포함되지 않음", num)
+	}
+
+	for _, num := range lowFreqMega {
+		freq := float64(coldMegaCount[num]) / float64(iterations) * 100
+		t.Logf("낮은 빈도 메가볼 %d의 생성 비율: %.2f%%", num, freq)
+		assert.Greater(t, freq, 10.0, "낮은 빈도 메가볼 %d가 생성 결과에 충분히 포함되지 않음", num)
+	}
+}
