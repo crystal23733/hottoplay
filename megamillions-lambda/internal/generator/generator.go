@@ -11,85 +11,99 @@ import (
 
 // Generator는 메가밀리언 번호 생성을 담당하는 구조체입니다.
 type Generator struct {
-	draws                []models.MegaMillionsDraw
-	whiteNumberFrequency map[int]int
-	megaBallFrequency    map[int]int
-	whiteBallRange       []int
-	megaBallRange        []int
-	rand                 *rand.Rand
+	// draws는 현재 규칙에 해당하는 추첨 결과들을 저장합니다.
+	draws []models.MegaMillionsDraw
+
+	// rand는 난수 생성기입니다.
+	rand *rand.Rand
+
+	// 현재 게임 규칙의 번호 범위
+	whiteBallRange []int
+	megaBallRange  []int
 }
 
-// NumberFreq는 번호와 빈도를 나타내는 구조체입니다.
-type NumberFreq struct {
+// NumberFrequency는 번호의 출현 빈도를 나타내는 구조체입니다.
+type NumberFrequency struct {
+	// Number는 볼 번호입니다.
 	Number int
-	Freq   int
-}
 
-// calculateFrequency는 번호별 출현 빈도를 계산합니다.
-func (g *Generator) calculateFrequency() {
-	for _, draw := range g.draws {
-		for _, wn := range draw.WhiteNumbers {
-			g.whiteNumberFrequency[wn]++
-		}
-		g.megaBallFrequency[draw.MegaBall]++
-	}
-}
-
-// getFrequencySortedNumbers는 주어진 빈도 맵에서 정렬된 NumberFreq 슬라이스를 반환합니다.
-func getFrequencySortedNumbers(freqMap map[int]int, ascending bool) []NumberFreq {
-	freqs := make([]NumberFreq, 0, len(freqMap))
-	for num, freq := range freqMap {
-		freqs = append(freqs, NumberFreq{Number: num, Freq: freq})
-	}
-
-	// 빈도 정렬 (ascending이 true면 오름차순, false면 내림차순)
-	sort.Slice(freqs, func(i, j int) bool {
-		if ascending {
-			return freqs[i].Freq < freqs[j].Freq
-		}
-		return freqs[i].Freq > freqs[j].Freq
-	})
-
-	return freqs
+	// Count는 해당 번호가 나온 횟수입니다.
+	Count int
 }
 
 // NewGenerator는 새로운 Generator 인스턴스를 생성합니다.
 func NewGenerator(draws []models.MegaMillionsDraw) *Generator {
 	g := &Generator{
-		draws:                draws,
-		whiteNumberFrequency: make(map[int]int),
-		megaBallFrequency:    make(map[int]int),
-		rand:                 rand.New(rand.NewSource(time.Now().UnixNano())),
+		draws: draws,
+		rand:  rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 
 	// 현재 규칙 설정
 	if len(draws) > 0 {
 		g.whiteBallRange = draws[0].Rules.WhiteBallRange
 		g.megaBallRange = draws[0].Rules.MegaBallRange
+	} else {
+		// 기본값: 현재 메가밀리언 규칙 (1-70, 1-24)
+		g.whiteBallRange = []int{1, 70}
+		g.megaBallRange = []int{1, 24}
 	}
-
-	// 번호 빈도 계산
-	g.calculateFrequency()
 
 	return g
 }
 
-// GenerateRandom은 완전 랜덤한 번호 조합을 생성합니다.
-func (g *Generator) GenerateRandom() models.GeneratedNumbers {
-	// 흰 공 번호 생성 (중복 없이 5개)
-	whiteNumbers := make([]int, 0, 5)
-	whiteNumbersMap := make(map[int]bool)
+// analyzeFrequency는 과거 데이터에서 번호별 출현 빈도를 분석합니다.
+// isMegaBall이 true이면 메가볼 번호를, false이면 흰 공 번호를 분석합니다.
+func (g *Generator) analyzeFrequency(isMegaBall bool) []NumberFrequency {
+	// 번호별 출현 횟수를 저장할 맵
+	frequency := make(map[int]int)
 
-	for len(whiteNumbers) < 5 {
-		// 1부터 whiteBallRange[1] 사이의 랜덤 번호 생성
-		num := g.rand.Intn(g.whiteBallRange[1]-g.whiteBallRange[0]+1) + g.whiteBallRange[0]
-		if !whiteNumbersMap[num] {
-			whiteNumbers = append(whiteNumbers, num)
-			whiteNumbersMap[num] = true
+	for _, draw := range g.draws {
+		if isMegaBall {
+			// 메가볼 번호 분석
+			frequency[draw.MegaBall]++
+		} else {
+			// 흰 공 번호 분석
+			for _, num := range draw.WhiteNumbers {
+				frequency[num]++
+			}
 		}
 	}
 
-	// 오름차순 정렬
+	// 맵을 슬라이스로 변환
+	var frequencies []NumberFrequency
+	for num, count := range frequency {
+		frequencies = append(frequencies, NumberFrequency{
+			Number: num,
+			Count:  count,
+		})
+	}
+
+	// 출현 빈도순으로 정렬
+	sort.Slice(frequencies, func(i, j int) bool {
+		return frequencies[i].Count > frequencies[j].Count
+	})
+
+	return frequencies
+}
+
+// GenerateRandom은 완전 무작위로 메가밀리언 번호를 생성합니다.
+func (g *Generator) GenerateRandom() models.GeneratedNumbers {
+	// 흰 공 번호를 저장할 맵 (중복 방지)
+	whiteBalls := make(map[int]bool)
+
+	// 5개의 흰 공 번호 생성
+	for len(whiteBalls) < 5 {
+		num := g.rand.Intn(g.whiteBallRange[1]-g.whiteBallRange[0]+1) + g.whiteBallRange[0]
+		whiteBalls[num] = true
+	}
+
+	// 맵을 슬라이스로 변환
+	whiteNumbers := make([]int, 0, 5)
+	for num := range whiteBalls {
+		whiteNumbers = append(whiteNumbers, num)
+	}
+
+	// 흰 공 번호 정렬
 	sort.Ints(whiteNumbers)
 
 	// 메가볼 번호 생성
@@ -101,42 +115,43 @@ func (g *Generator) GenerateRandom() models.GeneratedNumbers {
 	}
 }
 
-// GenerateHotNumbers는 자주 나오는 번호를 기반으로 번호 조합을 생성합니다.
+// GenerateHotNumbers는 자주 나온 번호들을 기반으로 번호를 생성합니다.
+// 흰 공은 상위 15개 중에서 5개를 선택하고,
+// 메가볼은 상위 5개 중에서 1개를 선택합니다.
 func (g *Generator) GenerateHotNumbers() models.GeneratedNumbers {
-	// 흰 공 빈도 정렬
-	whiteFreqs := getFrequencySortedNumbers(g.whiteNumberFrequency, false)
+	// 흰 공 빈도 분석
+	whiteFreq := g.analyzeFrequency(false)
 
-	// 상위 빈도 번호에서 랜덤 선택 (상위 15개 중 5개)
-	numHotWhiteNumbers := len(whiteFreqs)
-	if numHotWhiteNumbers > 15 {
-		numHotWhiteNumbers = 15
+	// 상위 15개 중에서 5개 선택
+	whiteBalls := make(map[int]bool)
+	hotWhites := whiteFreq
+
+	if len(hotWhites) > 15 {
+		hotWhites = hotWhites[:15] // 상위 15개만 사용
 	}
 
+	for len(whiteBalls) < 5 {
+		idx := g.rand.Intn(len(hotWhites))
+		whiteBalls[hotWhites[idx].Number] = true
+	}
+
+	// 선택된 번호를 슬라이스로 변환 및 정렬
 	whiteNumbers := make([]int, 0, 5)
-	whiteNumbersMap := make(map[int]bool)
-
-	for len(whiteNumbers) < 5 {
-		idx := g.rand.Intn(numHotWhiteNumbers)
-		num := whiteFreqs[idx].Number
-		if !whiteNumbersMap[num] {
-			whiteNumbers = append(whiteNumbers, num)
-			whiteNumbersMap[num] = true
-		}
+	for num := range whiteBalls {
+		whiteNumbers = append(whiteNumbers, num)
 	}
-
-	// 오름차순 정렬
 	sort.Ints(whiteNumbers)
 
-	// 메가볼 빈도 정렬
-	megaFreqs := getFrequencySortedNumbers(g.megaBallFrequency, false)
+	// 메가볼 빈도 분석
+	megaFreq := g.analyzeFrequency(true)
 
-	// 상위 빈도 메가볼에서 선택 (상위 5개 중 1개)
-	numHotMegaBalls := len(megaFreqs)
-	if numHotMegaBalls > 5 {
-		numHotMegaBalls = 5
+	// 상위 5개 중에서 1개 선택
+	hotMegas := megaFreq
+	if len(hotMegas) > 5 {
+		hotMegas = hotMegas[:5] // 상위 5개만 사용
 	}
 
-	megaBall := megaFreqs[g.rand.Intn(numHotMegaBalls)].Number
+	megaBall := hotMegas[g.rand.Intn(len(hotMegas))].Number
 
 	return models.GeneratedNumbers{
 		WhiteNumbers: whiteNumbers,
@@ -144,42 +159,43 @@ func (g *Generator) GenerateHotNumbers() models.GeneratedNumbers {
 	}
 }
 
-// GenerateColdNumbers는 드물게 나오는 번호를 기반으로 번호 조합을 생성합니다.
+// GenerateColdNumbers는 적게 나온 번호들을 기반으로 번호를 생성합니다.
+// 흰 공은 하위 15개 중에서 5개를 선택하고,
+// 메가볼은 하위 5개 중에서 1개를 선택합니다.
 func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
-	// 흰 공 빈도 정렬
-	whiteFreqs := getFrequencySortedNumbers(g.whiteNumberFrequency, true)
+	// 흰 공 빈도 분석
+	whiteFreq := g.analyzeFrequency(false)
 
-	// 하위 빈도 번호에서 랜덤 선택 (하위 15개 중 5개)
-	numColdWhiteNumbers := len(whiteFreqs)
-	if numColdWhiteNumbers > 15 {
-		numColdWhiteNumbers = 15
+	// 하위 15개 중에서 5개 선택
+	whiteBalls := make(map[int]bool)
+	coldWhites := whiteFreq
+
+	if len(coldWhites) > 15 {
+		coldWhites = coldWhites[len(coldWhites)-15:] // 하위 15개만 사용
 	}
 
+	for len(whiteBalls) < 5 {
+		idx := g.rand.Intn(len(coldWhites))
+		whiteBalls[coldWhites[idx].Number] = true
+	}
+
+	// 선택된 번호를 슬라이스로 변환 및 정렬
 	whiteNumbers := make([]int, 0, 5)
-	whiteNumbersMap := make(map[int]bool)
-
-	for len(whiteNumbers) < 5 {
-		idx := g.rand.Intn(numColdWhiteNumbers)
-		num := whiteFreqs[idx].Number
-		if !whiteNumbersMap[num] {
-			whiteNumbers = append(whiteNumbers, num)
-			whiteNumbersMap[num] = true
-		}
+	for num := range whiteBalls {
+		whiteNumbers = append(whiteNumbers, num)
 	}
-
-	// 오름차순 정렬
 	sort.Ints(whiteNumbers)
 
-	// 메가볼 빈도 정렬
-	megaFreqs := getFrequencySortedNumbers(g.megaBallFrequency, true)
+	// 메가볼 빈도 분석
+	megaFreq := g.analyzeFrequency(true)
 
-	// 하위 빈도 메가볼에서 선택 (하위 5개 중 1개)
-	numColdMegaBalls := len(megaFreqs)
-	if numColdMegaBalls > 5 {
-		numColdMegaBalls = 5
+	// 하위 5개 중에서 1개 선택
+	coldMegas := megaFreq
+	if len(coldMegas) > 5 {
+		coldMegas = coldMegas[len(coldMegas)-5:] // 하위 5개만 사용
 	}
 
-	megaBall := megaFreqs[g.rand.Intn(numColdMegaBalls)].Number
+	megaBall := coldMegas[g.rand.Intn(len(coldMegas))].Number
 
 	return models.GeneratedNumbers{
 		WhiteNumbers: whiteNumbers,
@@ -187,42 +203,70 @@ func (g *Generator) GenerateColdNumbers() models.GeneratedNumbers {
 	}
 }
 
-// generateCombinationKey는 번호 조합의 고유 키를 생성합니다.
-func generateCombinationKey(whiteNumbers []int, megaBall int) string {
-	// 흰 공 번호 복사 및 정렬
-	sortedWhite := make([]int, len(whiteNumbers))
-	copy(sortedWhite, whiteNumbers)
-	sort.Ints(sortedWhite)
-
-	// 키 생성 (시간을 줄이기 위해 간단한 해시 방식 사용)
-	key := 0
-	for _, num := range sortedWhite {
-		key = key*100 + num
-	}
-	key = key*100 + megaBall
-
-	return strconv.Itoa(key)
-}
-
-// GenerateUniqueCombination은 과거에 나온 적 없는 조합을 생성합니다.
+// GenerateUniqueCombination은 과거에 나온적 없는 새로운 조합을 생성합니다.
 func (g *Generator) GenerateUniqueCombination(maxAttempts int) (models.GeneratedNumbers, error) {
-	// 과거 당첨 번호 조합 맵 구성
-	pastCombinations := make(map[string]bool)
-	for _, draw := range g.draws {
-		// 키 생성 (흰 공 번호 + 메가볼)
-		key := generateCombinationKey(draw.WhiteNumbers, draw.MegaBall)
-		pastCombinations[key] = true
-	}
+	// 과거 조합을 맵으로 변환하여 빠른 검색이 가능하게 함
+	existingCombinations := g.createExistingCombinationsMap()
 
-	// 유니크한 조합 찾기
+	// 최대 시도 횟수만큼 반복
 	for attempt := 0; attempt < maxAttempts; attempt++ {
+		// 랜덤 번호 생성
 		numbers := g.GenerateRandom()
-		key := generateCombinationKey(numbers.WhiteNumbers, numbers.MegaBall)
 
-		if !pastCombinations[key] {
+		// 조합 문자열 생성
+		combination := g.createCombinationString(numbers)
+
+		// 과거에 나온적 없는 조합인지 확인
+		if !existingCombinations[combination] {
 			return numbers, nil
 		}
 	}
 
-	return models.GeneratedNumbers{}, errors.New("failed to generate unique combination")
+	return models.GeneratedNumbers{}, errors.New("유니크한 조합을 찾지 못했습니다")
+}
+
+// createExistingCombinationsMap은 과거 추첨 결과를 맵으로 변환합니다.
+func (g *Generator) createExistingCombinationsMap() map[string]bool {
+	combinations := make(map[string]bool)
+
+	for _, draw := range g.draws {
+		// GenerateNumbers 구조체 생성
+		numbers := models.GeneratedNumbers{
+			WhiteNumbers: draw.WhiteNumbers,
+			MegaBall:     draw.MegaBall,
+		}
+
+		// 조합 문자열 생성 및 맵에 저장
+		combination := g.createCombinationString(numbers)
+		combinations[combination] = true
+	}
+
+	return combinations
+}
+
+// createCombinationString은 번호 조합을 고유한 문자열로 변환합니다.
+func (g *Generator) createCombinationString(numbers models.GeneratedNumbers) string {
+	// 흰 공 번호 정렬
+	sortedWhites := make([]int, len(numbers.WhiteNumbers))
+	copy(sortedWhites, numbers.WhiteNumbers)
+	sort.Ints(sortedWhites)
+
+	// 번호를 문자열로 변환
+	whiteStrs := make([]string, len(sortedWhites))
+	for i, num := range sortedWhites {
+		whiteStrs[i] = g.formatNumber(num)
+	}
+
+	// 최종 조합 문자열 생성
+	return strconv.Itoa(sortedWhites[0]) + "-" +
+		strconv.Itoa(sortedWhites[1]) + "-" +
+		strconv.Itoa(sortedWhites[2]) + "-" +
+		strconv.Itoa(sortedWhites[3]) + "-" +
+		strconv.Itoa(sortedWhites[4]) + "|" +
+		strconv.Itoa(numbers.MegaBall)
+}
+
+// formatNumber는 번호를 2자리 문자열로 변환합니다.
+func (g *Generator) formatNumber(num int) string {
+	return strconv.Itoa(num)
 }
