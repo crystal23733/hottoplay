@@ -3,6 +3,7 @@ import env from '@/config/meta/env';
 import hottoplay from '@/lotto/constants/hottoplay';
 import PowerBallNav from '@/power-ball/components/atoms/PowerBallNav/PowerBallNav';
 import Script from 'next/script';
+import Disclaimer from '@/power-ball/components/atoms/Disclaimer/Disclaimer';
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.url.base),
@@ -115,6 +116,8 @@ export default function PowerBallLayout({
       <PowerBallNav />
 
       {children}
+
+      <Disclaimer />
 
       <Script
         id="powerball-structured-data"
