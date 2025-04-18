@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"powerball-lambda/internal/cache"
-	"powerball-lambda/internal/generator"
-	"powerball-lambda/internal/models"
-	"powerball-lambda/internal/statistics"
-	"powerball-lambda/internal/utils"
+	"fmt"
+	"megamillions-lambda/internal/cache"
+	"megamillions-lambda/internal/generator"
+	"megamillions-lambda/internal/models"
+	"megamillions-lambda/internal/statistics"
 	"strings"
 	"time"
 
@@ -30,7 +30,7 @@ type Handler struct {
 }
 
 type GenerateRequest struct {
-	// Methid는 번호 생성 방식을 지정합니다.
+	// Method는 번호 생성 방식을 지정합니다.
 	// "random", "hot", "cold", "unique" 중 하나
 	Method string `json:"method"`
 
@@ -68,7 +68,7 @@ type Response struct {
 }
 
 // HandleRequest는 Lambda 함수의 진입점입니다.
-func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) { // CORS 헤더 기본 설정
+func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Content-Type":                     "application/json",
@@ -111,6 +111,7 @@ func (h *Handler) handleGenerateNumbers(request GenerateRequest, headers map[str
 		return createErrorResponse(headers, err.Error(), 400), nil
 	}
 
+	// 중요: 여기서 최신 데이터만 사용하도록 ensureDataLoaded 함수 호출
 	if err := h.ensureDataLoaded(); err != nil {
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
@@ -160,6 +161,7 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
 	}
 
+	// 중요: 최신 데이터만 사용
 	if err := h.ensureDataLoaded(); err != nil {
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
@@ -217,12 +219,15 @@ func validateRequest(request GenerateRequest) error {
 }
 
 // ensureDataLoaded는 데이터가 로드되었는지 확인하고, 필요한 경우 생성기를 초기화합니다.
+// 중요: 이 함수는 최신 데이터만 사용하도록 수정되었습니다.
 func (h *Handler) ensureDataLoaded() error {
+	// 최신 데이터만 가져오기
 	draws, valid := h.cache.Get()
 	if !valid {
 		return errors.New("캐시된 데이터가 없거나 만료되었습니다")
 	}
 
+	// 생성기가 없거나 데이터가 업데이트되면 새로 생성
 	if h.numberGenerator == nil {
 		h.numberGenerator = generator.NewGenerator(draws)
 	}
@@ -258,7 +263,7 @@ func (h *Handler) generateNumbers(request GenerateRequest) ([]models.GeneratedNu
 	return numbers, nil
 }
 
-// 회차 목록 반환 핸들러
+// HandleDrawListRequest는 회차 목록 요청을 처리합니다.
 func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
 		"Content-Type":                     "application/json",
@@ -282,13 +287,9 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		return createErrorResponse(headers, "잘못된 요청 형식입니다", 400), nil
 	}
 
-	if err := h.ensureDataLoaded(); err != nil {
-		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
-	}
-
 	// draws API에서는 전체 데이터 사용
 	draws, valid := h.cache.GetAllDraws()
-	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
+	// 전체 데이터가 없으면 최신 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
 		if !valid {
@@ -324,12 +325,17 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		endIdx = 0
 	}
 
-	pagedDraws := filteredDraws[startIdx:endIdx]
+	pagedDraws := filteredDraws
+	if startIdx < endIdx {
+		pagedDraws = filteredDraws[startIdx:endIdx]
+	} else {
+		pagedDraws = []models.MegaMillionsDraw{}
+	}
 
 	// 응답 생성
 	summaries := make([]models.DrawSummary, len(pagedDraws))
 	for i, draw := range pagedDraws {
-		jackpotWinners := "0"
+		jackpotWinners := 0
 		if len(draw.PrizeBreakdown) > 0 {
 			jackpotWinners = draw.PrizeBreakdown[0].Winners
 		}
@@ -337,8 +343,8 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		summaries[i] = models.DrawSummary{
 			Date:             draw.Date,
 			WhiteNumbers:     draw.WhiteNumbers,
-			Powerball:        draw.Powerball,
-			PowerPlay:        draw.PowerPlay,
+			MegaBall:         draw.MegaBall,
+			MegaPlier:        draw.MegaPlier,
 			EstimatedJackpot: draw.EstimatedJackpot,
 			JackpotWinners:   jackpotWinners,
 		}
@@ -363,7 +369,7 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 	}, nil
 }
 
-// 특정 회차 상세 정보 핸들러
+// HandleDrawDetailRequest는 특정 회차 상세 정보 요청을 처리합니다.
 func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
 		"Content-Type":                     "application/json",
@@ -391,13 +397,8 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "날짜를 지정해야 합니다", 400), nil
 	}
 
-	if err := h.ensureDataLoaded(); err != nil {
-		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
-	}
-
-	// 상세 회차 정보에서도 전체 데이터 사용
+	// 모든 시대의 데이터 사용
 	draws, valid := h.cache.GetAllDraws()
-	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
 		if !valid {
@@ -406,7 +407,7 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 	}
 
 	// 날짜로 회차 찾기
-	var draw *models.PowerballDraw
+	var draw *models.MegaMillionsDraw
 	for i := range draws {
 		if draws[i].Date == req.Date {
 			draw = &draws[i]
@@ -431,7 +432,7 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 	}, nil
 }
 
-// 번호별 출현 빈도 핸들러
+// HandleNumberFrequencyRequest는 번호 빈도 요청을 처리합니다.
 func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
 	headers := map[string]string{
 		"Content-Type":                     "application/json",
@@ -450,6 +451,7 @@ func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request even
 		}, nil
 	}
 
+	// 중요: 최신 데이터만 사용
 	if err := h.ensureDataLoaded(); err != nil {
 		return createErrorResponse(headers, "데이터 로드 실패: "+err.Error(), 500), nil
 	}
@@ -461,40 +463,49 @@ func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request even
 
 	// 번호별 빈도 계산
 	whiteFrequency := make(map[int]int)
-	powerFrequency := make(map[int]int)
+	megaFrequency := make(map[int]int)
 
+	// 현재 규칙 가져오기
+	currentRules, valid := h.cache.GetCurrentRules()
+	if !valid {
+		// 기본값 설정
+		currentRules = models.Rules{
+			WhiteBallRange: []int{1, 70},
+			MegaBallRange:  []int{1, 24},
+		}
+	}
+
+	// 빈도 계산
 	for _, draw := range draws {
 		// 흰 공 번호 빈도
-		for _, numStr := range draw.WhiteNumbers {
-			num := utils.ParseInt(numStr)
+		for _, num := range draw.WhiteNumbers {
 			whiteFrequency[num]++
 		}
 
-		// 파워볼 번호 빈도
-		powerNum := utils.ParseInt(draw.Powerball)
-		powerFrequency[powerNum]++
+		// 메가볼 번호 빈도
+		megaFrequency[draw.MegaBall]++
 	}
 
 	// 맵을 슬라이스로 변환
-	whiteBalls := make([]models.NumberFrequency, 0, 69)
-	for num := 1; num <= 69; num++ {
+	whiteBalls := make([]models.NumberFrequency, 0, currentRules.WhiteBallRange[1])
+	for num := currentRules.WhiteBallRange[0]; num <= currentRules.WhiteBallRange[1]; num++ {
 		whiteBalls = append(whiteBalls, models.NumberFrequency{
 			Number: num,
 			Count:  whiteFrequency[num],
 		})
 	}
 
-	powerBalls := make([]models.NumberFrequency, 0, 26)
-	for num := 1; num <= 26; num++ {
-		powerBalls = append(powerBalls, models.NumberFrequency{
+	megaBalls := make([]models.NumberFrequency, 0, currentRules.MegaBallRange[1])
+	for num := currentRules.MegaBallRange[0]; num <= currentRules.MegaBallRange[1]; num++ {
+		megaBalls = append(megaBalls, models.NumberFrequency{
 			Number: num,
-			Count:  powerFrequency[num],
+			Count:  megaFrequency[num],
 		})
 	}
 
 	response := models.NumberFrequencyResponse{
 		WhiteBalls: whiteBalls,
-		PowerBalls: powerBalls,
+		MegaBalls:  megaBalls,
 	}
 
 	responseBody, err := json.Marshal(response)
@@ -509,13 +520,28 @@ func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request even
 	}, nil
 }
 
-// 검색 함수
-func (h *Handler) searchDraws(draws []models.PowerballDraw, req models.DrawListRequest) []models.PowerballDraw {
-	result := make([]models.PowerballDraw, 0)
+// searchDraws는 주어진 조건에 맞는 회차를 검색합니다.
+func (h *Handler) searchDraws(draws []models.MegaMillionsDraw, req models.DrawListRequest) []models.MegaMillionsDraw {
+	result := make([]models.MegaMillionsDraw, 0)
 
 	// 날짜 파싱 함수
 	parseDate := func(dateStr string) (time.Time, error) {
-		return time.Parse("Mon, Jan 2, 2006", dateStr)
+		layouts := []string{
+			"January 2, 2006",
+			"Jan 2, 2006",
+		}
+
+		var parsedTime time.Time
+		var err error
+
+		for _, layout := range layouts {
+			parsedTime, err = time.Parse(layout, dateStr)
+			if err == nil {
+				return parsedTime, nil
+			}
+		}
+
+		return time.Time{}, errors.New("날짜 형식을 파싱할 수 없습니다")
 	}
 
 	// 날짜 범위 검색을 위한 변수
@@ -542,19 +568,25 @@ func (h *Handler) searchDraws(draws []models.PowerballDraw, req models.DrawListR
 	for _, draw := range draws {
 		include := true
 
-		// 텍스트 기반 검색 (계속 유지)
+		// 텍스트 기반 검색
 		if req.SearchTerm != "" {
 			textMatch := strings.Contains(strings.ToLower(draw.Date), strings.ToLower(req.SearchTerm))
 			if !textMatch {
 				// 번호 검색
-				numFound := false
-				for _, num := range draw.WhiteNumbers {
-					if num == req.SearchTerm {
-						numFound = true
-						break
+				searchNumStr := req.SearchTerm
+				searchNum := 0
+				if _, err := fmt.Sscanf(searchNumStr, "%d", &searchNum); err == nil {
+					numFound := false
+					for _, num := range draw.WhiteNumbers {
+						if num == searchNum {
+							numFound = true
+							break
+						}
 					}
-				}
-				if !numFound && draw.Powerball != req.SearchTerm {
+					if !numFound && draw.MegaBall != searchNum {
+						include = false
+					}
+				} else {
 					include = false
 				}
 			}
@@ -593,13 +625,13 @@ func (h *Handler) searchDraws(draws []models.PowerballDraw, req models.DrawListR
 		// 특정 번호 검색
 		if req.Number > 0 {
 			numFound := false
-			for _, numStr := range draw.WhiteNumbers {
-				if utils.ParseInt(numStr) == req.Number {
+			for _, num := range draw.WhiteNumbers {
+				if num == req.Number {
 					numFound = true
 					break
 				}
 			}
-			if !numFound && utils.ParseInt(draw.Powerball) != req.Number {
+			if !numFound && draw.MegaBall != req.Number {
 				include = false
 			}
 		}

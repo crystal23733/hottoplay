@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
+	"megamillions-lambda/config"
+	"megamillions-lambda/internal/cache"
+	"megamillions-lambda/internal/handlers"
+	"megamillions-lambda/internal/s3client"
+	"megamillions-lambda/internal/server"
 	"os"
-	"powerball-lambda/config"
-	"powerball-lambda/internal/cache"
-	"powerball-lambda/internal/handlers"
-	"powerball-lambda/internal/s3client"
-	"powerball-lambda/internal/server"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -37,8 +37,13 @@ func main() {
 		allDraws, err := s3client.LoadAllDataFromS3(
 			cfg.S3BucketName,
 			cfg.S3ObjectKey,
-			cfg.S3ObjectKey2012to2015,
-			cfg.S3ObjectKeyBefore2012,
+			cfg.S3ObjectKey1999,
+			cfg.S3ObjectKey2002,
+			cfg.S3ObjectKey2005,
+			cfg.S3ObjectKey2013,
+			cfg.S3ObjectKey2017,
+			cfg.S3ObjectKey2025,
+			cfg.S3ObjectKeyCurrent,
 		)
 		if err != nil {
 			log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
