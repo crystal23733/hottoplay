@@ -34,17 +34,17 @@ func main() {
 		}
 
 		// 모든 시기의 데이터 로드
-		allDraws, err := s3client.LoadAllDataFromS3(
-			cfg.S3BucketName,
-			cfg.S3ObjectKey,
-			cfg.S3ObjectKey2012to2015,
-			cfg.S3ObjectKeyBefore2012,
-		)
-		if err != nil {
-			log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
-		} else {
-			powerballCache.SetAllDraws(allDraws)
-		}
+		// allDraws, err := s3client.LoadAllDataFromS3(
+		// 	cfg.S3BucketName,
+		// 	cfg.S3ObjectKey,
+		// 	cfg.S3ObjectKey2012to2015,
+		// 	cfg.S3ObjectKeyBefore2012,
+		// )
+		// if err != nil {
+		// 	log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
+		// } else {
+		// 	powerballCache.SetAllDraws(allDraws)
+		// }
 	}
 
 	// 핸들러 초기화

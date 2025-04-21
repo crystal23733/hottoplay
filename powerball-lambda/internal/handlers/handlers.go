@@ -287,7 +287,7 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 	}
 
 	// draws API에서는 전체 데이터 사용
-	draws, valid := h.cache.GetAllDraws()
+	draws, valid := h.cache.Get()
 	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
@@ -396,7 +396,7 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 	}
 
 	// 상세 회차 정보에서도 전체 데이터 사용
-	draws, valid := h.cache.GetAllDraws()
+	draws, valid := h.cache.Get()
 	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
