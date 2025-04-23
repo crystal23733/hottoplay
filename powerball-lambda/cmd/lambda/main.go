@@ -5,6 +5,7 @@ import (
 	"os"
 	"powerball-lambda/config"
 	"powerball-lambda/internal/cache"
+	"powerball-lambda/internal/encryption"
 	"powerball-lambda/internal/handlers"
 	"powerball-lambda/internal/s3client"
 	"powerball-lambda/internal/server"
@@ -18,6 +19,13 @@ func main() {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		log.Printf("Warning: 설정 로드 실패: %v", err)
+	}
+
+	// 암호화 초기화
+	if cfg != nil && cfg.EncryptResponse {
+		if err := encryption.Initialize(); err != nil {
+			log.Printf("Warning: 암호화 초기화 실패: %v", err)
+		}
 	}
 
 	// 캐시 초기화
@@ -47,8 +55,13 @@ func main() {
 		// }
 	}
 
+	encryptResponse := false
+	if cfg != nil {
+		encryptResponse = cfg.EncryptResponse
+	}
+
 	// 핸들러 초기화
-	handler := handlers.NewHandler(powerballCache, nil)
+	handler := handlers.NewHandler(powerballCache, nil, encryptResponse)
 
 	// Lambda 또는 로컬 서버 실행
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
