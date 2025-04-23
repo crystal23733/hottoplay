@@ -23,7 +23,7 @@ func TestHandleRequest(t *testing.T) {
 		},
 	})
 
-	handler := NewHandler(testCache, nil)
+	handler := NewHandler(testCache, nil, false)
 
 	t.Run("유효한 요청 처리", func(t *testing.T) {
 		request := events.APIGatewayProxyRequest{
