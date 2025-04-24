@@ -1,4 +1,7 @@
 export default (markdown: string): string => {
+  // undefined 또는 null 체크
+  if (!markdown) return '';
+
   return (
     markdown
       // 헤더 제거 (### 등)

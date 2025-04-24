@@ -24,7 +24,7 @@ func TestServer(t *testing.T) {
 		},
 	})
 
-	handler := handlers.NewHandler(testCache, nil)
+	handler := handlers.NewHandler(testCache, nil, false)
 	server := NewServer(handler)
 
 	t.Run("CORS Headers Check", func(t *testing.T) {

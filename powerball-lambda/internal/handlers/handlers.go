@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"powerball-lambda/internal/cache"
+	"powerball-lambda/internal/encryption"
 	"powerball-lambda/internal/generator"
 	"powerball-lambda/internal/models"
 	"powerball-lambda/internal/statistics"
@@ -27,6 +28,7 @@ const (
 type Handler struct {
 	cache           *cache.Cache
 	numberGenerator *generator.Generator
+	encryptResponse bool
 }
 
 type GenerateRequest struct {
@@ -53,10 +55,11 @@ type StatisticsRequest struct {
 }
 
 // NewHandler는 새로운 Handler 인스턴스를 생성합니다.
-func NewHandler(cache *cache.Cache, generator *generator.Generator) *Handler {
+func NewHandler(cache *cache.Cache, generator *generator.Generator, encryptResponse bool) *Handler {
 	return &Handler{
 		cache:           cache,
 		numberGenerator: generator,
+		encryptResponse: encryptResponse,
 	}
 }
 
@@ -65,6 +68,23 @@ type Response struct {
 	StatusCode int               `json:"statusCode"`
 	Headers    map[string]string `json:"headers"`
 	Body       string            `json:"body"`
+}
+
+func (h *Handler) encryptResponseIfNeeded(responseBody []byte, headers map[string]string) (string, error) {
+	if !h.encryptResponse {
+		return string(responseBody), nil
+	}
+
+	// 암호화 및 JSON 응답 형식으로 변환
+	encryptedData, err := encryption.EncryptResponse(responseBody)
+	if err != nil {
+		return "", err
+	}
+
+	// 응답이 암호화되었음을 헤더에 표시
+	headers["X-Response-Encrypted"] = "true"
+
+	return string(encryptedData), nil
 }
 
 // HandleRequest는 Lambda 함수의 진입점입니다.
@@ -129,10 +149,16 @@ func (h *Handler) handleGenerateNumbers(request GenerateRequest, headers map[str
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
 	}
 
+	// 응답 암호화
+	encryptedBody, err := h.encryptResponseIfNeeded(responseBody, headers)
+	if err != nil {
+		return createErrorResponse(headers, "암호화 실패: "+err.Error(), 500), nil
+	}
+
 	return Response{
 		StatusCode: 200,
 		Headers:    headers,
-		Body:       string(responseBody),
+		Body:       encryptedBody,
 	}, nil
 }
 
@@ -180,10 +206,16 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
 	}
 
+	// 응답 암호화
+	encryptedBody, err := h.encryptResponseIfNeeded(responseBody, headers)
+	if err != nil {
+		return createErrorResponse(headers, "암호화 실패: "+err.Error(), 500), nil
+	}
+
 	return Response{
 		StatusCode: 200,
 		Headers:    headers,
-		Body:       string(responseBody),
+		Body:       encryptedBody,
 	}, nil
 }
 
@@ -287,7 +319,7 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 	}
 
 	// draws API에서는 전체 데이터 사용
-	draws, valid := h.cache.GetAllDraws()
+	draws, valid := h.cache.Get()
 	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
@@ -356,10 +388,16 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
 	}
 
+	// 응답 암호화
+	encryptedBody, err := h.encryptResponseIfNeeded(responseBody, headers)
+	if err != nil {
+		return createErrorResponse(headers, "암호화 실패: "+err.Error(), 500), nil
+	}
+
 	return Response{
 		StatusCode: 200,
 		Headers:    headers,
-		Body:       string(responseBody),
+		Body:       encryptedBody,
 	}, nil
 }
 
@@ -396,7 +434,7 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 	}
 
 	// 상세 회차 정보에서도 전체 데이터 사용
-	draws, valid := h.cache.GetAllDraws()
+	draws, valid := h.cache.Get()
 	// 전체 데이터가 없으면 2015년 이후 데이터로 폴백
 	if !valid {
 		draws, valid = h.cache.Get()
@@ -424,10 +462,16 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
 	}
 
+	// 응답 암호화
+	encryptedBody, err := h.encryptResponseIfNeeded(responseBody, headers)
+	if err != nil {
+		return createErrorResponse(headers, "암호화 실패: "+err.Error(), 500), nil
+	}
+
 	return Response{
 		StatusCode: 200,
 		Headers:    headers,
-		Body:       string(responseBody),
+		Body:       encryptedBody,
 	}, nil
 }
 
@@ -502,10 +546,16 @@ func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request even
 		return createErrorResponse(headers, "응답 생성 실패: "+err.Error(), 500), nil
 	}
 
+	// 응답 암호화
+	encryptedBody, err := h.encryptResponseIfNeeded(responseBody, headers)
+	if err != nil {
+		return createErrorResponse(headers, "암호화 실패: "+err.Error(), 500), nil
+	}
+
 	return Response{
 		StatusCode: 200,
 		Headers:    headers,
-		Body:       string(responseBody),
+		Body:       encryptedBody,
 	}, nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"os"
 	"powerball-lambda/config"
 	"powerball-lambda/internal/cache"
+	"powerball-lambda/internal/encryption"
 	"powerball-lambda/internal/handlers"
 	"powerball-lambda/internal/s3client"
 	"powerball-lambda/internal/server"
@@ -20,11 +21,19 @@ func main() {
 		log.Printf("Warning: 설정 로드 실패: %v", err)
 	}
 
+	// 암호화 초기화
+	if cfg != nil && cfg.EncryptResponse {
+		if err := encryption.Initialize(); err != nil {
+			log.Printf("Warning: 암호화 초기화 실패: %v", err)
+		}
+	}
+
 	// 캐시 초기화
 	powerballCache := cache.NewCache(1 * time.Hour)
 
 	// S3에서 초기 데이터 로드
 	if cfg != nil {
+		// 2015년 이후 데이터 로드
 		// 2015년 이후 데이터 로드
 		draws, err := s3client.LoadDataFromS3(cfg.S3BucketName, cfg.S3ObjectKey)
 		if err != nil {
@@ -34,21 +43,26 @@ func main() {
 		}
 
 		// 모든 시기의 데이터 로드
-		allDraws, err := s3client.LoadAllDataFromS3(
-			cfg.S3BucketName,
-			cfg.S3ObjectKey,
-			cfg.S3ObjectKey2012to2015,
-			cfg.S3ObjectKeyBefore2012,
-		)
-		if err != nil {
-			log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
-		} else {
-			powerballCache.SetAllDraws(allDraws)
-		}
+		// allDraws, err := s3client.LoadAllDataFromS3(
+		// 	cfg.S3BucketName,
+		// 	cfg.S3ObjectKey,
+		// 	cfg.S3ObjectKey2012to2015,
+		// 	cfg.S3ObjectKeyBefore2012,
+		// )
+		// if err != nil {
+		// 	log.Printf("Warning: 전체 S3 데이터 로드 실패: %v", err)
+		// } else {
+		// 	powerballCache.SetAllDraws(allDraws)
+		// }
+	}
+
+	encryptResponse := false
+	if cfg != nil {
+		encryptResponse = cfg.EncryptResponse
 	}
 
 	// 핸들러 초기화
-	handler := handlers.NewHandler(powerballCache, nil)
+	handler := handlers.NewHandler(powerballCache, nil, encryptResponse)
 
 	// Lambda 또는 로컬 서버 실행
 	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {

@@ -14,6 +14,9 @@ type Config struct {
 	S3ObjectKey2012to2015 string
 	// 2012년 이전 데이터
 	S3ObjectKeyBefore2012 string
+
+	APIEncryptionKey string
+	EncryptResponse  bool
 }
 
 func LoadConfig() (*Config, error) {
@@ -23,10 +26,17 @@ func LoadConfig() (*Config, error) {
 		}
 	}
 
+	encryptResponse := false
+	if os.Getenv("API_ENCRYPT_RESPONSE") == "true" {
+		encryptResponse = true
+	}
+
 	return &Config{
 		S3BucketName:          os.Getenv("S3_BUCKET_NAME"),
 		S3ObjectKey:           os.Getenv("S3_OBJECT_KEY"),
 		S3ObjectKey2012to2015: os.Getenv("S3_OBJECT_KEY_2012_TO_2015"),
 		S3ObjectKeyBefore2012: os.Getenv("S3_OBJECT_KEY_BEFORE_2012"),
+		APIEncryptionKey:      os.Getenv("API_ENCRYPTION_KEY"),
+		EncryptResponse:       encryptResponse,
 	}, nil
 }
