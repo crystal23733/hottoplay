@@ -93,7 +93,7 @@ func (h *Handler) HandleRequest(ctx context.Context, request events.APIGatewayPr
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST",
-		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Headers":     "Content-Type,X-Response-Encrypted",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
@@ -168,7 +168,7 @@ func (h *Handler) HandleStatisticsRequest(ctx context.Context, request events.AP
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST",
-		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Headers":     "Content-Type,X-Response-Encrypted",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
@@ -296,7 +296,7 @@ func (h *Handler) HandleDrawListRequest(ctx context.Context, request events.APIG
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST",
-		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Headers":     "Content-Type,X-Response-Encrypted",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
@@ -407,7 +407,7 @@ func (h *Handler) HandleDrawDetailRequest(ctx context.Context, request events.AP
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST",
-		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Headers":     "Content-Type,X-Response-Encrypted",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
@@ -481,7 +481,7 @@ func (h *Handler) HandleNumberFrequencyRequest(ctx context.Context, request even
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Origin":      "https://hottoplay.com",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST",
-		"Access-Control-Allow-Headers":     "Content-Type",
+		"Access-Control-Allow-Headers":     "Content-Type,X-Response-Encrypted",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
