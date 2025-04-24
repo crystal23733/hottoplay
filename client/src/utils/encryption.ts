@@ -68,6 +68,8 @@ export const decryptData = <T>(encryptedBase64: string, key: string): T => {
       }
     }
 
-    throw new Error('decryptData error: ' + (error instanceof Error ? error.message : String(error)));
+    throw new Error(
+      'decryptData error: ' + (error instanceof Error ? error.message : String(error))
+    );
   }
 };
