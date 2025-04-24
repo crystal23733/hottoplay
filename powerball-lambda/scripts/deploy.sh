@@ -161,10 +161,9 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --http-method OPTIONS \
     --status-code 200 \
     --response-parameters "{
-      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Response-Encrypted'\",
       \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
-      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\",
-      \"method.response.header.X-Response-Encrypted\": \"'true'\"
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
     }" \
     --region $AWS_REGION 2>/dev/null || true
 
@@ -274,10 +273,9 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --http-method OPTIONS \
     --status-code 200 \
     --response-parameters "{
-      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Response-Encrypted'\",
       \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
-      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\",
-      \"method.response.header.X-Response-Encrypted\": \"'true'\"
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
     }" \
     --region $AWS_REGION 2>/dev/null || true
 
@@ -396,10 +394,9 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --http-method OPTIONS \
     --status-code 200 \
     --response-parameters "{
-      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Response-Encrypted'\",
       \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
-      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\",
-      \"method.response.header.X-Response-Encrypted\": \"'true'\"
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
     }" \
     --region $AWS_REGION 2>/dev/null || true
 
@@ -518,10 +515,9 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --http-method OPTIONS \
     --status-code 200 \
     --response-parameters "{
-      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Response-Encrypted'\",
       \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
-      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\",
-      \"method.response.header.X-Response-Encrypted\": \"'true'\"
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
     }" \
     --region $AWS_REGION 2>/dev/null || true
 
@@ -640,10 +636,9 @@ if [ ! -z "$API_GATEWAY_ID" ]; then
     --http-method OPTIONS \
     --status-code 200 \
     --response-parameters "{
-      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key'\",
+      \"method.response.header.Access-Control-Allow-Headers\": \"'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Response-Encrypted'\",
       \"method.response.header.Access-Control-Allow-Methods\": \"'GET,POST,OPTIONS'\",
-      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\",
-      \"method.response.header.X-Response-Encrypted\": \"'true'\"
+      \"method.response.header.Access-Control-Allow-Origin\": \"'https://hottoplay.com'\"
     }" \
     --region $AWS_REGION 2>/dev/null || true
 
