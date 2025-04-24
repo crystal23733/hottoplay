@@ -34,6 +34,7 @@ func main() {
 	// S3에서 초기 데이터 로드
 	if cfg != nil {
 		// 2015년 이후 데이터 로드
+		// 2015년 이후 데이터 로드
 		draws, err := s3client.LoadDataFromS3(cfg.S3BucketName, cfg.S3ObjectKey)
 		if err != nil {
 			log.Printf("Warning: S3 데이터 로드 실패: %v", err)

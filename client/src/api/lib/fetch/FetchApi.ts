@@ -53,17 +53,17 @@ export default class<T> extends BaseFetchApi<T> {
 
       // 응답이 JSON이 아니면
       if (!isJson) {
-        return await response.text() as unknown as T;
+        return (await response.text()) as unknown as T;
       }
 
       // JSON 응답 파싱
       const data = await response.json();
-      
+
       // 암호화된 응답인지 확인하고 복호화 (isEncrypted 필드로만 체크)
       if (isEncryptedResponse(data)) {
         return await decryptData<T>(data.data, this.encryptionKey);
       }
-      
+
       return data as T;
     } catch (error) {
       console.error('요청 처리 중 에러 발생:', error);
