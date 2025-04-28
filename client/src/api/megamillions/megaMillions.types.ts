@@ -114,7 +114,7 @@ export interface NumberFrequency {
 export interface NumberFrequencyResponse {
   white_ball_frequency: NumberFrequency[];
   mega_ball_frequency: NumberFrequency[];
-}/**
+} /**
  * 메가밀리언 번호 생성 요청 타입
  * @property method - 생성 방법 (예: "random", "hot", "cold", "unique")
  * @property count - 생성할 번호 개수
