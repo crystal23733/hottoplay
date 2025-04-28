@@ -11,7 +11,7 @@ import {
  * 메가밀리언 서비스 인터페이스
  * 메가밀리언 관련 API 호출을 위한 메서드 정의
  */
-export default interface MegaMillionsService {
+export default interface IMegaMillionsService {
   /**
    * 메가밀리언 번호 생성
    * @param params - 생성 요청 파라미터
