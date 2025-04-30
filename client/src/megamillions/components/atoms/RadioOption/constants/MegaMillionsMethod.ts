@@ -1,12 +1,7 @@
 import { Brain, Flame, Snowflake, Zap } from 'lucide-react';
 import { MegaMillionsMethodInfo } from '../MegaMillionsMethodSelect.types';
 
-/**
- * 메가밀리언 생성 메서드 정보
- * @constant
- * @type {Array<MegaMillionsMethodInfo>}
- */
-export const MEGAMILLIONS_METHODS: MegaMillionsMethodInfo[] = [
+const MEGAMILLIONS_METHODS: MegaMillionsMethodInfo[] = [
   {
     id: 'random',
     label: 'Quick Pick',
@@ -19,7 +14,7 @@ export const MEGAMILLIONS_METHODS: MegaMillionsMethodInfo[] = [
     label: 'Hot Numbers',
     shortDescription: 'Most frequently drawn numbers',
     description:
-      'Use numbers that have been drawn most frequently in recent MegaMillions history. This method is based on actual drawing data from the past few months, identifying numbers that appear more often than others.',
+      'Use numbers that have been drawn most frequently in recent Mega Millions history. This method is based on actual drawing data from the past few months, identifying numbers that appear more often than others.',
     icon: Flame,
   },
   {
@@ -39,14 +34,4 @@ export const MEGAMILLIONS_METHODS: MegaMillionsMethodInfo[] = [
   },
 ];
 
-/**
- * 메가밀리언 메서드 이름 맵핑
- * @constant
- * @type {Object}
- */
-export const methodNameMap: Record<string, string> = {
-  random: 'Quick Pick',
-  hot: 'Hot Numbers',
-  cold: 'Cold Numbers',
-  unique: 'Unique Combination',
-};
+export default MEGAMILLIONS_METHODS;

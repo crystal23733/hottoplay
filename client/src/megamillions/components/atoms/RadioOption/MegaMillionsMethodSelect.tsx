@@ -1,58 +1,67 @@
-'use client';
-
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
-import MegaMillionsMethodSelectProps, {
-  MegaMillionsMethod,
-} from './MegaMillionsMethodSelect.types';
-import { MEGAMILLIONS_METHODS } from './constants/methodInfo.ts';
+import PowerBallMethodSelectProps from './MegaMillionsMethodSelect.types';
+import { Label } from '@/ui/label';
+import POWERBALL_METHODS from './constants/powerBallMethod';
+import { Card, CardContent } from '@/ui/Card';
 import { cn } from '@/lib/utils';
 
 /**
- * 메가밀리언 메서드 선택 컴포넌트
- * @param props 메가밀리언 메서드 선택 컴포넌트 속성
- * @returns 메가밀리언 메서드 선택 컴포넌트
+ * 파워볼 메서드 선택 컴포넌트
+ * @param {PowerBallMethodSelectProps} props - 파워볼 메서드 선택 컴포넌트 속성
+ * @returns {React.ReactNode} 파워볼 메서드 선택 컴포넌트
  * @example
- * <MegaMillionsMethodSelect value="random" onChange={(value) => setValue(value)} />
+ * <PowerBallMethodSelect value={value} onChange={onChange} disabled={disabled} />
  */
-const MegaMillionsMethodSelect: React.FC<MegaMillionsMethodSelectProps> = ({
+const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
   value,
   onChange,
   disabled = false,
 }) => {
   return (
-    <RadioGroup
-      defaultValue={value}
-      value={value}
-      onValueChange={value => onChange(value as MegaMillionsMethod)}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-      disabled={disabled}
-    >
-      {MEGAMILLIONS_METHODS.map(method => (
-        <div key={method.id}>
-          <RadioGroupItem value={method.id} id={method.id} className="peer sr-only" />
-          <label
-            htmlFor={method.id}
+    <div className="space-y-4">
+      <RadioGroup
+        value={value}
+        onValueChange={onChange as (value: string) => void}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        disabled={disabled}
+      >
+        {POWERBALL_METHODS.map(method => (
+          <Card
+            key={method.id}
             className={cn(
-              'flex flex-col gap-2 p-4 rounded-lg border-2 cursor-pointer',
-              'hover:border-primary/50 hover:bg-muted/50',
-              'peer-checked:border-primary peer-checked:bg-primary/5',
-              'peer-disabled:cursor-not-allowed peer-disabled:opacity-50',
-              'peer-disabled:hover:border-muted peer-disabled:hover:bg-transparent'
+              'cursor-pointer transition-all hover:border-primary',
+              value === method.id && 'border-primary bg-primary/5'
             )}
+            onClick={() => !disabled && onChange(method.id)}
           >
-            <div className="flex items-start gap-3">
-              <method.icon className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" />
-              <div className="space-y-1">
-                <div className="font-medium">{method.label}</div>
-                <div className="text-sm text-muted-foreground">{method.shortDescription}</div>
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-4">
+                <RadioGroupItem value={method.id} id={method.id} className="mt-1" />
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <method.icon className="w-4 h-4" />
+                    <Label htmlFor={method.id} className="text-lg font-medium cursor-pointer">
+                      {method.label}
+                    </Label>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">{method.shortDescription}</p>
+                </div>
               </div>
-            </div>
-            <p className="text-xs text-muted-foreground">{method.description}</p>
-          </label>
-        </div>
-      ))}
-    </RadioGroup>
+            </CardContent>
+          </Card>
+        ))}
+      </RadioGroup>
+
+      {/* 선택된 방식의 자세한 설명 */}
+      <Card className="bg-muted">
+        <CardContent className="p-4">
+          <p className="text-sm leading-relaxed">
+            {POWERBALL_METHODS.find(m => m.id === value)?.description}
+          </p>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
-export default MegaMillionsMethodSelect;
+export default PowerBallMethodSelect;
