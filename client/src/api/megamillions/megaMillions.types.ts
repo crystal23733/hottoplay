@@ -231,3 +231,15 @@ export interface NumberFrequencyResponse {
   white_ball_frequency: NumberFrequency[];
   mega_ball_frequency: NumberFrequency[];
 }
+
+export interface DrawListRequest {
+  page: number;
+  page_size: number;
+  search_term?: string;
+  year?: number;
+  month?: number;
+  day?: number;
+  start_date?: string;
+  end_date?: string;
+  number?: number;
+}
