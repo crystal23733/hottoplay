@@ -1,7 +1,7 @@
 import { RadioGroup, RadioGroupItem } from '@/ui/radio-group';
-import PowerBallMethodSelectProps from './MegaMillionsMethodSelect.types';
+import MegaMillionsMethodSelectProps from './MegaMillionsMethodSelect.types';
 import { Label } from '@/ui/label';
-import POWERBALL_METHODS from './constants/powerBallMethod';
+import MEGAMILLIONS_METHODS from './constants/MegaMillionsMethod';
 import { Card, CardContent } from '@/ui/Card';
 import { cn } from '@/lib/utils';
 
@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
  * @example
  * <PowerBallMethodSelect value={value} onChange={onChange} disabled={disabled} />
  */
-const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
+const MegaMillionsMethodSelect: React.FC<MegaMillionsMethodSelectProps> = ({
   value,
   onChange,
   disabled = false,
@@ -25,7 +25,7 @@ const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
         disabled={disabled}
       >
-        {POWERBALL_METHODS.map(method => (
+        {MEGAMILLIONS_METHODS.map(method => (
           <Card
             key={method.id}
             className={cn(
@@ -56,7 +56,7 @@ const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
       <Card className="bg-muted">
         <CardContent className="p-4">
           <p className="text-sm leading-relaxed">
-            {POWERBALL_METHODS.find(m => m.id === value)?.description}
+            {MEGAMILLIONS_METHODS.find(m => m.id === value)?.description}
           </p>
         </CardContent>
       </Card>
@@ -64,4 +64,4 @@ const PowerBallMethodSelect: React.FC<PowerBallMethodSelectProps> = ({
   );
 };
 
-export default PowerBallMethodSelect;
+export default MegaMillionsMethodSelect;
