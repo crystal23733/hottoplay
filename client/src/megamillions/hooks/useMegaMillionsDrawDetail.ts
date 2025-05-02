@@ -1,6 +1,6 @@
 import customHook from '@/api/lib/customHook/customHook';
-import { MegaMillionsDrawsResponse } from '@/api/megamillions/megaMillions.types';
-import MegaMillionsService from '@/api/megamillions/megaMillionsService';
+import { DrawDetailResponse } from '@/api/megamillions/megaMillionsDraw.types';
+import MegaMillionsDrawService from '@/api/megamillions/megaMillionsDrawService';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
@@ -9,10 +9,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
  */
 export default (initialDate?: string) => {
   const [date, setDate] = useState<string | undefined>(initialDate);
-  const { data, setData, loading, setLoading, error, setError } =
-    customHook<MegaMillionsDrawsResponse>();
+  const { data, setData, loading, setLoading, error, setError } = customHook<DrawDetailResponse>();
 
-  const megaMillionsService = useMemo(() => new MegaMillionsService(), []);
+  const megaMillionsDrawService = useMemo(() => new MegaMillionsDrawService(), []);
 
   const fetchDrawDetail = useCallback(
     async (drawDate: string) => {
@@ -20,7 +19,7 @@ export default (initialDate?: string) => {
 
       setLoading(true);
       try {
-        const response = await megaMillionsService.getDrawDetail(drawDate);
+        const response = await megaMillionsDrawService.getDrawDetail({ date: drawDate });
         setData(response);
       } catch (err) {
         setError(err instanceof Error ? err.message : '상세 정보 조회 중 오류가 발생했습니다.');
@@ -28,7 +27,7 @@ export default (initialDate?: string) => {
         setLoading(false);
       }
     },
-    [megaMillionsService, setData, setError, setLoading]
+    [megaMillionsDrawService, setData, setError, setLoading]
   );
 
   // 날짜가 변경되면 상세 정보 조회

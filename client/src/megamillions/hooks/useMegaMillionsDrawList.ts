@@ -1,10 +1,10 @@
 import customHook from '@/api/lib/customHook/customHook';
-import { DrawListRequest, MegaMillionsDrawsResponse } from '@/api/megamillions/megaMillions.types';
-import MegaMillionsService from '@/api/megamillions/megaMillionsService';
+import { DrawListRequest, DrawListResponse } from '@/api/megamillions/megaMillionsDraw.types';
+import MegaMillionsDrawService from '@/api/megamillions/megaMillionsDrawService';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
- * 메가밀리언스 추첨 결과 목록 조회 훅
+ * 파워볼 추첨 결과 목록 조회 훅
  * 페이지네이션, 검색, 필터링 기능 지원
  */
 export default () => {
@@ -18,10 +18,9 @@ export default () => {
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
   const [number, setNumber] = useState<number | undefined>(undefined);
 
-  const { data, setData, loading, setLoading, error, setError } =
-    customHook<MegaMillionsDrawsResponse>();
+  const { data, setData, loading, setLoading, error, setError } = customHook<DrawListResponse>();
 
-  const megaMillionsService = useMemo(() => new MegaMillionsService(), []);
+  const megaMillionsDrawService = useMemo(() => new MegaMillionsDrawService(), []);
 
   // 검색 파라미터 변경 및 결과 조회
   const fetchDrawList = useCallback(async () => {
@@ -45,7 +44,7 @@ export default () => {
       if (endDate !== undefined) params.end_date = endDate;
       if (number !== undefined) params.number = number;
 
-      const response = await megaMillionsService.getDraws(params.page, params.page_size);
+      const response = await megaMillionsDrawService.getDrawList(params);
       setData(response);
     } catch (err) {
       setError(err instanceof Error ? err.message : '데이터 조회 중 오류가 발생했습니다.');
@@ -62,7 +61,7 @@ export default () => {
     startDate,
     endDate,
     number,
-    megaMillionsService,
+    megaMillionsDrawService,
     setData,
     setError,
     setLoading,
