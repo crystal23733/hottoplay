@@ -24,7 +24,7 @@ const DrawList: React.FC<DrawListProps> = ({ draws, loading }) => {
   return (
     <div className="space-y-4">
       {draws.map((draw, index) => (
-        <DrawListItem key={`${draw.date}-${index}`} draw={draw} />
+        <DrawListItem key={`${draw.draw_date}-${index}`} draw={draw} />
       ))}
     </div>
   );
