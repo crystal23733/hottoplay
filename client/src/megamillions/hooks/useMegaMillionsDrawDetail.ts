@@ -1,6 +1,6 @@
 import customHook from '@/api/lib/customHook/customHook';
 import { DrawDetailResponse } from '@/api/megamillions/megaMillionsDraw.types';
-import MegaMillionsDrawService from '@/api/megamillions/megaMillionsDrawService';
+import MegaMillionsDrawService from '@/api/megamillions/MegaMillionsDrawService';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
