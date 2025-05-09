@@ -81,8 +81,7 @@ export interface PrizeBreakdown {
  */
 export interface NumberFrequency {
   number: number;
-  frequency: number;
-  percentage: number;
+  count: number;
 }
 
 /**
@@ -91,6 +90,6 @@ export interface NumberFrequency {
  * @property {NumberFrequency[]} mega_ball_frequency - 메가볼 빈도 데이터
  */
 export interface NumberFrequencyResponse {
-  white_ball_frequency: NumberFrequency[];
-  mega_ball_frequency: NumberFrequency[];
+  white_balls: NumberFrequency[];
+  mega_balls: NumberFrequency[];
 }
