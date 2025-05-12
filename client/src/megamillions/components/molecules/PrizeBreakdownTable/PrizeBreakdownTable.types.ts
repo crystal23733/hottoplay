@@ -1,4 +1,4 @@
-import { PrizeTier } from '@/api/powerBall/powerBallDraw.types';
+import { PrizeTier } from '@/api/megamillions/megaMillionsDraw.types';
 
 /**
  * 상금 분류 테이블 컴포넌트

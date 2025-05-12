@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import PrizeBreakdownTable from '../PrizeBreakdownTable';
-import { PrizeTier } from '@/api/powerBall/powerBallDraw.types';
+import { PrizeTier } from '@/api/megamillions/megaMillionsDraw.types';
 
 // 테이블 컴포넌트 모킹
 jest.mock('@/ui/table', () => ({
@@ -30,22 +30,25 @@ describe('PrizeBreakdownTable 컴포넌트', () => {
   // 테스트용 데이터
   const mockPrizeBreakdown: PrizeTier[] = [
     {
-      prize_tier: 'Match 5 + Power Ball',
-      winners: '1',
+      category: 'Match 5 + Mega Ball',
+      match: '5+1',
       prize: '$100,000,000',
-      power_play: 'N/A',
+      winners: 1,
+      prize_fund: 'N/A',
     },
     {
-      prize_tier: 'Match 5',
-      winners: '4',
+      category: 'Match 5',
+      match: '5',
       prize: '$1,000,000',
-      power_play: '$2,000,000',
+      winners: 4,
+      prize_fund: 'N/A',
     },
     {
-      prize_tier: 'Match 4 + Power Ball',
-      winners: '25',
+      category: 'Match 4 + Power Ball',
+      match: '4',
       prize: '$50,000',
-      power_play: '$150,000',
+      winners: 25,
+      prize_fund: 'N/A',
     },
   ];
 
@@ -55,10 +58,10 @@ describe('PrizeBreakdownTable 컴포넌트', () => {
     const headerCells = screen.getAllByTestId('table-head');
     expect(headerCells).toHaveLength(4);
 
-    expect(headerCells[0]).toHaveTextContent('Prize Tier');
+    expect(headerCells[0]).toHaveTextContent('Match');
     expect(headerCells[1]).toHaveTextContent('Winners');
     expect(headerCells[2]).toHaveTextContent('Prize');
-    expect(headerCells[3]).toHaveTextContent('Power Play');
+    expect(headerCells[3]).toHaveTextContent('Prize Fund');
   });
 
   it('올바른 수의 행이 렌더링되어야 합니다', () => {
@@ -74,17 +77,17 @@ describe('PrizeBreakdownTable 컴포넌트', () => {
 
     const cells = screen.getAllByTestId('table-cell');
 
-    // 첫 번째 행 (Match 5 + Power Ball)
-    expect(cells[0]).toHaveTextContent('Match 5 + Power Ball');
+    // 첫 번째 행 (Match 5 + Mega Ball)
+    expect(cells[0]).toHaveTextContent('5+1');
     expect(cells[1]).toHaveTextContent('1');
     expect(cells[2]).toHaveTextContent('$100,000,000');
     expect(cells[3]).toHaveTextContent('N/A');
 
     // 두 번째 행 (Match 5)
-    expect(cells[4]).toHaveTextContent('Match 5');
+    expect(cells[4]).toHaveTextContent('5');
     expect(cells[5]).toHaveTextContent('4');
     expect(cells[6]).toHaveTextContent('$1,000,000');
-    expect(cells[7]).toHaveTextContent('$2,000,000');
+    expect(cells[7]).toHaveTextContent('N/A');
   });
 
   it('빈 데이터가 주어졌을 때 빈 테이블이 렌더링되어야 합니다', () => {
@@ -104,7 +107,7 @@ describe('PrizeBreakdownTable 컴포넌트', () => {
     // 첫 번째 행의 첫 번째 셀(Prize Tier)을 확인
     const prizeTierCells = screen
       .getAllByTestId('table-cell')
-      .filter(cell => cell.textContent?.includes('Match 5 + Power Ball'));
+      .filter(cell => cell.textContent?.includes('5+1'));
 
     expect(prizeTierCells[0]).toHaveClass('font-medium');
   });
