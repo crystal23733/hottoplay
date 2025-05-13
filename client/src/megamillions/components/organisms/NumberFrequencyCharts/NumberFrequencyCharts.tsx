@@ -52,7 +52,7 @@ const NumberFrequencyCharts: React.FC<NumberFrequencyChartsProps> = ({ data, loa
         <Tabs defaultValue="white" className="w-full">
           <TabsList className="mb-4">
             <TabsTrigger value="white">White Balls</TabsTrigger>
-            <TabsTrigger value="power">Power Balls</TabsTrigger>
+            <TabsTrigger value="mega">Mega Balls</TabsTrigger>
           </TabsList>
           <TabsContent value="white">
             <FrequencyChart
@@ -63,7 +63,7 @@ const NumberFrequencyCharts: React.FC<NumberFrequencyChartsProps> = ({ data, loa
               height={2000}
             />
           </TabsContent>
-          <TabsContent value="power">
+          <TabsContent value="mega">
             <FrequencyChart
               data={data.mega_balls}
               title="MegaMillions Mega Ball Number Frequencies"
