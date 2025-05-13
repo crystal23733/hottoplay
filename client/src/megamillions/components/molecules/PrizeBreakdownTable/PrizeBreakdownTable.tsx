@@ -14,19 +14,19 @@ const PrizeBreakdownTable: React.FC<PrizeBreakdownTableProps> = ({ prizeBreakdow
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Prize Tier</TableHead>
+            <TableHead>Match</TableHead>
             <TableHead>Winners</TableHead>
             <TableHead>Prize</TableHead>
-            <TableHead>Power Play</TableHead>
+            <TableHead>Prize Fund</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {prizeBreakdown.map((tier, index) => (
             <TableRow key={index}>
-              <TableCell className="font-medium">{tier.prize_tier}</TableCell>
+              <TableCell className="font-medium">{tier.match}</TableCell>
               <TableCell>{tier.winners}</TableCell>
               <TableCell>{tier.prize}</TableCell>
-              <TableCell>{tier.power_play}</TableCell>
+              <TableCell>{tier.prize_fund}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -1,4 +1,3 @@
-// client/src/api/megamillions/interface/megaMillionsDrawService.ts
 import {
   DrawDetailRequest,
   DrawDetailResponse,

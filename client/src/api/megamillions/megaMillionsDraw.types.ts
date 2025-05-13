@@ -1,17 +1,89 @@
-// client/src/api/megamillions/megaMillionsDraw.types.ts
 import { MegaMillionsDraw } from './megaMillions.types';
 
 /**
- * 추첨 결과 목록 요청 타입
+ * 메가밀리언스 추첨 결과 상세 응답 인터페이스
+ * @property {string} draw_date - 추첨 날짜
+ * @property {number[]} white_numbers - 메인 번호
+ * @property {number} mega_ball - 메가볼
+ * @property {string | null} mega_plier - 메가볼 곱수
+ * @property {string | null} estimated_jackpot - 추정 상금
+ * @property {string | null} cash_option - 현금 상금
+ * @property {number | null} jackpot_winners - 상금 당첨자 수
+ */
+export interface DrawDetailResponse {
+  draw_date: string;
+  white_numbers: number[];
+  mega_ball: number;
+  mega_plier: string | null;
+  estimated_jackpot?: string;
+  cash_option?: string;
+  jackpot_winners?: number;
+  prize_breakdown?: PrizeTier[];
+  era: string;
+  rules: Rules;
+}
+
+/**
+ * 상금 등급 정보 인터페이스
+ * @property {string} category - 상금 등급
+ * @property {string} match - 매치 수
+ * @property {string} prize - 상금
+ * @property {number} winners - 당첨자 수
+ * @property {string} prize_fund - 상금 자금
+ */
+export interface PrizeTier {
+  category: string;
+  match: string;
+  prize: string;
+  winners: number;
+  prize_fund: string;
+}
+
+/**
+ * 메가밀리언스 게임 규칙 인터페이스
+ * @property {number[]} white_ball_range - 메인 번호 범위
+ * @property {number[]} mega_ball_range - 메가볼 번호 범위
+ * @property {string} start_date - 게임 시작 날짜
+ * @property {string | null} end_date - 게임 종료 날짜
+ */
+export interface Rules {
+  white_ball_range: number[];
+  mega_ball_range: number[];
+  start_date: string;
+  end_date: string | null;
+}
+
+/**
+ * 메가밀리언스 번호 빈도 응답 인터페이스
+ * @property {NumberFrequency[]} white_balls - 메인 번호 빈도
+ * @property {NumberFrequency[]} mega_balls - 메가볼 빈도
+ */
+export interface NumberFrequencyResponse {
+  white_balls: NumberFrequency[];
+  mega_balls: NumberFrequency[];
+}
+
+/**
+ * 번호 빈도 인터페이스
+ * @property {number} number - 번호
+ * @property {number} count - 빈도
+ */
+export interface NumberFrequency {
+  number: number;
+  count: number;
+}
+
+/**
+ * 추첨 결과 목록 요청 인터페이스
  * @property {number} page - 페이지 번호
  * @property {number} page_size - 페이지 크기
- * @property {string} [search_term] - 검색어 (선택적)
- * @property {number} [year] - 연도 필터 (선택적)
- * @property {number} [month] - 월 필터 (선택적)
- * @property {number} [day] - 일 필터 (선택적)
- * @property {string} [start_date] - 시작 날짜 필터 (선택적)
- * @property {string} [end_date] - 종료 날짜 필터 (선택적)
- * @property {number} [number] - 번호 필터 (선택적)
+ * @property {string} search_term - 검색어
+ * @property {number} year - 연도
+ * @property {number} month - 월
+ * @property {number} day - 일
+ * @property {string} start_date - 시작 날짜 (형식: "Mon, Jan 2, 2006")
+ * @property {string} end_date - 종료 날짜 (형식: "Mon, Jan 2, 2006")
+ * @property {number} number - 특정 번호
  */
 export interface DrawListRequest {
   page: number;
@@ -26,10 +98,10 @@ export interface DrawListRequest {
 }
 
 /**
- * 추첨 결과 목록 응답 타입
+ * 추첨 결과 목록 응답 인터페이스
  * @property {MegaMillionsDraw[]} draws - 추첨 결과 목록
- * @property {number} total_count - 전체 결과 수
- * @property {number} page - 현재 페이지 번호
+ * @property {number} total_count - 총 결과 수
+ * @property {number} page - 현재 페이지
  * @property {number} page_size - 페이지 크기
  */
 export interface DrawListResponse {
@@ -40,57 +112,9 @@ export interface DrawListResponse {
 }
 
 /**
- * 추첨 결과 상세 요청 타입
- * @property {string} date - 조회할 날짜 (YYYY-MM-DD 형식)
+ * 특정 회차 요청 인터페이스
+ * @property {string} date - 추첨 날짜
  */
 export interface DrawDetailRequest {
   date: string;
-}
-
-/**
- * 추첨 결과 상세 응답 타입
- * @property {MegaMillionsDraw} draw - 추첨 결과 상세 정보
- * @property {PrizeBreakdown[]} prize_breakdown - 당첨금 정보
- */
-export interface DrawDetailResponse {
-  draw: MegaMillionsDraw;
-  prize_breakdown: PrizeBreakdown[];
-}
-
-/**
- * 당첨금 정보 타입
- * @property {string} prize_category - 당첨 종류
- * @property {string} match - 매치 패턴
- * @property {string} prize - 당첨금액
- * @property {number} winners - 당첨자 수
- * @property {string} prize_fund - 당첨금 총액
- */
-export interface PrizeBreakdown {
-  category: string;
-  match: string;
-  prize: string;
-  winners: number;
-  prize_fund: string;
-}
-
-/**
- * 번호 빈도 데이터
- * @property {number} number - 번호
- * @property {number} frequency - 출현 빈도 (횟수)
- * @property {number} percentage - 출현 확률 (%)
- */
-export interface NumberFrequency {
-  number: number;
-  frequency: number;
-  percentage: number;
-}
-
-/**
- * 번호 빈도 응답 타입
- * @property {NumberFrequency[]} white_ball_frequency - 흰 공 빈도 데이터
- * @property {NumberFrequency[]} mega_ball_frequency - 메가볼 빈도 데이터
- */
-export interface NumberFrequencyResponse {
-  white_ball_frequency: NumberFrequency[];
-  mega_ball_frequency: NumberFrequency[];
 }

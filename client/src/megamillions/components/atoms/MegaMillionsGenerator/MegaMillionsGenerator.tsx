@@ -11,7 +11,7 @@ import MegaMillionsGeneratorProps from './MegaMillionsGenerator.types';
  * @example
  * <MegaMillionsGenerator count={5} onCountChange={() => {}} onGenerate={() => {}} isLoading={false} disabled={false} />
  */
-const PowerBallGenerator: React.FC<MegaMillionsGeneratorProps> = ({
+const MegaMillionsGenerator: React.FC<MegaMillionsGeneratorProps> = ({
   count,
   onCountChange,
   onGenerate,
@@ -76,4 +76,4 @@ const PowerBallGenerator: React.FC<MegaMillionsGeneratorProps> = ({
   );
 };
 
-export default PowerBallGenerator;
+export default MegaMillionsGenerator;

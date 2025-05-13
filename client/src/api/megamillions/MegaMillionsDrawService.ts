@@ -1,4 +1,3 @@
-// client/src/api/megamillions/MegaMillionsDrawService.ts
 import FetchApi from '../lib/fetch/FetchApi';
 import ENDPOINT from '../url/constants/ENDPOINT';
 import IMegaMillionsDrawService from './interface/megaMillionsDrawService';
