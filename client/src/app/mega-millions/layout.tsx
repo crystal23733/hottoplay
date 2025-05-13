@@ -109,7 +109,8 @@ export default function MegaMillionsLayout({
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">MegaMillions Number Generator</h1>
         <p className="text-muted-foreground">
-          Generate your MegaMillions numbers using different strategies or analyze number statistics.
+          Generate your MegaMillions numbers using different strategies or analyze number
+          statistics.
         </p>
       </div>
 

@@ -79,7 +79,7 @@ describe('NumberFrequencyCharts 컴포넌트', () => {
 
     // 탭이 올바르게 렌더링되었는지 확인
     expect(screen.getByTestId('tab-white')).toBeInTheDocument();
-    expect(screen.getByTestId('tab-power')).toBeInTheDocument();
+    expect(screen.getByTestId('tab-mega')).toBeInTheDocument();
 
     // 기본적으로 white 탭이 선택되었는지 확인
     const whiteTabContent = screen.getByTestId('tabs-content-white');

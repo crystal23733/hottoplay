@@ -6,8 +6,8 @@ export default function MegaMillionsPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">MegaMillions Number Generator</h1>
         <p className="text-muted-foreground">
-          Generate your MegaMillions numbers using different strategies. Choose your preferred method
-          and get your lucky numbers!
+          Generate your MegaMillions numbers using different strategies. Choose your preferred
+          method and get your lucky numbers!
         </p>
       </div>
 
