@@ -1,4 +1,5 @@
-// client/src/api/megamillions/megaMillionsDraw.types.ts에 추가할 타입
+import { MegaMillionsDraw } from './megaMillions.types';
+
 /**
  * 메가밀리언스 추첨 결과 상세 응답 인터페이스
  * @property {string} draw_date - 추첨 날짜
@@ -70,4 +71,50 @@ export interface NumberFrequencyResponse {
 export interface NumberFrequency {
   number: number;
   count: number;
+}
+
+/**
+ * 추첨 결과 목록 요청 인터페이스
+ * @property {number} page - 페이지 번호
+ * @property {number} page_size - 페이지 크기
+ * @property {string} search_term - 검색어
+ * @property {number} year - 연도
+ * @property {number} month - 월
+ * @property {number} day - 일
+ * @property {string} start_date - 시작 날짜 (형식: "Mon, Jan 2, 2006")
+ * @property {string} end_date - 종료 날짜 (형식: "Mon, Jan 2, 2006")
+ * @property {number} number - 특정 번호
+ */
+export interface DrawListRequest {
+  page: number;
+  page_size: number;
+  search_term?: string;
+  year?: number;
+  month?: number;
+  day?: number;
+  start_date?: string;
+  end_date?: string;
+  number?: number;
+}
+
+/**
+ * 추첨 결과 목록 응답 인터페이스
+ * @property {MegaMillionsDraw[]} draws - 추첨 결과 목록
+ * @property {number} total_count - 총 결과 수
+ * @property {number} page - 현재 페이지
+ * @property {number} page_size - 페이지 크기
+ */
+export interface DrawListResponse {
+  draws: MegaMillionsDraw[];
+  total_count: number;
+  page: number;
+  page_size: number;
+}
+
+/**
+ * 특정 회차 요청 인터페이스
+ * @property {string} date - 추첨 날짜
+ */
+export interface DrawDetailRequest {
+  date: string;
 }
