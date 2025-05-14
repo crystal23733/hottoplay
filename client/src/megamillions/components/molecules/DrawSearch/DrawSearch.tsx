@@ -8,9 +8,9 @@ import { DatePicker } from '@/ui/date-picker';
 import { Card, CardContent } from '@/ui/Card';
 
 /**
- * 파워볼 추첨 결과 검색 컴포넌트
- * @param {DrawSearchProps} props - 파워볼 추첨 결과 검색 컴포넌트 속성
- * @returns {React.ReactNode} 파워볼 추첨 결과 검색 컴포넌트
+ * 메가밀리언스 추첨 결과 검색 컴포넌트
+ * @param {DrawSearchProps} props - 메가밀리언스 추첨 결과 검색 컴포넌트 속성
+ * @returns {React.ReactNode} 메가밀리언스 추첨 결과 검색 컴포넌트
  */
 const DrawSearch: React.FC<DrawSearchProps> = ({ onSearch, onDateSearch, onReset }) => {
   const [searchTerm, setSearchTerm] = useState('');

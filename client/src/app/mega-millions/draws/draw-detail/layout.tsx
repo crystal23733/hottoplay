@@ -1,4 +1,4 @@
-export default function PowerBallDrawsLayout({
+export default function MegaMillionsDrawsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

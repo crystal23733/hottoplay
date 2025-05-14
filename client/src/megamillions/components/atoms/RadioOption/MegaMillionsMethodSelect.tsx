@@ -6,11 +6,11 @@ import { Card, CardContent } from '@/ui/Card';
 import { cn } from '@/lib/utils';
 
 /**
- * 파워볼 메서드 선택 컴포넌트
- * @param {PowerBallMethodSelectProps} props - 파워볼 메서드 선택 컴포넌트 속성
- * @returns {React.ReactNode} 파워볼 메서드 선택 컴포넌트
+ * 메가밀리언스 메서드 선택 컴포넌트
+ * @param {MegaMillionsMethodSelectProps} props - 메가밀리언스 메서드 선택 컴포넌트 속성
+ * @returns {React.ReactNode} 메가밀리언스 메서드 선택 컴포넌트
  * @example
- * <PowerBallMethodSelect value={value} onChange={onChange} disabled={disabled} />
+ * <MegaMillionsMethodSelect value={value} onChange={onChange} disabled={disabled} />
  */
 const MegaMillionsMethodSelect: React.FC<MegaMillionsMethodSelectProps> = ({
   value,

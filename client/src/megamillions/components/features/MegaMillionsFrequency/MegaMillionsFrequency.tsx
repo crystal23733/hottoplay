@@ -8,8 +8,8 @@ import NumberFrequencyCharts from '../../organisms/NumberFrequencyCharts/NumberF
 import useMegaMillionsNumberFrequency from '@/megamillions/hooks/useMegaMillionsNumberFrequency';
 
 /**
- * 파워볼 번호 빈도 분석 페이지 컴포넌트
- * @returns {React.ReactNode} 파워볼 번호 빈도 분석 페이지
+ * 메가밀리언스 번호 빈도 분석 페이지 컴포넌트
+ * @returns {React.ReactNode} 메가밀리언스 번호 빈도 분석 페이지
  */
 const MegaMillionsFrequency = () => {
   const { data, loading, error, refreshFrequency } = useMegaMillionsNumberFrequency();
@@ -35,9 +35,9 @@ const MegaMillionsFrequency = () => {
   return (
     <div className="container max-w-6xl mx-auto py-8 px-4">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Powerball Number Frequency</h1>
+        <h1 className="text-3xl font-bold mb-2">MegaMillions Number Frequency</h1>
         <p className="text-muted-foreground">
-          Check the frequency of Powerball numbers based on historical drawing data.
+          Check the frequency of MegaMillions numbers based on historical drawing data.
         </p>
       </div>
 

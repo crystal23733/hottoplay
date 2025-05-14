@@ -61,7 +61,7 @@ const MegaMillionsDrawDetail: React.FC<MegaMillionsDrawDetailProps> = ({ date })
             We couldn&apos;t find the drawing result for {date}
           </p>
           <Button asChild className="mt-4">
-            <Link href="/power-ball/draws">
+            <Link href="/mega-millions/draws">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Drawing Results
             </Link>

@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PowerBallLayout({
+export default function MegaMillionsStatisticsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

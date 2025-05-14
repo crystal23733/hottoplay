@@ -2,13 +2,13 @@ import { cn } from '@/lib/utils';
 import MegaMillionsNumberProps from './MegaMillionsNumber.types';
 
 /**
- * 파워볼 번호 컴포넌트
- * @param {PowerBallNumberProps} props - 파워볼 번호 컴포넌트 속성
- * @returns {React.ReactNode} 파워볼 번호 컴포넌트
+ * 메가밀리언스 번호 컴포넌트
+ * @param {MegaMillionsNumberProps} props - 메가밀리언스 번호 컴포넌트 속성
+ * @returns {React.ReactNode} 메가밀리언스 번호 컴포넌트
  * @example
- * <PowerBallNumber number={23} />
- * <PowerBallNumber number={7} isPowerball />
- * <PowerBallNumber number={15} className="text-blue-500" />
+ * <MegaMillionsNumber number={23} />
+ * <MegaMillionsNumber number={7} isMegaBall />
+ * <MegaMillionsNumber number={15} className="text-blue-500" />
  */
 const MegaMillionsNumber: React.FC<MegaMillionsNumberProps> = ({
   number,
