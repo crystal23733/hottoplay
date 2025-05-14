@@ -20,7 +20,15 @@ const DrawListItem: React.FC<DrawListItemProps> = ({ draw }) => {
           <div className="space-y-2">
             <div className="text-lg font-medium">{draw.draw_date}</div>
 
-            <div className="text-xs text-muted-foreground">Multiplier: {draw.multiplier}</div>
+            {draw.estimated_jackpot && (
+              <div className="text-sm text-primary font-medium">
+                Jackpot: {draw.estimated_jackpot}
+              </div>
+            )}
+
+            <div className="text-xs text-muted-foreground">
+              Multiplier: {draw.mega_plier || 'None'}
+            </div>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">

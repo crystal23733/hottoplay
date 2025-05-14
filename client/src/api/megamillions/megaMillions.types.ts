@@ -77,11 +77,13 @@ export interface StatisticsRequest {
  * @property {string} draw_date - 추첨 날짜
  * @property {number[]} white_numbers - 흰색 번호 배열
  * @property {number} mega_ball - 메가볼 번호
- * @property {string} multiplier - 당첨금 배수
+ * @property {string} mega_plier - 당첨금 배수
+ * @property {string} estimated_jackpot - 추정 상금
  */
 export interface MegaMillionsDraw {
   draw_date: string;
   white_numbers: number[];
   mega_ball: number;
-  multiplier: string;
+  mega_plier: string | null;
+  estimated_jackpot?: string | null;
 }

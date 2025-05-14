@@ -42,7 +42,12 @@ export default class MegaMillionsDrawService implements IMegaMillionsDrawService
    * @returns 추첨 결과 상세 정보
    */
   async getDrawDetail(params: DrawDetailRequest): Promise<DrawDetailResponse> {
-    return await this.apiDrawDetail.request(ENDPOINT.MEGA_MILLIONS_DRAW_DETAIL, 'POST', params);
+    const requestParams = { draw_date: params.date };
+    return await this.apiDrawDetail.request(
+      ENDPOINT.MEGA_MILLIONS_DRAW_DETAIL,
+      'POST',
+      requestParams
+    );
   }
 
   /**

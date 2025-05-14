@@ -4,8 +4,8 @@ import MegaMillionsService from '@/api/megamillions/megaMillionsService';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
- * 파워볼 통계 커스텀 훅
- * @returns 파워볼 통계 조회 및 번호 선택 기능
+ * 메가밀리언스 통계 커스텀 훅
+ * @returns 메가밀리언스 통계 조회 및 번호 선택 기능
  */
 export default () => {
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([]);
