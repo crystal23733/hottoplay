@@ -1,5 +1,5 @@
 import Logo from '@/lotto/components/atoms/Logo/Logo';
-import NoticeLink from '@/lotto/components/atoms/Button/NoticeButton/NoticeButton';
+
 import DreamButton from '@/lotto/components/atoms/Button/DreamButton/DreamButton';
 
 const Header: React.FC = () => (
@@ -9,7 +9,6 @@ const Header: React.FC = () => (
         <Logo />
         <div className="flex items-center gap-2">
           <DreamButton />
-          <NoticeLink />
         </div>
       </div>
     </nav>

@@ -11,7 +11,6 @@ services:
       - PORT=${CLIENT_PORT}
     depends_on:
       - server
-      - board-server
   server:
     build:
       context: ./server
@@ -23,14 +22,4 @@ services:
     environment:
       - GO_ENV=production
       - DOCKER_ENV=true
-  board-server:
-    build:
-      context: ./board-server
-      dockerfile: Dockerfile
-    ports:
-      - "${BOARD_SERVER_PORT}:${BOARD_SERVER_PORT}"
-    env_file:
-      - ./board-server/.env.production
-    environment:
-      - GO_ENV=production
-      - DOCKER_ENV=true
+

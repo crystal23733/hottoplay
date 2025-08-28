@@ -1,5 +1,4 @@
 import CLIENT_URL from '@/api/url/constants/CLIENT_URL';
-import notices from '@/utils/sitemap/notices';
 import { MetadataRoute } from 'next';
 
 /**
@@ -28,11 +27,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       path: '/lotto',
-      priority: 0.8,
-      changeFrequency: 'daily',
-    },
-    {
-      path: '/lotto/notices',
       priority: 0.8,
       changeFrequency: 'daily',
     },
@@ -71,8 +65,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route.priority,
   }));
 
-  // 동적 공지사항 경로 추가
-  const noticesPaths = await notices();
-
-  return [...staticPaths, ...noticesPaths];
+  return [...staticPaths];
 }

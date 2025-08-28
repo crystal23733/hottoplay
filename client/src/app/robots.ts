@@ -12,7 +12,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: [
           '/',
           '/lotto',
-          '/lotto/notices',
           '/lotto/content/dream',
           '/sitemap.xml',
           '/power-ball',
