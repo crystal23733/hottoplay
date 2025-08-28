@@ -3,18 +3,31 @@ package main
 import (
 	"board-server/config"
 	"board-server/internal/delivery/http/handler"
+	lambdaAdapter "board-server/internal/lambda"
 	noticeRepo "board-server/internal/repository/mongodb"
 	"board-server/internal/router"
 	"board-server/internal/usecase"
 	"board-server/pkg/database"
 	"log"
 	"net/http"
+	"os"
 
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	// Lambda 모드 체크
+	if os.Getenv("AWS_LAMBDA_RUNTIME_API") != "" {
+		log.Println("Lambda 모드로 실행합니다...")
+		adapter := lambdaAdapter.NewLambdaAdapter()
+		lambda.Start(adapter.HandleRequest)
+		return
+	}
+
+	log.Println("HTTP 서버 모드로 실행합니다...")
+
 	// 환경 변수 로드
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -65,5 +78,4 @@ func main() {
 	router.InitRoutes(e, noticeHandler)
 
 	e.Logger.Fatal(e.Start(":" + cfg.Port))
-
 }
