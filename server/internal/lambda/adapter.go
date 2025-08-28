@@ -33,12 +33,21 @@ type Response struct {
 
 // HandleRequest는 Lambda 진입점입니다.
 func (a *LambdaAdapter) HandleRequest(ctx context.Context, request events.APIGatewayProxyRequest) (Response, error) {
-	// CORS 헤더 설정
+	// CORS 헤더 설정 - credentials가 include일 때는 특정 origin 사용
+	origin := request.Headers["Origin"]
+	if origin == "" {
+		origin = request.Headers["origin"]
+	}
+	// hottoplay.com 도메인만 허용
+	if origin != "https://hottoplay.com" && origin != "https://www.hottoplay.com" {
+		origin = "https://hottoplay.com"
+	}
+
 	headers := map[string]string{
-		"Access-Control-Allow-Origin":      "*",
+		"Access-Control-Allow-Origin":      origin,
 		"Content-Type":                     "application/json",
 		"Access-Control-Allow-Methods":     "OPTIONS,POST,GET",
-		"Access-Control-Allow-Headers":     "Content-Type,X-API-KEY",
+		"Access-Control-Allow-Headers":     "Content-Type,X-API-KEY,Authorization",
 		"Access-Control-Allow-Credentials": "true",
 	}
 
@@ -51,8 +60,8 @@ func (a *LambdaAdapter) HandleRequest(ctx context.Context, request events.APIGat
 		}, nil
 	}
 
-	// API 키 검증 (헬스체크 제외)
-	if !strings.HasSuffix(request.Path, "/lotto") && !a.validateAPIKey(request) {
+	// API 키 검증 (헬스체크와 공지사항 제외)
+	if !strings.HasSuffix(request.Path, "/lotto") && !strings.Contains(request.Path, "/notices") && !a.validateAPIKey(request) {
 		return Response{
 			StatusCode: 401,
 			Headers:    headers,
@@ -75,6 +84,9 @@ func (a *LambdaAdapter) HandleRequest(ctx context.Context, request events.APIGat
 			Headers:    headers,
 			Body:       `{"message": "Hello, World!"}`,
 		}, nil
+	case strings.Contains(request.Path, "/notices"):
+		// Board 서비스 처리
+		return a.handleNoticeRequest(ctx, request, headers)
 	default:
 		return Response{
 			StatusCode: 404,
@@ -237,6 +249,92 @@ func (a *LambdaAdapter) handleGetPopularWatch(ctx context.Context, request event
 		Headers:    headers,
 		Body:       string(body),
 	}, nil
+}
+
+// handleNoticeRequest는 공지사항 요청을 처리합니다.
+func (a *LambdaAdapter) handleNoticeRequest(ctx context.Context, request events.APIGatewayProxyRequest, headers map[string]string) (Response, error) {
+	// 간단한 공지사항 목업 응답 (실제로는 MongoDB 연결이 필요)
+	switch {
+	case strings.HasSuffix(request.Path, "/notices/"):
+		// 헬스체크
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       `{"message": "Board API OK"}`,
+		}, nil
+	case strings.HasSuffix(request.Path, "/notices/list"):
+		// 공지사항 목록
+		mockNotices := map[string]interface{}{
+			"notices": []map[string]interface{}{
+				{
+					"id":        "1",
+					"title":     "공지사항 1",
+					"content":   "공지사항 내용 1",
+					"timestamp": "2025-08-28T10:00:00Z",
+				},
+				{
+					"id":        "2",
+					"title":     "공지사항 2",
+					"content":   "공지사항 내용 2",
+					"timestamp": "2025-08-27T10:00:00Z",
+				},
+			},
+			"total": 2,
+		}
+		body, err := json.Marshal(mockNotices)
+		if err != nil {
+			return Response{
+				StatusCode: 500,
+				Headers:    headers,
+				Body:       `{"error": "응답 생성 실패"}`,
+			}, nil
+		}
+		return Response{
+			StatusCode: 200,
+			Headers:    headers,
+			Body:       string(body),
+		}, nil
+	case strings.Contains(request.Path, "/notices/") && !strings.HasSuffix(request.Path, "/notices/") && !strings.HasSuffix(request.Path, "/notices/list"):
+		// 특정 공지사항 상세 조회 (/notices/:timestamp)
+		pathParts := strings.Split(request.Path, "/")
+		if len(pathParts) >= 5 {
+			timestamp := pathParts[4] // /api/v1/notices/{timestamp}
+
+			// 목업 상세 데이터
+			mockDetail := map[string]interface{}{
+				"id":        "1",
+				"title":     "공지사항 상세",
+				"content":   "요청하신 " + timestamp + " 시점의 공지사항 상세 내용입니다.",
+				"timestamp": timestamp,
+				"author":    "관리자",
+			}
+
+			body, err := json.Marshal(mockDetail)
+			if err != nil {
+				return Response{
+					StatusCode: 500,
+					Headers:    headers,
+					Body:       `{"error": "응답 생성 실패"}`,
+				}, nil
+			}
+			return Response{
+				StatusCode: 200,
+				Headers:    headers,
+				Body:       string(body),
+			}, nil
+		}
+		return Response{
+			StatusCode: 400,
+			Headers:    headers,
+			Body:       `{"error": "잘못된 요청 형식입니다"}`,
+		}, nil
+	default:
+		return Response{
+			StatusCode: 404,
+			Headers:    headers,
+			Body:       `{"error": "지원하지 않는 공지사항 경로입니다"}`,
+		}, nil
+	}
 }
 
 // validateAPIKey는 API 키를 검증합니다.
