@@ -1,3 +1,23 @@
 .env
 .env.*
 main
+# Lambda 배포 관련 파일
+bootstrap
+*.zip
+lotto-lambda.zip
+
+# 환경변수 파일 (보안상 중요)
+.env
+.env.*
+!.env.example
+
+# Lambda 테스트 파일
+test-*.json
+response*.json
+
+# AWS CLI 임시 파일
+trust-policy.json
+
+# 빌드 아티팩트
+test-build
+test-optimized
