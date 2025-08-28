@@ -4,7 +4,6 @@ import { MainLayout } from '@/lotto/components/features/MainLayout/MainLayout';
 import HomeIntro from '@/lotto/components/features/HomeIntro/HomeIntro';
 import TabContent from '@/lotto/components/features/TabContent/TabContent';
 
-
 export default function Home() {
   return (
     <MainLayout>
