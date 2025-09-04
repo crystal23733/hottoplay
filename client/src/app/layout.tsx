@@ -152,15 +152,7 @@ export default function RootLayout({
             }),
           }}
         />
-<<<<<<< HEAD
-        <Script
-          async
-          src={process.env.NEXT_PUBLIC_GOOGLE_AD}
-          crossOrigin='anonymous'
-        />
-=======
         <Script async src={process.env.NEXT_PUBLIC_GOOGLE_AD} crossOrigin="anonymous" />
->>>>>>> refs/heads/release/v2.1.1
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <div className="min-h-screen bg-background">
