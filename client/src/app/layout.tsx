@@ -122,14 +122,12 @@ export default function RootLayout({
       <head>
         <GoogleTagManager gtmId={env.analytics.gtmId} />
         <GoogleAnalytics gaId={env.analytics.gaId} />
-        {/* 
-          구글 애드센스 스크립트 (승인 후 주석 해제)
-          <script 
-            async 
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" 
-            crossOrigin="anonymous"
-          />
-        */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7408626546715060"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
 
         <Script
           id="structured-data"
