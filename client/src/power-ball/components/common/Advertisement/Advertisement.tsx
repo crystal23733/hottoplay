@@ -32,7 +32,7 @@ export default function Advertisement({ adSlot, adSize, className }: Advertiseme
             ins.style.display = 'block';
 
             // data-ad-client은 실제 애드센스 ID로 교체해야 함
-            ins.setAttribute('data-ad-client', 'ca-pub-XXXXXXXXXXXXXXXX');
+            ins.setAttribute('data-ad-client', 'ca-pub-7408626546715060');
             ins.setAttribute('data-ad-slot', adSlot);
             ins.setAttribute('data-ad-format', 'auto');
             ins.setAttribute('data-full-width-responsive', 'true');
