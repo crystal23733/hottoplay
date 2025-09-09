@@ -1,13 +1,11 @@
-/* eslint-disable react/forbid-dom-props, react/no-unknown-property */
+/* eslint-disable react/forbid-dom-props, react/no-unknown-property, @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useEffect } from 'react';
-import env from '@/config/meta/env';
-import type { AdsByGoogle } from '@/types/adsense';
 
 declare global {
   interface Window {
-    adsbygoogle: AdsByGoogle;
+    adsbygoogle: any;
   }
 }
 
@@ -16,33 +14,16 @@ declare global {
  */
 export default function SideAd() {
   useEffect(() => {
-    try {
-      // 실제 광고 ID가 설정된 경우에만 광고 로드
-      if (env.adsense.clientId && !env.adsense.clientId.includes('placeholder')) {
-        (window.adsbygoogle =
-          window.adsbygoogle ||
-          ({
-            push: () => {},
-            length: 0,
-          } as AdsByGoogle)).push();
-      }
-    } catch (err) {
-      console.error('SideAd 로드 오류:', err);
-    }
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
   }, []);
-
-  // 광고 설정이 없으면 렌더링하지 않음
-  if (!env.adsense.clientId || env.adsense.clientId.includes('placeholder')) {
-    return null;
-  }
 
   return (
     <div className="w-full flex justify-center">
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}
-        data-ad-client={env.adsense.clientId}
-        data-ad-slot={env.adsense.sideAdSlot}
+        data-ad-client="ca-pub-7408626546715060"
+        data-ad-slot="6287625334"
         data-ad-format="auto"
         data-full-width-responsive="true"
       />
