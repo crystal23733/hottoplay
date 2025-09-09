@@ -122,12 +122,14 @@ export default function RootLayout({
       <head>
         <GoogleTagManager gtmId={env.analytics.gtmId} />
         <GoogleAnalytics gaId={env.analytics.gaId} />
-        <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.adsense.clientId}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
+        {env.adsense.clientId && !env.adsense.clientId.includes('placeholder') && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.adsense.clientId}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
 
         <Script
           id="structured-data"
