@@ -5,7 +5,7 @@ import { Toaster } from '@/ui/toaster';
 import env from '@/config/meta/env';
 import { Metadata } from 'next';
 import hottoplay from '@/lotto/constants/hottoplay';
-import AdLayout from '@/power-ball/components/common/AdLayout';
+import AdLayout from '@/components/layouts/AdLayout';
 import Script from 'next/script';
 
 const geistSans = localFont({
@@ -124,7 +124,7 @@ export default function RootLayout({
         <GoogleAnalytics gaId={env.analytics.gaId} />
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7408626546715060"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.adsense.clientId}`}
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />

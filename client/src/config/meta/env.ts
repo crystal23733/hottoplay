@@ -7,6 +7,12 @@ interface EnvConfig {
     google: string;
     naver: string;
   };
+  adsense: {
+    clientId: string;
+    topAdSlot: string;
+    bottomAdSlot: string;
+    sideAdSlot: string;
+  };
   url: {
     base: string;
   };
@@ -18,6 +24,10 @@ const requiredEnvs = [
   'NEXT_PUBLIC_GA_ID',
   'NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION',
   'NEXT_PUBLIC_NAVER_SITE_VERIFICATION',
+  'NEXT_PUBLIC_ADSENSE_CLIENT_ID',
+  'NEXT_PUBLIC_ADSENSE_TOP_AD_SLOT',
+  'NEXT_PUBLIC_ADSENSE_BOTTOM_AD_SLOT',
+  'NEXT_PUBLIC_ADSENSE_SIDE_AD_SLOT',
 ] as const;
 
 // 누락된 환경 변수 체크
@@ -35,6 +45,12 @@ const env: EnvConfig = {
   siteVerification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
     naver: process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION || '',
+  },
+  adsense: {
+    clientId: process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || '',
+    topAdSlot: process.env.NEXT_PUBLIC_ADSENSE_TOP_AD_SLOT || '',
+    bottomAdSlot: process.env.NEXT_PUBLIC_ADSENSE_BOTTOM_AD_SLOT || '',
+    sideAdSlot: process.env.NEXT_PUBLIC_ADSENSE_SIDE_AD_SLOT || '',
   },
   url: {
     base: 'https://hottoplay.com',
