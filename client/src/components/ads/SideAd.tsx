@@ -1,12 +1,13 @@
-/* eslint-disable react/forbid-dom-props, react/no-unknown-property, @typescript-eslint/no-explicit-any */
+/* eslint-disable react/forbid-dom-props, react/no-unknown-property */
 'use client';
 
 import { useEffect } from 'react';
 import env from '@/config/meta/env';
+import type { AdsByGoogle } from '@/types/adsense';
 
 declare global {
   interface Window {
-    adsbygoogle: any[];
+    adsbygoogle: AdsByGoogle;
   }
 }
 
@@ -16,7 +17,12 @@ declare global {
 export default function SideAd() {
   useEffect(() => {
     try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      (window.adsbygoogle =
+        window.adsbygoogle ||
+        ({
+          push: () => {},
+          length: 0,
+        } as AdsByGoogle)).push();
     } catch (err) {
       console.error('SideAd 로드 오류:', err);
     }
