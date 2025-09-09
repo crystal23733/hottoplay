@@ -1,4 +1,4 @@
-/* eslint-disable react/forbid-dom-props, react/no-unknown-property */
+/* eslint-disable react/forbid-dom-props, react/no-unknown-property, @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useEffect } from 'react';
