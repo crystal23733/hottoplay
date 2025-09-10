@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import TopAd from '@/components/ads/TopAd';
 import BottomAd from '@/components/ads/BottomAd';
 import SideAd from '@/components/ads/SideAd';
+import SideRightAd from '@/components/ads/SideRightAd';
 
 interface AdLayoutProps {
   children: React.ReactNode;
@@ -49,7 +50,7 @@ export default function AdLayout({ children }: AdLayoutProps) {
 
         {/* 오른쪽 사이드 광고 */}
         <div className="hidden xl:block w-[160px] p-2 sticky top-4 h-fit">
-          <SideAd />
+          <SideRightAd />
         </div>
       </div>
     );
