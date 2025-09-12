@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 declare global {
   interface Window {
@@ -13,9 +14,15 @@ declare global {
  * 사이드 광고 컴포넌트
  */
 export default function SideAd() {
+  const pathname = usePathname();
+
   useEffect(() => {
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-  }, []);
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (error) {
+      console.error('SideAd 로드 실패:', error);
+    }
+  }, [pathname]); // pathname 변경 시마다 새로운 광고 로드
 
   return (
     <div className="w-full flex justify-center">
